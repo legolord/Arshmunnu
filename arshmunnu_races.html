@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Species of Arshmunnu</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0e;--card:#13131a;--text:#e0dcd0;--muted:#a0a0a0;--gold:#c9a84c;--goldD:#8b7340;--red:#c0392b;--border:rgba(201,168,76,0.15);}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'EB Garamond',serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.topbar{height:52px;background:rgba(19,19,26,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:100;}
+.topbar h1{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);letter-spacing:2px;}
+.topbar a{font-family:'Cinzel',serif;font-size:10px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.topbar a:hover{color:var(--gold);}
+.grid{display:grid;grid-template-columns:260px 1fr;gap:16px;padding:16px;max-width:1200px;margin:0 auto;}
+.sidebar{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;position:sticky;top:68px;height:calc(100vh - 84px);overflow-y:auto;}
+.sidebar h3{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.race-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;cursor:pointer;transition:all .15s;border-bottom:1px solid rgba(255,255,255,0.03);}
+.race-item:hover{background:rgba(201,168,76,0.08);}
+.race-item.active{background:rgba(201,168,76,0.15);border-left:3px solid var(--gold);}
+.r-ico{font-size:20px;}
+.r-name{font-family:'Cinzel',serif;font-size:11px;color:var(--text);}
+.r-tag{font-size:9px;color:var(--muted);margin-left:auto;font-family:'Cinzel',serif;}
+.race-detail{display:none;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:24px;}
+.race-detail.active{display:block;}
+.race-header{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.race-emoji{font-size:48px;line-height:1;}
+.race-title h2{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);margin-bottom:4px;}
+.race-sub{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:8px;}
+.race-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);font-family:'Cinzel',serif;}
+.race-meta span{background:rgba(201,168,76,0.08);padding:3px 8px;border-radius:3px;}
+.race-section{margin-bottom:18px;}
+.race-section h4{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.race-section p{line-height:1.6;font-size:14px;color:var(--text);}
+.race-section ul{margin:6px 0 0 18px;font-size:14px;line-height:1.7;color:var(--text);}
+.attr-table{width:100%;border-collapse:collapse;margin:8px 0;font-family:'Cinzel',serif;font-size:12px;}
+.attr-table td{padding:6px 8px;text-align:center;border:1px solid var(--border);}
+.attr-label{color:var(--muted);font-size:10px;background:rgba(255,255,255,0.02);}
+.attr-mod-pos{color:#4ade80;font-weight:700;}
+.attr-mod-neg{color:#f87171;font-weight:700;}
+.attr-mod-neut{color:var(--muted);}
+.trait{margin-bottom:10px;padding:10px;background:rgba(255,255,255,0.02);border-radius:4px;border-left:3px solid var(--goldD);}
+.trait-name{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);margin-bottom:3px;}
+.trait-desc{font-size:13px;color:var(--text);line-height:1.45;}
+.ep-fab{position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--card),#1a1a2e);border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;z-index:800;transition:all .22s;color:var(--gold);}
+.ep-fab:hover{transform:scale(1.12);}
+.ep-ov{position:fixed;inset:0;z-index:900;background:rgba(3,1,8,0.97);display:none;flex-direction:column;}
+.ep-ov.open{display:flex;}
+.ep-tb{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:rgba(6,4,12,0.95);flex-shrink:0;}
+.ep-tb-title{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);}
+.ep-close{background:none;border:none;color:var(--gold);font-size:20px;cursor:pointer;}
+.ep-body{display:grid;grid-template-columns:220px 1fr;gap:0;flex:1;overflow:hidden;}
+.ep-lst{border-right:1px solid var(--border);overflow-y:auto;padding:8px;}
+.ep-rgt{overflow-y:auto;padding:16px 20px;}
+.ep-srch{width:100%;padding:6px 10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:inherit;font-size:13px;margin-bottom:8px;}
+.ep-srch:focus{outline:none;border-color:var(--goldD);}
+.ep-li{padding:7px 10px;border-radius:4px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;transition:all .12s;border-bottom:1px solid rgba(255,255,255,0.03);}
+.ep-li:hover{background:rgba(201,168,76,0.08);}
+.ep-li.sel{background:rgba(201,168,76,0.18);border-left:2px solid var(--gold);}
+.ep-li-name{font-family:'Cinzel',serif;font-size:11px;}
+.ep-li-sub{font-size:9px;color:var(--muted);}
+.ep-li-del{background:none;border:none;color:#f87171;cursor:pointer;font-size:12px;padding:0 4px;}
+.ep-ph{text-align:center;padding:60px 20px;color:var(--muted);font-style:italic;}
+.ep-ph span{font-size:40px;display:block;margin-bottom:12px;}
+.ep-ftitle{font-family:'Cinzel',serif;font-size:14px;color:var(--gold);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.ep-field{margin-bottom:10px;}
+.ep-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--goldD);display:block;margin-bottom:3px;}
+.ep-inp,.ep-sel,.ep-txt{width:100%;padding:7px 10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:inherit;font-size:14px;}
+.ep-inp:focus,.ep-sel:focus,.ep-txt:focus{outline:none;border-color:var(--goldD);}
+.ep-txt{min-height:80px;resize:vertical;}
+.ep-row2{display:grid;grid-template-columns:2fr 1fr;gap:8px;}
+.ep-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.ep-row7{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.ep-btn{background:rgba(201,168,76,0.12);border:1px solid var(--border);color:var(--text);padding:6px 14px;font-family:'Cinzel',serif;font-size:10px;cursor:pointer;border-radius:3px;transition:.2s;}
+.ep-btn:hover{background:rgba(201,168,76,0.25);}
+.ep-btn.danger{background:rgba(248,113,113,0.08);border-color:rgba(248,113,113,0.2);color:#f87171;}
+.ep-btn.danger:hover{background:rgba(248,113,113,0.2);}
+.ep-ftr{display:none;gap:8px;padding:10px 20px;border-top:1px solid var(--border);background:rgba(6,4,12,0.95);flex-shrink:0;align-items:center;justify-content:flex-end;}
+.ep-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:8px 16px;border-radius:3px;border:1px solid rgba(134,239,172,0.4);background:rgba(58,102,56,0.25);color:#86efac;font-family:'Cinzel',serif;font-size:10px;z-index:1000;}
+@media(max-width:768px){
+.grid{grid-template-columns:1fr}
+.sidebar{display:none}
+.ep-body{grid-template-columns:1fr}
+.ep-lst{display:none}
+.topbar{padding:8px 14px}
+.brand{font-size:11px}
+.nav a{font-size:7px;padding:3px 6px}
+.main{padding:14px}
+.hero{font-size:16px}
+.sub{font-size:11px}
+.card{padding:14px}
+.fab{width:48px;height:48px;font-size:22px}
+.owrap{padding:10px}
+.ep-panel{width:100%;max-width:none;border-radius:0}
+}
+</style>
+<style id="arsh-gate-base"></style>
+<script>
+/* ════ ARSH ADMIN GATE ════
+   Editing the Archive is reserved for the Keeper (Aelarion).
+   Readers see the pages in view-only form. This is an editing lock,
+   shared across pages via localStorage('arsh_admin'). */
+(function(){
+  var SEL='.fab,.ep-fab,.ep-sadd';
+  function admin(){try{return localStorage.getItem('arsh_admin')==='1';}catch(e){return false;}}
+  function mark(){
+    if(!document.body||document.getElementById('arsh-viewlock'))return;
+    var d=document.createElement('div');d.id='arsh-viewlock';d.textContent='\uD83D\uDD12 View only';
+    d.style.cssText='position:fixed;bottom:16px;right:16px;z-index:2147483000;font-family:Cinzel,Georgia,serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,164,74,.55);background:rgba(10,6,16,.72);border:1px solid rgba(212,164,74,.22);border-radius:20px;padding:6px 12px;pointer-events:none;';
+    document.body.appendChild(d);
+  }
+  function unmark(){var d=document.getElementById('arsh-viewlock');if(d)d.remove();}
+  function apply(){
+    var st=document.getElementById('arsh-gate-base'),on=admin();
+    document.documentElement.setAttribute('data-arsh-role',on?'keeper':'reader');
+    if(on){if(st)st.textContent='';unmark();return;}
+    if(st)st.textContent=SEL+'{display:none!important;}';
+    if(document.body)mark();else document.addEventListener('DOMContentLoaded',mark);
+  }
+  apply();
+  window.addEventListener('storage',function(e){if(e.key==='arsh_admin'||e.key===null)apply();});
+  document.addEventListener('DOMContentLoaded',apply);
+})();
+</script>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>&#127757; Species of Arshmunnu</h1>
+  <a href="index.html">&larr; Archive Hub</a>
+</div>
+
+<div class="grid">
+  <div class="sidebar" id="sidebar">
+    <h3>Peoples of the World</h3>
+    <div id="raceList"></div>
+  </div>
+  <div class="main" id="main"></div>
+</div>
+
+<div class="ep-fab" id="rFab" title="Edit Species" onclick="rEpOpen()">&#9998;</div>
+<div class="ep-ov" id="rEp">
+  <div class="ep-tb">
+    <span class="ep-tb-title">&#9998; Species Editor</span>
+    <button class="ep-close" onclick="rEpClose()">&#10005;</button>
+  </div>
+  <div class="ep-body">
+    <div class="ep-lst">
+      <input class="ep-srch" id="rSrch" placeholder="Search species..." oninput="rRenderList()">
+      <div id="rList"></div>
+      <div style="padding:8px"><button class="ep-btn" style="width:100%" onclick="rNew()">+ New Species</button></div>
+    </div>
+    <div class="ep-rgt" id="rRgt">
+      <div class="ep-ph"><span>&#127757;</span>Select a species to edit,<br>or click + New to add one.</div>
+    </div>
+  </div>
+  <div class="ep-ftr" id="rFtr" style="display:none">
+    <button class="ep-btn" onclick="rSave()">&#10003; Save</button>
+    <button class="ep-btn" onclick="rNew()">+ New</button>
+    <button class="ep-btn danger" onclick="rDelete()">Delete</button>
+    <button class="ep-btn" onclick="rExport()">&#8689; Export JSON</button>
+    <button class="ep-btn" onclick="document.getElementById('rImpFile').click()">&#8690; Import</button>
+    <input type="file" id="rImpFile" style="display:none" accept=".json" onchange="rImport(event)">
+    <button class="ep-btn danger" onclick="rReset()">Reset All</button>
+  </div>
+</div>
+
+<script>
+
+// ============== SPECIES DATA (Arshmunnu canon) ==============
+let RACES=[
+  {
+    id:"sofkarr",name:"Sofkarr",emoji:"\u25C8",tag:"Deep-Born",
+    desc:"Crystal-bone and living mycelium. White-blue aether-sap runs where blood should flow. Minted by the Aethernum Nexus itself. Dwell deep beneath the mountains of the north, building vast underground cities lit by phosphorescent fungi and crystal resonance. The tallest Sofkarr stand barely 4ft but their density makes them heavier than most humans. Their bones are literal crystal formations, making them nearly unbreakable. When a Sofkarr dies, their crystal bones are harvested to build the next generation's tools, creating a cycle of ancestral reverence. Aether-sap glows brighter when they are emotional, making deception difficult among their own kind.",
+    attrs:{MIG:0,AGI:0,FOR:2,WIT:1,WIL:0,BRG:-1,MAN:0},
+    bonus:"+2 FOR, +1 WIT, -1 BRG",speed:5,size:"Small",lifespan:"120-180 years",
+    traits:[
+      {name:"Crystal-Bone Frame",desc:"Natural Armour 2. Your crystal bones are nearly unbreakable. You have resistance to bludgeoning damage from non-magical sources."},
+      {name:"Aether-Sap",desc:"Your aether-sap glows faintly in darkness (dim light in 3m radius). You can extinguish or rekindle this glow as a free action. The glow pulses when you are emotional, making deception difficult among your own kind."},
+      {name:"Stone-Speaker",desc:"You can sense the composition and structural integrity of any stone or earth you touch. You have advantage on Craft checks involving stone, metal, or crystal."},
+      {name:"Dark-Adapted",desc:"You can see in complete darkness up to 18m as if it were dim light. You are dazzled by bright sunlight (-1 to all rolls) for the first hour after surfacing."},
+      {name:"Density",desc:"Your weight is triple what a human of your size would be. You sink in water and must succeed at an Athletics check (DL 12) to swim. You cannot be forcibly moved against your will by creatures smaller than Large."}
+    ],
+    cultures:["Nexus-Forge (craft-clan)","Deep-City (urban)","Surface-Outpost (exile)","Crystal-Temple (religious)"],
+    names:"Resonance-names that humans cannot pronounce. Surface names are usually descriptive translations: Stonebright, Deepdelver, Crystalweave, Forgeheart.",
+    homelands:"The Deep Roads beneath the Karun Mountains, the Nexus Caverns"
+  },
+  {
+    id:"drothmir",name:"Drothmir",emoji:"\u25D1",tag:"Void-Quenched",
+    desc:"Amethyst-hued survivors of the Aethernum Nexus catastrophe. Their ancestors were Sofkarr caught in a dimensional rupture. Generations in the Void changed them. Void-resistant seal-keepers who have made their home in the border-realm between dimensions. Their skin carries a faint violet luminescence that intensifies when they use their null-sense. Drothmir collect names the way others collect coins, believing that to know a true name is to hold power over its bearer.",
+    attrs:{MIG:0,AGI:0,FOR:1,WIT:1,WIL:2,BRG:0,MAN:-1},
+    bonus:"+2 WIL, +1 FOR, +1 WIT, -1 MAN",speed:5,size:"Small",lifespan:"Unknown (possibly immortal)",
+    traits:[
+      {name:"Void-Resistant",desc:"You have resistance to all damage from Void sources. You cannot be corrupted by Void exposure (you are already changed)."},
+      {name:"Null-Sense",desc:"You can detect the presence of magical effects, illusions, and dimensional anomalies within 12m. You know the approximate strength and type of any magic you detect."},
+      {name:"Seal-Born",desc:"You can create temporary dimensional seals that last up to 1 hour. A seal can bar passage, anchor an object in place, or prevent scrying. Creating a seal costs 2 MP."},
+      {name:"Name-Collector",desc:"When you learn a creature's true name, you gain +2 to all social checks against that creature. You can attempt to compel a named creature once per day (contested WIL check)."},
+      {name:"Amethyst-Hued",desc:"Your skin glows faintly violet. In complete darkness, you emit dim light in a 2m radius. You have disadvantage on Stealth checks in darkness unless you concentrate to suppress the glow (requires a WIL check each round)."}
+    ],
+    cultures:["Seal-Keepers (guardians)","Void-Walkers (explorers)","Name-Brokers (merchants)","Rift-Singers (artists)"],
+    names:"Drothmir names are sounds that resonate between dimensions. Examples: Vss-Thalen, Orim-Nul, Keth-Vaar, Syl-Reth, Mor-Vaan.",
+    homelands:"The Border-Realm, dimensional pockets between the material world and the Void"
+  },
+  {
+    id:"viteine",name:"Viteine",emoji:"\u2741",tag:"Holy Tree Dweller",
+    desc:"Tall, lithe beings with skin that shows faint bark-veins or a subtle green-gold grain. Dwell about the Holy Tree Flosevita. Each Viteine shares half their memories through the Tree. When a Viteine sleeps near the Tree, their memories flow into its root-system and can be accessed by any other Viteine. This creates a collective consciousness that is both blessing and curse. Viteines are immortal in the sense that they do not age, though they can be killed. Their connection to the Tree weakens with distance.",
+    attrs:{MIG:0,AGI:1,FOR:0,WIT:0,WIL:1,BRG:0,MAN:1},
+    bonus:"+1 AGI, +1 WIL, +1 MAN",speed:6,size:"Medium",lifespan:"Immortal (do not age)",
+    traits:[
+      {name:"Tree-Shared Memory",desc:"When you sleep within 10km of Flosevita, you can access the collective memory of all Viteines. This grants advantage on Lore checks about anything any Viteine has experienced. When further than 100km from Flosevita, you have disadvantage on all memory-dependent checks."},
+      {name:"Verdant Resilience",desc:"You have resistance to poison and disease. You can photosynthesize in sunlight, requiring only half as much food. You can regenerate 1 EP per hour while in direct sunlight."},
+      {name:"Flosevita's Blessing",desc:"Once per day, you can channel the Tree's power to heal yourself or an ally within touch range for 2d6+WIL EP. This costs 2 MP."},
+      {name:"Bark-Sight",desc:"You can sense the health and emotional state of any plant you touch. You can communicate simple concepts to plants. You have advantage on all checks involving plant-based environments."},
+      {name:"Memory-Bound",desc:"If you die more than 100km from Flosevita, your memories are lost forever. If you die within 10km of the Tree, a new Viteine body can be grown from your essence over 1d6 months, though you lose all memories since your last communion."}
+    ],
+    cultures:["Root-Dwellers (close to the Tree)","Branch-Walkers (explorers)","Seed-Bearers (diplomats)","Thorn-Guards (warriors)"],
+    names:"Wind-rustling names: Sylvaneth, Oakhaven, Willowmere, Thornheart, Fernwhisper.",
+    homelands:"The groves surrounding Flosevita, scattered enclaves elsewhere"
+  },
+  {
+    id:"roodin",name:"Roodin",emoji:"\u27B3",tag:"Root-Runner",
+    desc:"Cordial and capable in the deep forest and the night. Root-lines run beneath their skin like veins, and sap-memories from Elara's shaping carry ancient knowledge. Roodins share a wilderness competence with Lunarian beastfolk. They are smaller than Viteines, more compact and hardy. Their skin shows actual root-patterns that shift and grow slowly over their lifetime. They do not build cities, preferring to shape living structures from trees and vines.",
+    attrs:{MIG:0,AGI:2,FOR:0,WIT:0,WIL:0,BRG:0,MAN:0},
+    bonus:"+2 AGI, flexible +1 to any ability",speed:7,size:"Medium",lifespan:"400-600 years",
+    traits:[
+      {name:"Root-Run",desc:"You can move at full speed through any natural difficult terrain. You can climb natural surfaces at your full movement speed without a check."},
+      {name:"Night-Sight",desc:"You can see in dim light as if it were bright light, and in darkness as if it were dim light (out to 18m)."},
+      {name:"Sap-Memory",desc:"Once per day, you can access ancient memories from Elara's shaping to gain advantage on any one Lore, History, or Arcana check."},
+      {name:"Wilderness Craft",desc:"You have advantage on Survival checks in forest environments. You can find food and water for up to 5 people in any forest. You cannot become lost in natural woodlands."},
+      {name:"Living Shelter",desc:"Given 10 minutes of concentration, you can coax plants to form a temporary shelter that provides concealment equivalent to a tent. Lasts up to 8 hours."}
+    ],
+    cultures:["Deep-Forest (isolationist)","Border-Wood (traders)","Root-Bound (traditionalists)","Storm-Callers (shamans)"],
+    names:"Nature-sound names: Thornwhisper, Oakshadow, Mosswalker, Dewcatcher, Wildheart.",
+    homelands:"The Great Forests of the North, the Wealdlands"
+  },
+  {
+    id:"astrylian",name:"As'try'lian",emoji:"\u2600",tag:"Children of the Sun",
+    desc:"Large, sun-aligned animalistic humanoids. The most common are lupine (wolf), leonine (lion), and cervine (deer) variants. Blunt sunlight to the High Elves' subtlety. Natural law-givers and judges. Built for power, not speed. Their bodies combine humanoid form with powerful animal features - claws, fur, tails, and animal heads. They are social, hierarchical, and deeply honour-bound. Sunlight strengthens them, and they are noticeably weaker at night.",
+    attrs:{MIG:2,AGI:0,FOR:1,WIT:0,WIL:0,BRG:0,MAN:-1},
+    bonus:"+2 MIG, +1 FOR, -1 MAN",speed:6,size:"Medium",lifespan:"80-120 years",
+    traits:[
+      {name:"Sun-Aligned",desc:"While in direct sunlight, you gain +1 to all physical rolls (MIG, AGI, FOR-based). At night or in complete darkness, you suffer -1 to all physical rolls."},
+      {name:"Natural Weapons",desc:"You have claws (1d6+MIG slashing) and teeth (1d4+MIG piercing). You are proficient with your natural weapons."},
+      {name:"Pride-Bound",desc:"You are part of a pride with specific codes of honour. Breaking your pride's code causes loss of Sun-Alignment bonus until atonement. You can call on pride members for aid."},
+      {name:"Keen Senses",desc:"You have advantage on Perception checks involving smell or hearing. You cannot be surprised while conscious and not incapacitated."},
+      {name:"Intimidating Presence",desc:"As an action, you can attempt to intimidate all enemies within 6m. They must succeed at a WIL save (DL 10+your MIG) or be Shaken for 1 round."}
+    ],
+    cultures:["Pride of the Sun (traditional)","Wandering Judge (itinerant)","Sun-Forged (warrior)","Dawn-Singer (artist)"],
+    names:"Sun-themed names: Sunproud, Brightmane, Dawnwatcher, Goldenfur, Lawkeeper.",
+    homelands:"The Sun-Plateau, southern savannas, arid highlands"
+  },
+  {
+    id:"lunarian",name:"Lunarian",emoji:"\u263E",tag:"Children of the Moon",
+    desc:"Small, fast, silent animal-humanoids. The most common are vulpine (fox), feline (cat), and lapine (rabbit) variants. Built for speed, stealth, and night-travel. Night is their mother-tongue. Lunarians are compact, rarely exceeding 5ft in height. Their fur patterns often reflect phases of the moon. They are curious, playful, and deeply communal. Their politics operate on a hive-memory system where experiences are shared through scent-marking and touch.",
+    attrs:{MIG:-1,AGI:2,FOR:0,WIT:0,WIL:0,BRG:1,MAN:0},
+    bonus:"+2 AGI, +1 BRG, -1 MIG",speed:7,size:"Small",lifespan:"60-90 years",
+    traits:[
+      {name:"Night-Aligned",desc:"While in darkness or dim light, you gain +1 to all rolls. In bright sunlight, you suffer -1 to all rolls."},
+      {name:"Small and Fast",desc:"Your small size grants you +1 to Stealth checks. You can fit through any opening at least 30cm wide. You have advantage on checks to escape grapples or bindings."},
+      {name:"Hive-Memory Politics",desc:"When you spend at least 1 minute sharing scent and touch with another Lunarian, you can exchange surface memories and emotional states. Advantage on all social checks with that individual for 24 hours."},
+      {name:"Silent Step",desc:"You have advantage on Stealth checks. You can move at full speed while stealthed without penalty. You leave no tracks in natural environments."},
+      {name:"Preternatural Reflexes",desc:"Once per combat, when you would be hit by an attack, you can use your reaction to impose disadvantage on that attack roll."}
+    ],
+    cultures:["Moon-Warren (communal)","Wandering Mischief (trickster)","Shadow-Nest (criminal)","Dream-Touched (seer)"],
+    names:"Soft sounds: Whisperfoot, Moonwhisker, Softpaw, Shadowtail, Deweye.",
+    homelands:"The Moonshadow Vale, forested regions, underground warrens"
+  },
+  {
+    id:"shaiyan",name:"Shaiyan",emoji:"\u25BC",tag:"Stone-Blooded",
+    desc:"Mountain and forest-dwelling folk built for endurance. Fur-ridged, broad-backed, with strong tails for balance. Cannot be bent by glamour, cannot be swayed by fear. Shaiyans stand 6-7ft tall with dense muscle and thick fur. Their tails are prehensile and can be used to hold items or assist with balance. They are territorial, loyal, and slow to anger but terrifying when roused. Their glamour-immunity makes them invaluable as bodyguards and enforcers.",
+    attrs:{MIG:1,AGI:0,FOR:2,WIT:0,WIL:0,BRG:-1,MAN:0},
+    bonus:"+2 FOR, +1 MIG, -1 BRG",speed:5,size:"Medium",lifespan:"100-150 years",
+    traits:[
+      {name:"Glamour-Immune",desc:"You are immune to all mind-affecting magic, illusions, charm effects, and fear effects. This includes beneficial effects - no magic can alter your mental state."},
+      {name:"Stone-Kin",desc:"You have advantage on all checks to resist forced movement, being knocked prone, or being physically manipulated against your will. +2 to DL against being grappled."},
+      {name:"Prehensile Tail",desc:"Your tail can hold items up to 2kg, assist with balance (advantage against being knocked prone), and be used to make unarmed strikes (1d4 bludgeoning)."},
+      {name:"Territorial Memory",desc:"Once you have spent 24 hours in a location, you remember every detail of its layout. You cannot become lost in any place you have spent a day or more."},
+      {name:"Endurance-Built",desc:"You can march for 12 hours without making a FOR check for exhaustion. You have advantage on all FOR checks to resist fatigue, hunger, and environmental extremes."}
+    ],
+    cultures:["Ridge-Clan (mountain)","Pine-Tribe (forest)","Ash-Band (nomadic)","River-Keep (settled)"],
+    names:"Earth-element names: Stoneback, Ironfur, Ridgekeeper, Deepmaw, Boulderheart.",
+    homelands:"The Karun Mountains, the Wealdlands, northern forests"
+  },
+  {
+    id:"angel",name:"Angel",emoji:"\u2726",tag:"Forged by Amen",
+    desc:"Not born but forged. Angels are created by Amen from aether and purpose. Each has a specific divine mandate encoded into their essence. They appear as tall, beautiful humanoids with feathered wings that can manifest or demanifest at will. Their eyes glow with inner light that reveals their emotional state. Angels do not age, do not eat, and do not sleep. Each Angel knows their true name, which grants them power but could be used against them if discovered.",
+    attrs:{MIG:1,AGI:1,FOR:0,WIT:0,WIL:1,BRG:0,MAN:-1},
+    bonus:"+1 MIG, +1 AGI, +1 WIL, -1 MAN",speed:6,size:"Medium",lifespan:"Immortal",
+    traits:[
+      {name:"Winged",desc:"You have a fly speed of 9m. You can hover. In tight spaces (less than 3m wide), your wings cannot fully extend and you lose flight until you have 3m clearance."},
+      {name:"Divine Purpose",desc:"You have a specific mandate from Amen. While acting in accordance with your mandate, you gain +1 to all rolls. Acting against it causes -1 to all rolls until atonement."},
+      {name:"Aether-Form",desc:"You do not need to eat, drink, or breathe. You are immune to disease and poison. You can enter a meditative trance for 4 hours instead of sleeping."},
+      {name:"Light-Born",desc:"You can emit bright light in a 6m radius and dim light for a further 6m. You can suppress this light completely. Your eyes glow faintly even in darkness."},
+      {name:"True Name Vulnerability",desc:"If a creature learns your true name and speaks it aloud while targeting you with magic, you have disadvantage on all saves against that effect."}
+    ],
+    cultures:["Sword-Bearers (warriors)","Word-Bearers (messengers)","Seal-Bearers (wardens)","Mercy-Bearers (healers)"],
+    names:"Named by Amen at creation. Examples: Sabrael, Zachariel, Israfel, Dumah, Raphael.",
+    homelands:"The Celestial Spheres, though most currently dwell in the material world"
+  },
+  {
+    id:"flyborn",name:"Flyborn",emoji:"\u2744",tag:"Bird-Folk",
+    desc:"Bird-humanoid hybrids with hollow bones, sharp eyes, and a deep connection to the sky. Flyborn have feathered wings, taloned feet, and beaked faces with keen eyes. Their hollow bones make them light but fragile. They are naturally inquisitive, nomadic, and obsessed with acquiring new experiences. Most Flyborn cannot achieve sustained powered flight but can glide magnificently. A rare few can truly fly.",
+    attrs:{MIG:-1,AGI:2,FOR:0,WIT:0,WIL:0,BRG:0,MAN:0},
+    bonus:"+2 AGI, -1 MIG",speed:6,size:"Medium",lifespan:"50-70 years",
+    traits:[
+      {name:"Glide",desc:"You can glide for up to 30m horizontally for every 6m descended. While gliding, you have manoeuvrability equivalent to your walking speed."},
+      {name:"True Flight (rare)",desc:"If you were born under a celestial conjunction (1 in 20, or GM fiat), you have a fly speed of 9m instead of Glide."},
+      {name:"Hollow Bones",desc:"Your weight is half that of a human your size. You have disadvantage on checks to resist forced movement or being knocked prone. Bludgeoning damage against you deals +2 damage."},
+      {name:"Keen Eyesight",desc:"You have advantage on all Perception checks involving sight. You can see detail at three times the distance a human could."},
+      {name:"Messenger's Grace",desc:"You can memorise any route you have flown once, allowing you to retrace it perfectly. You always know which way is north."}
+    ],
+    cultures:["Sky-Flock (nomadic)","Cliff-Nest (settled)","Wind-Rider (messenger)","Storm-Caller (shaman)"],
+    names:"Wind-sound names: Skysong, Swiftwing, Brighteye, Cloudwalker, Galeheart.",
+    homelands:"Mountain peaks, cliff-cities, the Sky Roads"
+  },
+  {
+    id:"myrmid",name:"Myrmid",emoji:"\u265F",tag:"Sea-Folk",
+    desc:"Aquatic humanoids adapted to life beneath the waves. Myrmids have webbed hands and feet, gills along their necks, and skin that ranges from deep blue to pale green. Their eyes are large and reflective, adapted to seeing in the lightless depths. They are builders of coral cities and keepers of secrets that sank to the ocean floor.",
+    attrs:{MIG:1,AGI:0,FOR:1,WIT:0,WIL:0,BRG:0,MAN:-1},
+    bonus:"+1 MIG, +1 FOR, -1 MAN",speed:5,size:"Medium",lifespan:"80-120 years (water) / 40-60 years (land)",
+    traits:[
+      {name:"Amphibious",desc:"You can breathe both air and water. Your swim speed is 9m. You have advantage on all physical checks while fully submerged."},
+      {name:"Pressure-Adapted",desc:"You ignore all penalties for deep water pressure. You can dive to any depth without equipment. You are immune to the bends."},
+      {name:"Bioluminescence",desc:"You can emit coloured light from patches of skin. Dim light in 6m or bright in 2m. Underwater, you can use this to communicate complex ideas to other Myrmids within 30m."},
+      {name:"Depth-Sight",desc:"You can see clearly underwater regardless of turbidity or light level. You can detect currents, temperature changes, and pressure shifts within 12m."},
+      {name:"Land-Discomfort",desc:"For every 24 hours without submerging in water, you gain 1 level of exhaustion. Submerging for 1 hour removes all accumulated exhaustion from this source."}
+    ],
+    cultures:["Deep-Reef (coral builders)","Open-Ocean (nomadic)","Trench-Dweller (mystics)","Shore-Walker (ambassadors)"],
+    names:"Flowing water-sound names: Tidalweave, Deepsong, Currentflow, Coralbright, Abyssgaze.",
+    homelands:"The Western Ocean, the Sapphire Sea, coastal shallows"
+  },
+  {
+    id:"centaur",name:"Centaur",emoji:"\u265E",tag:"Stayer-Folk",
+    desc:"Four-legged humanoids with the lower body of a horse and the upper body of a humanoid. Centaurs are built for endurance and speed, capable of maintaining a gallop for hours. They are honour-bound warriors, skilled archers, and nomadic philosophers. A Centaur's lower body takes the form of various ungulate species. They do not build permanent settlements, following ancient migration routes.",
+    attrs:{MIG:1,AGI:0,FOR:1,WIT:0,WIL:0,BRG:0,MAN:0},
+    bonus:"+1 MIG, +1 FOR",speed:9,size:"Large",lifespan:"70-100 years",
+    traits:[
+      {name:"Quadruped",desc:"+2 to resist being knocked prone. Carrying capacity is tripled. Cannot wear humanoid leg armour - barding costs 2x. Cannot climb ladders or use standard staircases."},
+      {name:"Endurance Run",desc:"You can maintain a gallop for up to 4 hours without a FOR check. Overland travel speed is doubled for your party."},
+      {name:"Natural Archer",desc:"You have proficiency with all bows. When using a bow while moving, you do not suffer the normal penalty for attacking while mobile."},
+      {name:"Stampede",desc:"If you charge at least 12m in a straight line before attacking, your melee attack deals +1d6 damage and the target must save (DL 12 FOR) or be knocked prone."},
+      {name:"Nomad's Wisdom",desc:"You have advantage on Survival checks in open terrain. You can always find water within 6 hours in any environment that supports life."}
+    ],
+    cultures:["Horse-Clan (warrior)","Deer-Herd (diplomat)","Goat-Flock (trader)","Elk-Tribe (shaman)"],
+    names:"Compound names: Swiftwind, Ironhoof, Dawnrunner, Starshooter, Wildmane.",
+    homelands:"The Eastern Steppes, the Great Plains, open grasslands"
+  },
+  {
+    id:"chamalian",name:"Chamalian",emoji:"\u2605",tag:"Heat-Blooded",
+    desc:"Fully reptilian humanoids shaped by the Old Faith for control. Hierarchical, formulaic, decisive. A Chamalian's emotional spectrum is narrow - they experience passion, cold rage, and satisfaction, but not sorrow, doubt, or affection as humans understand it. Their scaled skin provides natural armour, and their cold-blooded nature makes them sluggish in chill but devastating in heat.",
+    attrs:{MIG:0,AGI:1,FOR:1,WIT:0,WIL:0,BRG:1,MAN:-1},
+    bonus:"+1 AGI, +1 FOR, +1 BRG, -1 MAN",speed:6,size:"Medium",lifespan:"150-200 years",
+    traits:[
+      {name:"Scaled Armour",desc:"Natural Armour 1. Resistance to fire damage. Your Armour DL is considered 1 higher than the armour you wear."},
+      {name:"Cold-Blooded",desc:"Below 10C: speed halved, -1 to all AGI rolls. Above 30C: speed +2m, +1 to all physical rolls."},
+      {name:"Formulaic Magic",desc:"You learn magic through rigid formulae. +1 to Ritual checks but -1 to spontaneous Arcana checks. You can cast any known spell as a ritual without preparing it."},
+      {name:"Decisive Will",desc:"Once per day, when you would be affected by charm, fear, or confusion, you can choose to simply ignore it."},
+      {name:"Emotionally Narrow",desc:"Advantage on WIL saves against emotional manipulation. Disadvantage on Persuasion checks that rely on empathy or compassion."}
+    ],
+    cultures:["Ziggurat-Lord (ruling class)","Temple-Scribe (scholar)","Scale-Merchant (trader)","Sun-Warrior (military)"],
+    names:"Harsh consonant names: Krix, Vossk, Thrax, Zul, Mrrk, Sseth, Draak.",
+    homelands:"The Ziggurat Cities, tropical lowlands, volcanic regions"
+  },
+  {
+    id:"prelling",name:"Prelling",emoji:"\u2727",tag:"Near-Human",
+    desc:"Created by Amen to bear a subtle spark of the divine. Prellings appear human at first glance but possess a faint halo when praying, slightly luminous eyes, and an undeniable presence. They are versatile, adaptable, and possess a faint resonance to celestial magic. Prellings are rare - Amen creates them only in times of great need.",
+    attrs:{MIG:0,AGI:0,FOR:0,WIT:0,WIL:1,BRG:1,MAN:0},
+    bonus:"+1 WIL, +1 BRG",speed:6,size:"Medium",lifespan:"80-120 years",
+    traits:[
+      {name:"Divine Spark",desc:"Once per day, you can restore 2d6+WIL EP to yourself or a touched ally. This costs no MP. When used, you emit a faint golden halo for 1 minute."},
+      {name:"Celestial Resonance",desc:"You have advantage on all Ritual checks involving divine magic. You can sense the presence of undead, demons, and unholy creatures within 12m."},
+      {name:"Versatile",desc:"Choose one additional Training at character creation. This Training can exceed normal starting limits."},
+      {name:"Unknowing Nature",desc:"Until your moment of awakening (determined by the GM, usually around level 3), you appear fully human and do not exhibit Prelling traits. After awakening, traits manifest permanently."},
+      {name:"Purpose-Bound",desc:"Amen created you for a purpose (GM secretly determines). When acting in accordance with your purpose, you gain +1 to all rolls. You have a vague sense of direction toward your purpose."}
+    ],
+    cultures:["Unknowing (appear human)","Awakened (aware)","Purpose-Driven (active)","Lost (abandoned purpose)"],
+    names:"Human names until awakening, then celestial names: Gabriel, Michaela, Raphael, Cassiel, Uriel.",
+    homelands:"Born among human populations, scattered worldwide"
+  },
+  {
+    id:"human",name:"Human",emoji:"\u2637",tag:"The Many",
+    desc:"The most numerous and varied people of Arshmunnu. Humans adapt, endure, and thrive in conditions that break other species. Four major kindreds dominate: the asturo-karunian empire-builders of the south, the Imvien maritime traders of the western archipelago, the Armoricans of the misty northern forests, and the Szewian horse-lords of the eastern plains. Humans interbreed readily with other species, producing half-bloods of varying stability.",
+    attrs:{MIG:0,AGI:0,FOR:0,WIT:0,WIL:0,BRG:0,MAN:0},
+    bonus:"+1 to any two abilities, +1 bonus Flexible Training",speed:6,size:"Medium",lifespan:"60-80 years",
+    traits:[
+      {name:"Adaptable",desc:"You gain +1 to any two abilities at character creation. Additionally, you gain one bonus Flexible Training at character creation."},
+      {name:"Enduring",desc:"You have advantage on all FOR checks to resist exhaustion, starvation, and environmental extremes. You require half as much food as other species when food is scarce."},
+      {name:"Quick Learner",desc:"The Training cost for your first rank in any new Training is halved (round up). Applies retroactively to Trainings acquired after character creation."},
+      {name:"Kindred Ties",desc:"Choose one kindred at character creation. You gain advantage on all social checks when interacting with members of your chosen kindred."}
+    ],
+    cultures:["Asturo-Karunian (southern empire)","Imvien (western maritime)","Armorican (northern forest)","Szewian (eastern plains)"],
+    names:"Varies by kindred. Karunian: Marcus, Aurelia. Imvien: Ashur, Amira. Armorican: Bjorn, Freya. Szewian: Wladys, Wanda.",
+    homelands:"Everywhere - humans have settlements on every continent"
+  },
+  {
+    id:"bobrie",name:"Bobrie",emoji:"\u2666",tag:"River-Folk",
+    desc:"Semi-aquatic humanoids with webbed digits, sleek fur, and a flat, paddle-like tail. Bobrie are small, gregarious, and industrious. They build elaborate dam-towns along rivers and are renowned engineers, architects, and mathematicians. Their flat tails can be used as weapons, tools, and communication devices. Bobrie are fiercely territorial about their waterways but friendly to those they consider neighbours.",
+    attrs:{MIG:0,AGI:1,FOR:0,WIT:1,WIL:0,BRG:0,MAN:0},
+    bonus:"+1 AGI, +1 WIT",speed:5,size:"Small",lifespan:"40-60 years",
+    traits:[
+      {name:"Amphibious",desc:"You can breathe both air and water. Your swim speed is 9m. You have advantage on all physical checks while submerged."},
+      {name:"Engineering Instinct",desc:"You have advantage on all Craft checks involving construction, architecture, or mechanisms. You can estimate structural integrity of any building by sight (DL 10 WIT check)."},
+      {name:"Tail-Slap",desc:"Your flat tail is a natural weapon (1d6 bludgeoning) and can be used to make trip attacks. A successful tail attack against a creature your size or smaller forces an AGI save (DL 12) or be knocked prone."},
+      {name:"Territorial",desc:"When defending your home territory, you gain +1 to all combat rolls. You have advantage on Perception checks to detect intruders in your territory."},
+      {name:"Gnar-Builder",desc:"Given appropriate materials and 1 hour, you can construct temporary fortifications (cover, barricades, or small shelters) that provide significant defensive advantage."}
+    ],
+    cultures:["Dam-Town (settled)","River-Nomad (migratory)","Engineer-Guild (craft-focused)","Guard-Post (defensive)"],
+    names:"Soft consonant names with repeated sounds: Babblebrook, Dambuilder, Ripplecraft, Stonegnaw, Flowkeeper.",
+    homelands:"River systems, lake regions, coastal estuaries"
+  }
+];
+
+// ============== RENDER ==============
+let activeRace=0;
+const ABILS=['MIG','AGI','FOR','WIT','WIL','BRG','MAN'];
+const ABIL_NAMES={MIG:'Might',AGI:'Agility',FOR:'Fortitude',WIT:'Wit',WIL:'Will',BRG:'Bearing',MAN:'Mana'};
+
+function render(){
+  var list=document.getElementById('raceList');
+  var main=document.getElementById('main');
+  var listHtml='';
+  for(var i=0;i<RACES.length;i++){
+    var r=RACES[i];
+    var cls='race-item'+(i===activeRace?' active':'');
+    listHtml+='<div class="'+cls+'" onclick="showRace('+i+')">'+
+      '<span class="r-ico">'+r.emoji+'</span>'+
+      '<span class="r-name">'+r.name+'</span>'+
+      '<span class="r-tag">'+r.tag+'</span></div>';
+  }
+  list.innerHTML=listHtml;
+  
+  var r=RACES[activeRace];
+  var traitsHtml='';
+  for(var t=0;t<r.traits.length;t++){
+    traitsHtml+='<div class="trait">'+
+      '<div class="trait-name">'+r.traits[t].name+'</div>'+
+      '<div class="trait-desc">'+r.traits[t].desc+'</div></div>';
+  }
+  var culturesHtml='';
+  for(var c=0;c<r.cultures.length;c++){
+    culturesHtml+='<span style="display:inline-block;margin:2px;padding:3px 8px;background:rgba(201,168,76,0.08);border-radius:3px;font-size:12px;">'+r.cultures[c]+'</span>';
+  }
+  
+  var attrRow1='<tr class="attr-label">';
+  var attrRow2='<tr>';
+  for(var a=0;a<ABILS.length;a++){
+    var ab=ABILS[a];
+    var val=r.attrs[ab];
+    var modClass=val>0?'attr-mod-pos':val<0?'attr-mod-neg':'attr-mod-neut';
+    var sign=val>0?'+':'';
+    attrRow1+='<td>'+ab+'</td>';
+    attrRow2+='<td class="'+modClass+'">'+sign+val+'</td>';
+  }
+  attrRow1+='</tr>';attrRow2+='</tr>';
+  
+  main.innerHTML='<div class="race-detail active">'+
+    '<div class="race-header">'+
+      '<span class="race-emoji">'+r.emoji+'</span>'+
+      '<div class="race-title">'+
+        '<h2>'+r.name+'</h2>'+
+        '<div class="race-sub">'+r.tag+'</div>'+
+        '<div class="race-meta">'+
+          '<span>Speed: '+r.speed+'m</span>'+
+          '<span>Size: '+r.size+'</span>'+
+          '<span>Lifespan: '+r.lifespan+'</span></div></div></div>'+
+    '<div class="race-section"><h4>Description</h4><p>'+r.desc+'</p></div>'+
+    '<div class="race-section"><h4>Attribute Modifiers</h4>'+
+      '<table class="attr-table">'+attrRow1+attrRow2+'</table>'+
+      '<p style="font-size:12px;color:var(--muted);margin-top:4px;"><strong>Bonus:</strong> '+r.bonus+'</p></div>'+
+    '<div class="race-section"><h4>Species Traits</h4>'+traitsHtml+'</div>'+
+    '<div class="race-section"><h4>Names</h4><p>'+r.names+'</p></div>'+
+    '<div class="race-section"><h4>Homelands</h4><p>'+r.homelands+'</p></div>'+
+    '<div class="race-section"><h4>Cultures</h4><p>'+culturesHtml+'</p></div>'+
+    '</div>';
+}
+
+function showRace(i){activeRace=i;render();}
+
+// ============== CRUD EDITOR ==============
+let selR=null;
+
+function rEpOpen(){document.getElementById('rEp').classList.add('open');rRenderList();document.getElementById('rFtr').style.display='flex';}
+function rEpClose(){document.getElementById('rEp').classList.remove('open');}
+
+function rRenderList(){
+  var s=document.getElementById('rSrch').value.toLowerCase();
+  var el=document.getElementById('rList');var h='';
+  for(var i=0;i<RACES.length;i++){
+    var r=RACES[i];
+    if(s && r.name.toLowerCase().indexOf(s)===-1 && r.tag.toLowerCase().indexOf(s)===-1) continue;
+    var cls='ep-li'+(selR===i?' sel':'');
+    h+='<div class="'+cls+'" onclick="rSelect('+i+')">'+
+      '<div><div class="ep-li-name">'+r.emoji+' '+r.name+'</div>'+
+      '<div class="ep-li-sub">'+r.tag+'</div></div>'+
+      '<button class="ep-li-del" onclick="event.stopPropagation();rQuickDel('+i+')">&times;</button></div>';
+  }
+  el.innerHTML=h||'<div style="padding:12px;color:var(--muted);font-size:12px;text-align:center">No matches</div>';
+}
+
+function rSelect(i){selR=i;rRenderList();rLoadForm();}
+
+function rLoadForm(){
+  var el=document.getElementById('rRgt');
+  if(selR===null){el.innerHTML='<div class="ep-ph"><span>&#127757;</span>Select a species to edit,<br>or click + New to add one.</div>';return;}
+  var r=RACES[selR];
+  var attrInputs='';
+  for(var a=0;a<ABILS.length;a++){
+    var ab=ABILS[a];
+    var val=r.attrs?r.attrs[ab]||0:0;
+    attrInputs+='<div class="ep-field"><label class="ep-lbl">'+ab+' ('+ABIL_NAMES[ab]+')</label>'+
+      '<input class="ep-inp" type="number" id="ra-'+ab+'" value="'+val+'" style="text-align:center"></div>';
+  }
+  var traitsInputs='';
+  for(var t=0;t<5;t++){
+    var tr=r.traits&&r.traits[t]?r.traits[t]:{name:'',desc:''};
+    traitsInputs+='<div class="ep-field"><label class="ep-lbl">Trait '+(t+1)+'</label>'+
+      '<input class="ep-inp" id="rtn-'+t+'" value="'+tr.name+'" placeholder="Trait name">'+
+      '<textarea class="ep-txt" id="rtd-'+t+'" placeholder="Trait description" style="margin-top:4px;min-height:50px">'+tr.desc+'</textarea></div>';
+  }
+  var culturesStr=r.cultures?r.cultures.join('\n'):'';
+  
+  el.innerHTML='<div class="ep-ftitle">&#9998; Editing: '+r.emoji+' '+r.name+'</div>'+
+    '<div class="ep-row2"><div class="ep-field"><label class="ep-lbl">Name</label><input class="ep-inp" id="rn-name" value="'+r.name+'"></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Emoji</label><input class="ep-inp" id="rn-emoji" value="'+r.emoji+'"></div></div>'+
+    '<div class="ep-row2"><div class="ep-field"><label class="ep-lbl">Tagline</label><input class="ep-inp" id="rn-tag" value="'+r.tag+'"></div>'+
+    '<div class="ep-field"><label class="ep-lbl">ID (no spaces)</label><input class="ep-inp" id="rn-id" value="'+r.id+'"></div></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Description</label><textarea class="ep-txt" id="rn-desc">'+r.desc+'</textarea></div>'+
+    '<div class="ep-row3"><div class="ep-field"><label class="ep-lbl">Speed (m)</label><input class="ep-inp" type="number" id="rn-speed" value="'+r.speed+'"></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Size</label><select class="ep-sel" id="rn-size"><option'+(r.size==='Small'?' selected':'')+'>Small</option><option'+(r.size==='Medium'?' selected':'')+'>Medium</option><option'+(r.size==='Large'?' selected':'')+'>Large</option></select></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Lifespan</label><input class="ep-inp" id="rn-life" value="'+r.lifespan+'"></div></div>'+
+    '<div class="ep-row2"><div class="ep-field"><label class="ep-lbl">Bonus Text</label><input class="ep-inp" id="rn-bonus" value="'+(r.bonus||'')+'"></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Homelands</label><input class="ep-inp" id="rn-lands" value="'+(r.homelands||'')+'"></div></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Names</label><textarea class="ep-txt" id="rn-names">'+(r.names||'')+'</textarea></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Cultures (one per line)</label><textarea class="ep-txt" id="rn-cults">'+culturesStr+'</textarea></div>'+
+    '<h4 style="font-family:Cinzel,serif;font-size:11px;color:var(--gold);margin:12px 0 8px">Attribute Modifiers</h4>'+
+    '<div class="ep-row7">'+attrInputs+'</div>'+
+    '<h4 style="font-family:Cinzel,serif;font-size:11px;color:var(--gold);margin:12px 0 8px">Traits</h4>'+traitsInputs;
+}
+
+function rNew(){
+  var id='species_'+Date.now();
+  var newR={id:id,name:'New Species',emoji:'\u2753',tag:'',desc:'',attrs:{MIG:0,AGI:0,FOR:0,WIT:0,WIL:0,BRG:0,MAN:0},bonus:'',speed:6,size:'Medium',lifespan:'',traits:[{name:'',desc:''},{name:'',desc:''},{name:'',desc:''},{name:'',desc:''},{name:'',desc:''}],cultures:[],names:'',homelands:''};
+  RACES.push(newR);
+  selR=RACES.length-1;
+  rRenderList();rLoadForm();
+  toast('New species created. Fill in the details and click Save.');
+}
+
+function rSave(){
+  if(selR===null)return;
+  var r=RACES[selR];
+  r.id=document.getElementById('rn-id').value||r.id;
+  r.name=document.getElementById('rn-name').value;
+  r.emoji=document.getElementById('rn-emoji').value;
+  r.tag=document.getElementById('rn-tag').value;
+  r.desc=document.getElementById('rn-desc').value;
+  r.speed=parseInt(document.getElementById('rn-speed').value)||6;
+  r.size=document.getElementById('rn-size').value;
+  r.lifespan=document.getElementById('rn-life').value;
+  r.bonus=document.getElementById('rn-bonus').value;
+  r.homelands=document.getElementById('rn-lands').value;
+  r.names=document.getElementById('rn-names').value;
+  var cults=document.getElementById('rn-cults').value.split('\n').filter(function(c){return c.trim();});
+  r.cultures=cults;
+  for(var a=0;a<ABILS.length;a++){var ab=ABILS[a];r.attrs[ab]=parseInt(document.getElementById('ra-'+ab).value)||0;}
+  r.traits=[];
+  for(var t=0;t<5;t++){
+    var n=document.getElementById('rtn-'+t).value;
+    var d=document.getElementById('rtd-'+t).value;
+    if(n.trim()) r.traits.push({name:n,desc:d});
+  }
+  localStorage.setItem('arshmunnu_races_v2',JSON.stringify(RACES));
+  render();rRenderList();
+  toast('Species saved!');
+}
+
+function rDelete(){
+  if(selR===null||!confirm('Delete '+RACES[selR].name+' forever?'))return;
+  RACES.splice(selR,1);
+  if(activeRace>=RACES.length)activeRace=0;
+  selR=null;
+  localStorage.setItem('arshmunnu_races_v2',JSON.stringify(RACES));
+  render();rRenderList();rLoadForm();
+  toast('Species deleted.');
+}
+
+function rQuickDel(i){
+  if(!confirm('Delete '+RACES[i].name+'?'))return;
+  RACES.splice(i,1);
+  if(activeRace>=RACES.length)activeRace=0;
+  if(selR===i)selR=null;
+  else if(selR>i)selR--;
+  localStorage.setItem('arshmunnu_races_v2',JSON.stringify(RACES));
+  render();rRenderList();if(selR!==null)rLoadForm();
+}
+
+function rExport(){
+  var dataStr='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(RACES,null,2));
+  var a=document.createElement('a');a.href=dataStr;a.download='arshmunnu_species.json';a.click();
+}
+
+function rImport(e){
+  var f=e.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(Array.isArray(d)&&d.length>0){RACES=d;selR=null;localStorage.setItem('arshmunnu_races_v2',JSON.stringify(RACES));render();rRenderList();rLoadForm();toast('Species imported!');}else{toast('Invalid file format.');}}catch(err){toast('Error parsing file.');}};
+  r.readAsText(f);
+  e.target.value='';
+}
+
+function rReset(){
+  if(!confirm('Reset ALL species to defaults? This will erase your custom species.'))return;
+  localStorage.removeItem('arshmunnu_races_v2');
+  location.reload();
+}
+
+function toast(msg){
+  var t=document.createElement('div');t.className='ep-toast';t.textContent=msg;document.body.appendChild(t);
+  setTimeout(function(){t.remove();},2000);
+}
+
+// Load saved data
+var saved=localStorage.getItem('arshmunnu_races_v2');
+if(saved){try{RACES=JSON.parse(saved);}catch(e){}}
+render();
+</script>
+</body>
+</html>

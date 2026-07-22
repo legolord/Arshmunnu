@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dynastiae Exeliae</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060310;--text:#e8dfc8;--tdim:rgba(232,223,200,.5);--gold:#d4a44a;--goldD:#7c5a1f;--goldL:#f0cc72;--sw:260px;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'EB Garamond',serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+
+.topbar{height:50px;flex-shrink:0;background:rgba(6,3,16,.97);border-bottom:1px solid rgba(212,164,74,.2);display:flex;align-items:center;gap:14px;padding:0 18px;z-index:50;}
+.ts{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f0cc72,#d4a44a 50%,#7c5a1f);box-shadow:0 0 0 1px #7c5a1f;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:13px;color:#1a0800;flex-shrink:0;}
+.topbar h1{font-family:'Cinzel',serif;font-size:clamp(13px,1.6vw,18px);color:var(--goldL);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.tsub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--tdim);}
+.sw{position:relative;margin-left:auto;}
+.sw svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--goldD);pointer-events:none;}
+#srch{padding:7px 9px 7px 30px;background:rgba(232,223,200,.07);border:1px solid rgba(212,164,74,.3);border-radius:3px;color:var(--text);font-family:'EB Garamond',serif;font-size:14px;outline:none;width:190px;transition:all .2s;}
+#srch::placeholder{color:var(--tdim)}
+#srch:focus{background:rgba(232,223,200,.12);border-color:var(--gold);}
+
+.layout{display:flex;flex:1;overflow:hidden;}
+
+.sidebar{width:var(--sw);flex-shrink:0;background:rgba(4,2,10,.96);border-right:1px solid rgba(212,164,74,.18);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(124,90,31,.4) transparent;}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(124,90,31,.35);}
+
+.rg{margin-bottom:1px;}
+.rh{display:flex;align-items:center;justify-content:space-between;padding:9px 13px 7px;cursor:pointer;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--goldD);border-bottom:1px solid rgba(124,90,31,.18);user-select:none;}
+.rh:hover{color:var(--goldL);background:rgba(212,164,74,.04);}
+.rarr{font-size:8px;transition:transform .22s;}
+.rg.open .rarr{transform:rotate(90deg);}
+.rhs{display:none;padding:3px 0;}
+.rg.open .rhs{display:block;}
+.hbtn{display:flex;align-items:center;gap:9px;width:100%;padding:8px 13px;background:none;border:none;cursor:pointer;text-align:left;transition:background .14s;}
+.hbtn:hover{background:rgba(212,164,74,.06);}
+.hbtn.active{background:rgba(212,164,74,.11);}
+.hbtn.active .hn{color:var(--goldL);}
+.hdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.hi{flex:1;min-width:0;}
+.hn{font-family:'Cinzel',serif;font-size:11px;font-weight:500;letter-spacing:.04em;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hf{font-size:11px;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--tdim);}
+.hst{font-size:8px;font-family:'Cinzel',serif;letter-spacing:.12em;text-transform:uppercase;padding:2px 5px;border-radius:10px;border:1px solid;flex-shrink:0;}
+.s-active{color:#86efac;border-color:rgba(134,239,172,.35);}
+.s-diminished{color:#fbbf24;border-color:rgba(251,191,36,.35);}
+.s-fallen{color:#f87171;border-color:rgba(248,113,113,.35);}
+.s-reborn{color:#67e8f9;border-color:rgba(103,232,249,.35);}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.hdr{flex-shrink:0;padding:16px 22px 12px;border-bottom:1px solid rgba(212,164,74,.12);background:rgba(6,3,16,.8);display:flex;align-items:flex-start;gap:18px;}
+.hcrest{width:50px;height:50px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 4px 14px rgba(0,0,0,.5);}
+.hname{font-family:'Cinzel',serif;font-size:clamp(17px,2.5vw,24px);font-weight:700;letter-spacing:.04em;line-height:1.1;}
+.hreg{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--tdim);margin:3px 0;}
+.hmotto{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;}
+.hmeta{display:flex;gap:14px;margin-top:7px;flex-wrap:wrap;}
+.hmi{font-size:12px;color:var(--tdim);}
+.hmi strong{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--goldD);}
+.hsigil{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:var(--tdim);max-width:260px;line-height:1.4;margin-left:auto;flex-shrink:0;}
+
+.tabs{display:flex;flex-shrink:0;border-bottom:1px solid rgba(212,164,74,.12);background:rgba(4,2,10,.7);}
+.tbtn{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;padding:9px 16px;border:none;background:none;cursor:pointer;color:var(--tdim);border-bottom:2px solid transparent;transition:all .16s;}
+.tbtn.active{color:var(--goldL);border-bottom-color:var(--gold);}
+.tbtn:hover{color:var(--goldL);}
+
+.tc{flex:1;overflow:auto;padding:22px 24px;}
+.tpane{display:none;}
+.tpane.active{display:block;}
+
+/* TREE */
+#tc{position:relative;min-width:300px;padding-bottom:30px;}
+#tsvg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible;}
+.tgen{display:flex;align-items:flex-start;margin-top:0;}
+.nwrap{display:flex;flex-direction:column;align-items:center;}
+.pnode{width:145px;padding:10px 11px;border:1px solid;border-radius:3px;background:rgba(6,3,16,.88);cursor:pointer;transition:all .18s;position:relative;overflow:hidden;flex-shrink:0;}
+.pnode:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.5);}
+.pr{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:4px;}
+.pname{font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--text);line-height:1.2;margin-bottom:3px;}
+.pdates{font-size:11px;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--tdim);}
+.pfrom{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:1px 5px;border-radius:2px;display:inline-block;margin-top:4px;border:1px solid rgba(103,232,249,.45);color:#67e8f9;background:rgba(103,232,249,.07);}
+.pto{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:1px 5px;border-radius:2px;display:inline-block;margin-top:4px;border:1px solid rgba(250,200,80,.45);color:#fac840;background:rgba(250,200,80,.07);}
+.msym{display:flex;align-items:center;justify-content:center;font-size:12px;padding:0 6px;}
+.ngap{width:26px;flex-shrink:0;}
+
+/* DETAIL */
+.ds{margin-bottom:22px;}
+.ds h3{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.32em;text-transform:uppercase;margin-bottom:11px;display:flex;align-items:center;gap:10px;color:var(--goldD);}
+.ds h3::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,currentColor,transparent);}
+.dt{font-size:15px;line-height:1.7;color:var(--tdim);}
+.erow{display:grid;grid-template-columns:100px 1fr;gap:10px;align-items:baseline;margin-bottom:8px;}
+.eyr{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;text-align:right;}
+.etxt{font-size:14px;line-height:1.5;color:var(--tdim);}
+.mcard{display:grid;grid-template-columns:1fr auto;gap:8px;padding:9px 12px;background:rgba(255,255,255,.026);border-left:2px solid;border-radius:0 3px 3px 0;margin-bottom:8px;}
+.mcard-name{font-family:'Cinzel',serif;font-size:11px;font-weight:600;margin-bottom:2px;}
+.mcard-role{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--tdim);}
+.mcard-dates{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:rgba(232,223,200,.38);white-space:nowrap;padding-top:2px;}
+
+/* EMPTY */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--tdim);}
+.es{width:58px;height:58px;border-radius:50%;background:radial-gradient(circle,#1a1028,#0d0a1a);border:1px solid rgba(124,90,31,.25);display:flex;align-items:center;justify-content:center;font-size:22px;}
+
+/* MODAL */
+.mov{position:fixed;inset:0;z-index:200;background:rgba(4,2,10,.88);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px;}
+.mov.open{display:flex;}
+.mod{background:radial-gradient(circle at 20% 10%,#1a1028,#0d0a18);border:1px solid;border-radius:5px;max-width:500px;width:100%;padding:28px 26px 32px;position:relative;box-shadow:0 40px 80px rgba(0,0,0,.8);animation:ms .24s ease;}
+@keyframes ms{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.mclose{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;border:1px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .14s;color:var(--tdim);}
+.mclose:hover{background:rgba(212,164,74,.14);}
+.mrole{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.35em;text-transform:uppercase;margin-bottom:7px;}
+.mname{font-family:'Cinzel',serif;font-size:20px;font-weight:700;letter-spacing:.04em;margin-bottom:4px;}
+.mdates{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--tdim);margin-bottom:13px;}
+.mdiv{height:1px;margin:13px 0;}
+.mbio{font-size:15px;line-height:1.7;color:rgba(232,223,200,.82);}
+.mhouse{margin-top:14px;padding:8px 12px;background:rgba(212,164,74,.06);border-left:3px solid;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;}
+
+@media(max-width:640px){:root{--sw:200px;}.tsub,.hsigil{display:none;}}
+</style>
+<style id="arsh-gate-base"></style>
+<script>
+/* ════ ARSH ADMIN GATE ════
+   Editing the Archive is reserved for the Keeper (Aelarion).
+   Readers see the pages in view-only form. This is an editing lock,
+   shared across pages via localStorage('arsh_admin'). */
+(function(){
+  var SEL='.fab,.ep-fab,.ep-sadd';
+  function admin(){try{return localStorage.getItem('arsh_admin')==='1';}catch(e){return false;}}
+  function mark(){
+    if(!document.body||document.getElementById('arsh-viewlock'))return;
+    var d=document.createElement('div');d.id='arsh-viewlock';d.textContent='\uD83D\uDD12 View only';
+    d.style.cssText='position:fixed;bottom:16px;right:16px;z-index:2147483000;font-family:Cinzel,Georgia,serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,164,74,.55);background:rgba(10,6,16,.72);border:1px solid rgba(212,164,74,.22);border-radius:20px;padding:6px 12px;pointer-events:none;';
+    document.body.appendChild(d);
+  }
+  function unmark(){var d=document.getElementById('arsh-viewlock');if(d)d.remove();}
+  function apply(){
+    var st=document.getElementById('arsh-gate-base'),on=admin();
+    document.documentElement.setAttribute('data-arsh-role',on?'keeper':'reader');
+    if(on){if(st)st.textContent='';unmark();return;}
+    if(st)st.textContent=SEL+'{display:none!important;}';
+    if(document.body)mark();else document.addEventListener('DOMContentLoaded',mark);
+  }
+  apply();
+  window.addEventListener('storage',function(e){if(e.key==='arsh_admin'||e.key===null)apply();});
+  document.addEventListener('DOMContentLoaded',apply);
+})();
+</script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="ts">D</div>
+  <div><h1>Dynastiae Exeliae</h1><div class="tsub">Interactive House Lineage Tracker — Arshmunnu</div></div>
+  <div class="sw">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="srch" type="text" placeholder="Search houses…" autocomplete="off"/>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar" id="sb"></aside>
+  <div class="main">
+    <div class="hdr" id="hdr" style="display:none"></div>
+    <div class="tabs" id="tabs" style="display:none">
+      <button class="tbtn active" data-tab="tree">⚜ Lineage Tree</button>
+      <button class="tbtn" data-tab="detail">📜 House Detail</button>
+    </div>
+    <div class="tc" id="tc-wrap">
+      <div class="tpane active" id="pane-tree">
+        <div class="empty" id="emp"><div class="es">⚜</div><p>Select a house from the left to view its lineage.</p></div>
+        <div id="tc" style="display:none"></div>
+      </div>
+      <div class="tpane" id="pane-detail"></div>
+    </div>
+  </div>
+</div>
+
+<div class="mov" id="mov"><div class="mod" id="mod"><button class="mclose" id="mc">✕</button><div id="mc2"></div></div></div>
+
+<script>
+const REGS={imvia:{l:'Imvia',c:'#b8893b'},armorica:{l:'Armorica',c:'#7c9e6b'},szewia:{l:'Szewia',c:'#8b6bb3'},gothia:{l:'Gothia',c:'#b36b6b'}};
+let H=[
+{id:'chliarinos',r:'imvia',n:'House Chliarinos',co:"As'hika / As'hikan Empire",fd:'0 AU',st:'diminished',col:'#c0843a',em:'🔥',mot:'"From Ashes, Empire."',sig:'A phoenix rising from golden flames, crowned with laurel, on crimson.',ov:"The House of Chliarinos stands unique among noble lineages — founded not through divine bloodline but by Achilleus, a commoner who rose through the Revolutionary Wars to forge the As'hikan Empire. His marriage to Isabelle IX of House Charan provided ancient noble legitimacy. After the empire's fall in 2078 AU, the name Chliarinos carries immense symbolic weight — a reminder of both imperial glory and the revolutionary spirit that built it.",
+evs:[{y:'0 AU',t:"Founded by Achilleus I upon declaring the As'hikan Empire."},{y:'31 AU',t:'Death of Empress Isabelle IX, solidifying dynastic legitimacy.'},{y:'140 AU',t:'Emperor Victor expands the empire and introduces meritocratic legal reforms.'},{y:'590 AU',t:"Empress Elisabeth's reforms attempt to restore revolutionary ideals."},{y:'2078 AU',t:"Fall of the As'hikan Empire; House Chliarinos loses its throne."},{y:'2125 AU',t:'Prince Aurelian rises as a claimant to the imperial legacy.'}],
+tree:[[{id:'a1',nm:'Achilleus I Chliarinos',dt:'c. 50 BU – 73 AU',ro:'Founder · First Emperor',bi:"Born a commoner in Alodia, Achilleus fled the civil war and arrived in As'hika. His tactical brilliance united Armorica, Alodia, Szewia, Chamalia, and Gothia through the Revolutionary Wars. He coined the family name from As'hikan: Chial (chivalry) + y nos (I who have). He founded the Phoenix Agency, built the empire's institutions, then in his twilight years abandoned the palace to wander the Karun Desert, dying alone after three weeks. His last words: \"I have undone thee, and yet I am as empty as thee.\"",isMar:true},{id:'isa9',nm:'Isabelle IX of Armorica',dt:'c. 92 BU – 31 AU',ro:'Empress · from House Charan',bi:"The last ruling monarch of the ancient House Charan. Her marriage to Achilleus I violated at least three laws of Armorican custom simultaneously. The Council of Helen met for a record 73 days before ruling retroactively in favour. Centuries later, shrines remember her as \"The Crowned Peacemaker\" and Achilleus as \"The Criminal God.\"",fh:'charan'}],[{id:'vic',nm:'Prince Victor Chliarinos',dt:'c. 78–140 AU',ro:'Crown Prince · abdicated',bi:"The eldest legitimate son of Achilleus. Victor refused the throne to live a monk-like life of contemplation. His refusal cursed the name 'Victor' — said to make any bearer unsuccessful. He later reappeared in Julian II's chronicles, duelled Marcus of House Morion for the title of 'uncle' in a contest of mutual justness lasting five hours, and presented Julian with the legendary Sword of Achilleus I."},{id:'phi',nm:'Philippe James Chliarinos',dt:'c. 21–90 AU',ro:'Emperor · The Unifier',bi:"Son of Achilleus and Isabelle IX. Philippe James institutionalised his father's conquests, beginning the Pax As'hikana (43 AU). He is also famously remembered for declaring the Imperial Chicken — having been convinced by a mischievous scholar that a chicken descending from a tree was the Phoenix in mortal form. The empire's bureaucracy spent generations justifying it."},{id:'elichild',nm:'Elisabeth Chliarinos',dt:'c. 25–67 AU',ro:'Princess · died young',bi:'The daughter meant to rule Armorica and the South. Her early death meant her lands passed to Philippe James. Had she survived, the Pax might have taken a more reformist trajectory from the very beginning.'},{id:'amal_ad',nm:'Amala (adoptive)',dt:'c. 32 AU – ?',ro:'Adoptive daughter · disappeared',bi:"The only adoptive child among Achilleus's four. She eloped at eighteen and has been missing for ten years — an open wound in the chronicles. Her fate is unknown. Some claim she lives in hiding; others that she walks the world under a false name."}],[{id:'el_emp',nm:'Empress Elisabeth Chliarinos',dt:'c. 530–590 AU',ro:'Empress · Reformer',bi:"A reformer who sought to reconnect the empire with its revolutionary roots, emphasising merit over birthright in governance. Her efforts delayed the empire's decline but exposed deep fractures within the ruling elite. Remembered as 'The Last Revolutionary in the Purple.'"},{id:'pj',nm:'Peter James Chliarinos',dt:'c. 610–675 AU',ro:'Emperor · Peak Control',bi:"A ruler whose reign marked the empire's peak territorial control but also the beginning of its bureaucratic stagnation. Known for harsh policies, he struggled with the empire's inherent contradictions — a commoner dynasty enforcing rigid aristocratic hierarchies."}],[{id:'jul2',nm:'Julian II the Long-Reigning',dt:'646–705 AU',ro:'Emperor · 59 years',bi:"The wisest and longest-reigning emperor. A master of diplomacy who kept rebellious nobles in line through respect, not terror. He accidentally married his gardener Eleanor after half-listening in a council meeting, was perpetually out-justed by Marcus of House Morion, and received the legendary Sword of Achilleus I as a gift from Victor. His death without a clear heir triggered the War of Two Houses (705–743 AU). Legacy: \"An emperor is not flame, but hearth. He does not burn the house — he keeps it warm.\""},{id:'eln',nm:'Eleanor (the Accidental Empress)',dt:'c. 648 AU – ?',ro:'Empress · The Gardener',bi:"A common gardener at Lady Evangeline's estate who became Empress because Julian II half-listened in a council meeting and muttered \"Yes, fine.\" The nobles collectively decided she was the obvious choice. She stormed into his office: \"WHAT THE HELL DID YOU DO?!\" He gestured vaguely. She became Empress — and turned out to be rather good at it.",fh:'commoner',isMar:true}],[{id:'ach4',nm:'Achilleus IV',dt:'793–817 AU',ro:'Emperor · The Iron Fist',bi:"Born to Cassander II of the Avilonic line, Achilleus IV was the last truly effective emperor. He crushed five rebellions, restored Lundenford, and reconvened the Imperial Council. \"If I must be iron, let it be for the sake of peace. If I must be hated, let it be by tyrants.\" His death in 817 AU began the true final decline."}],[{id:'aur',nm:'Prince Aurelian Chliarinos',dt:'c. 2125 AU –',ro:'Claimant · Imperial Restorer',bi:"A self-proclaimed heir to the As'hikan legacy who seeks to revive the empire in the post-imperial world. His claim is hotly debated — many view him as a relic, while others see him as a beacon of hope. The Phoenix Agency provides covert support to his cause."}]]},
+{id:'amala',r:'imvia',n:'House Amala',co:'Imvien Lands / Alodia',fd:'c. 2000 BU',st:'diminished',col:'#4a82b0',em:'⚓',mot:'"Where Horizons End, We Begin."',sig:'A golden ship with white sails riding sapphire waves, a radiant sun rising behind it.',ov:"House Amala was founded by Amala the Wayfarer and Imvius the Navigator, two of the legendary First Seventeens, who sailed beyond the known world after Sin's death. Their voyage established the Imvien civilisations. The house embodies exploration, discovery, and divine guidance.",
+evs:[{y:'c. 2000 BU',t:'Founded by Amala and Imvius after setting sail from the western shores.'},{y:'645 BU',t:'Queen Auvia Amala unites the Imvien islands, creating a maritime empire.'},{y:'220 AU',t:"Admiral Eron Imvius-Amala leads the Imvien fleets against the As'hikan Empire."},{y:'1840 AU',t:'High Priestess Selyra Amala initiates a religious revival, restoring sacred Imvien traditions.'},{y:'2130 AU',t:'Lord Vaelen Amala rises to restore ancient maritime networks.'}],
+tree:[[{id:'am_f',nm:'Amala the Wayfarer',dt:'c. 2000 BU',ro:'Founder · Spiritual Guide',bi:"A woman of unparalleled wisdom and grace, Amala was both a spiritual leader and an explorer. Her teachings on renewal, faith, and the endless pursuit of knowledge laid the foundations for Imvien culture. She was said to read the stars as easily as other women read their children's faces.",isMar:true},{id:'im_f',nm:'Imvius the Navigator',dt:'c. 2000 BU',ro:'Founder · First Great Sailor',bi:"The loyal right hand of Sin, Imvius was a master sailor, tactician, and leader. His navigational skills allowed him to lead fleets across uncharted waters. He mapped coastlines no other mortal had seen."}],[{id:'auvia',nm:'Queen Auvia Amala',dt:'c. 645–590 BU',ro:'Ruler · Maritime Empress',bi:"A ruler who united the scattered Imvien islands under a single banner, establishing a maritime empire that dominated trade routes and naval power. Known as 'She Who Commanded Two Tides.'"},{id:'eron',nm:'Admiral Eron Imvius-Amala',dt:'c. 220–285 AU',ro:"Admiral · The Sea's Unbroken Shield",bi:"A legendary admiral who led the Imvien fleets during conflicts with the rising As'hikan Empire, securing key victories despite being outnumbered. His naval tactics are still studied in the academies of Imvien Bay."}],[{id:'selyra',nm:'High Priestess Selyra Amala',dt:'c. 1840–1905 AU',ro:'Spiritual Leader · Revivalist',bi:"A spiritual leader who revitalised the ancient faith of Amala and Imvius during imperial cultural decline, restoring sacred traditions across the Imvien islands."}],[{id:'vaelen',nm:'Lord Vaelen Amala',dt:'c. 2130 AU –',ro:'Current · Restorer of Sea Roads',bi:"A charismatic sailor, explorer, and diplomat seeking to reconnect the fragmented Imvien territories, reviving the old maritime routes and cultural unity. His leadership is both admired and contested."}]]},
+{id:'charan',r:'armorica',n:'House Charan',co:'Armorica',fd:'c. 2000 BU',st:'fallen',col:'#7c9e6b',em:'🎵',mot:'"Through Song and Thought, We Reign."',sig:'A golden lyre entwined with a silver laurel wreath, on deep royal blue.',ov:"House Charan was founded by Octavia the Melodist and Recentibus the Wise — not through conquest or divine mandate, but through cultural and intellectual influence. The house rose to become the royal house of Armorica until Queen Isabelle IX's marriage to Achilleus I ended its sovereignty. Its intellectual legacy endures long after its royal power is gone.",
+evs:[{y:'c. 2000 BU',t:'Founded by Octavia the Melodist and Recentibus the Wise.'},{y:'c. 435 BU',t:'Queen Marian the Firm unifies Armorica, crowning herself without priest or song.'},{y:'c. 0 AU',t:"Queen Isabelle IX marries Achilleus I; House Charan's sovereignty ends."},{y:'c. 780 AU',t:"Philosopher Aelric Charan redefines Armorican philosophy."}],
+tree:[[{id:'oct',nm:'Octavia the Melodist',dt:'c. 2000 BU',ro:'Founder · First Musician',bi:"Revered as the First Musician, Octavia's compositions were said to soothe even the wildest hearts. Her music was not merely an art form but a sacred practice that connected mortals to the divine. She co-authored the First Pact between the Eight Houses — carved into obsidian and buried beneath the throne of Helen.",isMar:true},{id:'rec',nm:'Recentibus the Wise',dt:'c. 2000 BU',ro:'Founder · First Philosopher',bi:"A philosopher whose works on ethics, governance, and human nature laid the intellectual foundations of early Armorica. His treatises are still studied in the great academies of Exelia. He argued that the test of a noble house was not the blood in its veins but the wisdom it preserved."}],[{id:'mar',nm:'Queen Marian the Firm',dt:'c. 435–371 BU',ro:'Queen · Unifier of Armorica',bi:"A brilliant military strategist who unified the Armorican lands. She conquered the Two Duchies of Kovesk and Greenwood, seized Nerves, and subdued Somelsk. Her coronation on the Spire of Helen was without priest or song — she placed the Forge-Crown of eight nails upon her own head. 'No border shall divide my people that cannot be crossed by bread, and guarded by law.' Her Szewo-Armorican War ended not in victory but with all Szewians vanishing into the Endless Desert. She never took the field again."}],[{id:'isa9c',nm:'Queen Isabelle IX',dt:'c. 92 BU – 31 AU',ro:'Last Queen · Married into Chliarinos',bi:"The last ruling monarch of House Charan. Her marriage to Achilleus I Chliarinos violated at least three Armorican laws. The Council of Helen met for a record 73 days before ruling retroactively in favour. She is remembered as 'The Crowned Peacemaker' — the woman whose ancient blood legitimised an empire built from ash.",th:'chliarinos'}],[{id:'ael',nm:'Philosopher Aelric Charan',dt:'c. 780–845 AU',ro:"Scholar · Redefiner",bi:"A renowned scholar who redefined Armorican philosophical thought during the early days of the As'hikan Empire, blending ancient teachings with contemporary ideas of statecraft and ethics. His treatise 'The Two Crowns' is still assigned reading in Lundenford Academy."}]]},
+{id:'otisius',r:'armorica',n:'House Otisius',co:'Armorica',fd:'c. 2000 BU',st:'active',col:'#d4a44a',em:'✨',mot:'"By Light and Steel, We Endure."',sig:'A silver sunburst entwined with a golden sword, on deep indigo.',ov:"House Otisius was founded by Otisius the Saintess and Fortis the Unyielding. Otisius, the first mortal recognised as a saint, laid the spiritual foundations of Armorican society. Fortis, the first Paladin, established the ideals of sacred warfare and chivalric honour. The house maintains both intellectual and martial traditions across millennia.",
+evs:[{y:'c. 2000 BU',t:'Founded by Saintess Otisius and Fortis the Unyielding.'},{y:'613 BU',t:'Lady Aeloria Otisius writes "The Path of Light," a foundational theological text.'},{y:'312 AU',t:'Sir Dorian Fortis-Otisius leads the Crusade of the Crimson Star.'},{y:'1823 AU',t:'High Priestess Lysandra Otisius initiates religious reforms.'},{y:'2111 AU',t:'Sir Caelen Otisius-Fortis emerges as a beacon of hope for unity through faith and honour.'}],
+tree:[[{id:'otis_f',nm:'Otisius the Saintess',dt:'c. 2000 BU',ro:'Founder · First Saint',bi:"A revered spiritual leader, philosopher, and healer, Otisius is considered the first mortal to be recognised as a saint. Her teachings on compassion, justice, and the divine shaped the moral fabric of Armorica. She is said to have healed a dying city with nothing but her voice and a bowl of clean water.",isMar:true},{id:'fort',nm:'Fortis the Unyielding',dt:'c. 2000 BU',ro:'Founder · First Paladin',bi:"The first Paladin, Fortis was a warrior bound by sacred oaths to protect Otisius and her divine mission. His legacy established the ideals of chivalry, honour, and righteous warfare in Armorican culture. It is said he once stood between an entire army and a single unarmed refugee, refusing to move."}],[{id:'ael_o',nm:'Lady Aeloria Otisius',dt:'c. 613–559 BU',ro:'Philosopher · "The Path of Light"',bi:"A philosopher and theologian whose writings, 'The Path of Light,' became a cornerstone of Armorican religious doctrine, blending Otisius's original teachings with evolving cultural values."}],[{id:'dor_fo',nm:'Sir Dorian Fortis-Otisius',dt:'c. 312–375 AU',ro:'Knight · Crusade of the Crimson Star',bi:"A legendary paladin who led the Crusade of the Crimson Star, defending sacred sites from desecration during the early expansions of the As'hikan Empire. He negotiated the Treaty of the Sacred Paths without ever sheathing his sword."}],[{id:'lys_fo',nm:'High Priestess Lysandra Otisius',dt:'c. 1823–1887 AU',ro:'Reformer · Spiritual Revival',bi:"A spiritual reformer who revitalised the faith in the waning days of the As'hikan Empire. She directly challenged three corrupt bishops and one imperial governor — and outlived all four."}],[{id:'cae_fo',nm:'Sir Caelen Otisius-Fortis',dt:'c. 2111 AU –',ro:'Current · Restorer of Sacred Tradition',bi:"A knight and scholar striving to restore the sacred traditions of his ancestors. He seeks to unite Armorican factions through faith and honour rather than conquest, embodying both the intellectual legacy of Otisius and the martial discipline of Fortis."}]]},
+{id:'helen',r:'armorica',n:'House Helen',co:'Armorica',fd:'c. 2000 BU',st:'active',col:'#a0b4d0',em:'🏔',mot:'"In Love and Stone, We Endure."',sig:'A white mountain peak beneath a golden sun on sky blue, with two interlaced silver rings at the base.',ov:"House Helen was founded by Helen, a figure of divine beauty and political acumen, and Lucius, a renowned explorer whose love for Helen was so absolute that when God asked him to name the sacred peak he had climbed, he spoke her name without hesitation. The city of Helen and the Holy Mountain of Helen are the sacred heart of Armorican identity.",
+evs:[{y:'c. 2000 BU',t:"Lucius climbs the sacred peak and names it Helen; the house is established."},{y:'c. 400 BU',t:"Marian the Firm's coronation is held on the Spire of Helen."},{y:'0 AU',t:"The Treaty of the Burning Scroll is signed in the Ashhall of Helen."}],
+tree:[[{id:'hel_f',nm:'Helen',dt:'c. 2000 BU',ro:'Founder · Namesake of City and Mountain',bi:"A figure of divine beauty, wisdom, and political acumen — Helen was both a woman and a symbol. She guided early Armorican political institutions with a rare combination of charisma and principle. The city of Helen was built upon land she held sacred.",isMar:true},{id:'luc_h',nm:'Lucius',dt:'c. 2000 BU',ro:'Founder · First Explorer',bi:"A renowned explorer who ascended a sacred peak believed to be the Gate of Heaven. When God asked him what he would name the mountain, he replied 'Helen' without hesitation — forever immortalising his beloved in both stone and sky."}]]},
+{id:'delacroix',r:'armorica',n:'House Delacroix',co:'Armorica — Two Duchies',fd:'142 AU',st:'active',col:'#5a9e7a',em:'🌿',mot:'"By Merchant and Manor, We Prosper."',sig:'Emerald and silver — a stylised twin tower over an open market square.',ov:"The House of Delacroix traces its lineage to the House of Fortis (a sub-branch of Otisius), through Lady Aeliana Fortis who married Lord Dorian Delacroix. Founded in 142 AU, the house established itself as a regional power in the northern reaches of Armorica, synonymous with renewing prosperity and fostering stability in the post-imperial landscape.",
+evs:[{y:'142 AU',t:'House founded by Lady Aeliana Fortis and Lord Dorian Delacroix.'},{y:'c. 800 AU',t:'Duke Aldric Delacroix "The Peacemaker" ends decades of noble squabbles.'}],
+tree:[[{id:'ael_d',nm:'Lady Aeliana Fortis',dt:'c. 110–160 AU',ro:'Founder · from House Fortis / Otisius',bi:"A daughter of the ancient House of Fortis who married into the newly forming Delacroix line, bringing the sacred warrior traditions and paladin ethos of her founding ancestors. Her union with Dorian Delacroix combined martial legacy with merchant pragmatism.",fh:'otisius',isMar:true},{id:'dor_d',nm:'Lord Dorian Delacroix',dt:'c. 108–165 AU',ro:'Founder · Younger Son of Armorica',bi:"A younger son of a noble Armorican family who rose through merit and conquest. Dorian established the house's domain in the northern reaches of Armorica, carving out a territory that balanced the interests of the merchant guilds of Kovesd and the landed gentry of Greenwood."}],[{id:'ald_d',nm:'Duke Aldric Delacroix',dt:'c. 780–850 AU',ro:'"The Peacemaker"',bi:"Known as 'The Peacemaker,' Aldric ruled during the early reformation period. His deft diplomacy ended decades of squabbles among the lesser nobles, unified the fractured local militias, and secured an enduring trade alliance with the eastern city-states."}],[{id:'ric_d',nm:'Duke Richard Delacroix',dt:'c. 2075 AU –',ro:'Current · Duke of Kovesd and Greenwood',bi:"The current ruling duke — a prudent and resourceful leader known for balancing the interests of the merchant guilds of Kovesd and the landed gentry of Greenwood. His sister Lady Eleanor holds the Marchioness of Ellenhurst; his nephew Sir Tristan serves as High Marshal of the Greenwood Guard."}]]},
+{id:'braegor',r:'armorica',n:'House Braegor',co:'Armorica — Northern Marches',fd:'394 BU',st:'active',col:'#7a7a8a',em:'⚒',mot:'"By Iron and Mountain, We Stand."',sig:'Black and steel-grey — an iron anvil beneath a storm cloud, split by lightning.',ov:"The House of Braegor traces its lineage to the House of Fortis, through Lady Helena Fortis who married Lord Almaric Braegor. Founded in 394 BU during the Wars of the Black Tide, the house carved out its domain in the Warcisław Mountains, raising Ironhearth Keep from the very bones of the earth. They are masters of metallurgy, pioneers of siegecraft, and stalwart wardens of Armorica's northern defences.",
+evs:[{y:'394 BU',t:'Founded by Lady Helena Fortis and Lord Almaric Braegor during the Wars of the Black Tide.'},{y:'c. 250 BU',t:'Ironhearth Keep completed.'},{y:'c. 100 AU',t:'Lord Armand Braegor "The Iron Bastion" withstands the Szewian siege of Coldspire for two years.'}],
+tree:[[{id:'hel_br',nm:'Lady Helena Fortis',dt:'c. 414–360 BU',ro:'Founder · from House Fortis / Otisius',bi:"A daughter of the House of Fortis who brought the paladin warrior tradition into the mountain culture of northern Armorica. Her martial skill and strategic mind were instrumental in the Wars of the Black Tide, and she is said to have personally held the pass at Greycrest while her husband organised the first defences of Ironhearth.",fh:'otisius',isMar:true},{id:'alm_br',nm:'Lord Almaric Braegor',dt:'c. 420–358 BU',ro:'Founder · Mountain Warlord',bi:"A warrior-lord of unyielding discipline and iron command who carved out a domain in the Warcisław Mountains. He established Ironhearth Keep as both a military fortress and a centre of mountain metallurgy, beginning the house's tradition of defensive architecture and weapon-smithing."}],[{id:'arm_br',nm:'Lord Armand Braegor',dt:'c. 90–155 AU',ro:'"The Iron Bastion"',bi:"In the Siege of Coldspire, Armand withstood the Szewian onslaught for two years without faltering, holding the fortress with naught but discipline and strategic brilliance. His tactics remain studied in the war halls of Armorica."}],[{id:'eld_br',nm:'Duke Eldric Braegor',dt:'c. 2070 AU –',ro:'Current · Duke of Ironhearth',bi:"A grim and battle-hardened ruler whose vigilance and devotion to duty has kept his lands free from invaders. His sister Lady Isabeau holds the title of Countess of Dremswold; his cousin Sir Wystan serves as Lord-Marshal of the Obsidian Watch."}]]},
+{id:'boque',r:'szewia',n:'House Boque',co:'Gothia (Origins) → Szewia',fd:'c. 2000 BU',st:'diminished',col:'#5a8ab0',em:'🧭',mot:'"Through Paths and Praise, We Ascend."',sig:'A golden compass rose entwined with a silver scroll, on deep azure blue.',ov:"House Boque was founded by Boque the Wayfarer and Similemdeum the Hymnkeeper. Born in the ancient lands of Gothia, Boque's restless spirit drove him to explore beyond the known world, settling in Szewia. Similemdeum mapped the spiritual realm in sacred hymns. Together they forged a lineage embodying both the pursuit of knowledge and the reverence for the divine.",
+evs:[{y:'c. 2000 BU',t:'Founded by Boque the Wayfarer and Similemdeum the Hymnkeeper.'},{y:'754 BU',t:"Lord Eryon Boque charts the treacherous seas to the western islands."},{y:'301 AU',t:'High Priestess Velmira Boque revitalises the ancient hymns.'},{y:'1895 AU',t:"Cartographer-General Theorin Boque maps the shifting frontiers of the empire's decline."},{y:'2119 AU',t:'Lady Nirella Boque advocates for unity through ancient teachings.'}],
+tree:[[{id:'boque_f',nm:'Boque the Wayfarer',dt:'c. 2000 BU',ro:'Founder · First Cartographer',bi:"The first cartographer of the known world, Boque's maps became sacred relics, blending geography with the wisdom of the lands he discovered. He is said to have mapped Escapia's northern shores centuries before the continent was 'rediscovered.'",isMar:true},{id:'sim',nm:'Similemdeum the Hymnkeeper',dt:'c. 2000 BU',ro:'Founder · First Sacred Hymnist',bi:"A philosopher and theologian, Similemdeum co-wrote the first hymn to laud God alongside Chara. His teachings on faith and the divine nature of humanity shaped early Szewian spirituality and governance. Where Boque mapped the land, Similemdeum mapped the soul."}],[{id:'eryon',nm:'Lord Eryon Boque',dt:'c. 754–689 BU',ro:'Navigator · Opened the Western Seas',bi:"A master navigator who expanded Szewian influence by charting the treacherous seas to the distant western islands, establishing trade routes that fuelled Szewia's economic rise. His maps were bought for their weight in gold."},{id:'velm',nm:'High Priestess Velmira Boque',dt:'c. 301–366 AU',ro:'Spiritual Leader · Poet',bi:"A spiritual leader and poet who revitalised the ancient hymns of Similemdeum, blending them with Szewian traditions. Her verses became integral to state ceremonies and religious rites. Known as 'The Hymnseer.'"}],[{id:'theor',nm:'Cartographer-General Theorin Boque',dt:'c. 1895–1950 AU',ro:"Explorer · Mapped the Decline",bi:"A renowned explorer and military strategist who mapped the shifting frontiers of the As'hikan Empire's long decline. His maps were so accurate that both sides in the civil wars paid enormous sums to possess them."}],[{id:'nirel',nm:'Lady Nirella Boque',dt:'c. 2119 AU –',ro:'Current · Guardian of Ancestral Wisdom',bi:"A guiding figure in post-imperial Szewia, advocating for unity through the ancient teachings of her ancestors. Her revival of Boque cartographic traditions has produced the most comprehensive maps of post-imperial Exelia available to any faction."}]]},
+{id:'szew',r:'szewia',n:'House Szew',co:'Szewia',fd:'c. 2000 BU',st:'diminished',col:'#9370b0',em:'🦌',mot:'"By Right, By Sword, By Legacy."',sig:'A silver stag crowned with golden antlers, standing atop a black mountain, on crimson.',ov:"House Szew was founded by Queen Szew and Warcisław, who led their people westward to establish the first Szewian settlements. Their union blended royal authority with martial genius. The house embodies Szewian sovereignty, resilience, and cultural pride — its founders near-mythical icons whose deeds shaped the destiny of a nation.",
+evs:[{y:'c. 2000 BU',t:'Founded by Queen Szew and Warcisław after leading their people westward.'},{y:'765 BU',t:'King Jaromir Szew unites Szewia under a centralised monarchy.'},{y:'312 AU',t:'Queen Dragomira Szew defends Szewia against early As\'hikan expansion.'},{y:'2078 AU',t:"Fall of the As'hikan Empire; Szewia descends into fragmentation."},{y:'2108 AU',t:'Prince Radosław Szew rallies monarchist loyalists.'}],
+tree:[[{id:'szew_f',nm:'Queen Szew',dt:'c. 2000 BU',ro:'Founder · The Sovereign',bi:"A fierce and visionary leader who guided her people westward into untamed lands. Queen Szew embodied the spirit of leadership, diplomacy, and divine mandate, forging the royal dynasty of Szewia.",isMar:true},{id:'warc',nm:'Warcisław',dt:'c. 2000 BU',ro:'Founder · First Warlord',bi:"A brilliant military strategist and Queen Szew's most trusted general. The Warcisław Mountains bear his name. His military doctrines are still studied in military academies across Exelia."}],[{id:'jarom',nm:'King Jaromir Szew',dt:'c. 765–700 BU',ro:'Unifier · King of All Szewia',bi:"United the fractious Szewian clans under a centralised monarchy. Remembered as 'The Ironkeeper' — a title earned from holding a coalition together that by all rights should have torn itself apart."}],[{id:'drag',nm:'Queen Dragomira Szew',dt:'c. 280–330 AU',ro:'Defender · The Fierce',bi:"Earned a reputation as one of the fiercest queens in Exelian history by defending Szewia against early As'hikan expansion. She personally led the defence of the Three Rivers crossing, holding off an imperial force three times her own army's size for six months."}],[{id:'wlad',nm:'King Władysław Szew',dt:'c. 1975–2020 AU',ro:'Last King · Witness to the Fall',bi:"Reigned during the final days of the As'hikan Empire, witnessing the fracturing of Szewian unity. His reign was defined by the impossible task of holding together a kingdom whose identity had been suppressed for two thousand years."}],[{id:'rados',nm:'Prince Radosław Szew',dt:'c. 2108 AU –',ro:'Claimant · Rallying the Monarchists',bi:"Rallying monarchist loyalists in hopes of restoring the kingdom. His claim is contested by republican and communalist factions — but the name Szew still carries enough ancestral weight to draw followers in the borderlands."}]]},
+{id:'ferus',r:'gothia',n:'House Ferus',co:'Gothia',fd:'c. 2000 BU',st:'reborn',col:'#8b6b4a',em:'🌲',mot:'"In Song and Hunt, We Thrive."',sig:'A black stag with silver antlers, surrounded by crimson ivy, on forest green.',ov:"House Ferus was founded by Ferus the Wildheart and Limner the Eternal, who chose to remain in the untamed wilderness of Gothia rather than venture to distant lands like the other First Seventeens. Ferus was the first animal tamer — a bard whose songs tamed beasts. Limner was the first true artist. Together they established a house defined by its deep ties to nature, artistry, and the eternal balance between civilisation and the wild.",
+evs:[{y:'c. 2000 BU',t:'Founded by Ferus the Wildheart and Limner the Eternal in the forests of Gothia.'},{y:'712 BU',t:'Lady Sylvara Ferus tames the Crimson Direwolf — first time such a beast ever served a human master.'},{y:'1902 AU',t:'High Warden Nyssa Ferus defends the sacred Dark Forest against imperial invaders.'},{y:'2126 AU',t:'Rhaegor Ferus rises as a bard-warrior, rallying the clans of Gothia.'}],
+tree:[[{id:'fer_f',nm:'Ferus the Wildheart',dt:'c. 2000 BU',ro:'Founder · First Animal Tamer',bi:"Revered as the first animal tamer, Ferus could calm the fiercest beasts with a melody. He believed that the language of animals was older than the language of men — and he spent his life learning both. His songs are said to resonate in the forests of Gothia even today.",isMar:true},{id:'lim',nm:'Limner the Eternal',dt:'c. 2000 BU',ro:'Founder · First Artist',bi:"The first true artist, Limner's paintings and carvings shaped the cultural identity of early Gothian tribes. They are called 'eternal' because no artist since has been able to fully replicate their emotional resonance."}],[{id:'sylv',nm:'Lady Sylvara Ferus',dt:'c. 712–659 BU',ro:'Huntress · Tamer of the Crimson Direwolf',bi:"A legendary huntress who tamed the Crimson Direwolf — a beast that had killed seventeen hunters before her. The taming took eleven days, during which she neither ate nor slept, simply sitting at the beast's threshold until it stopped wanting to kill her."}],[{id:'nyss',nm:'High Warden Nyssa Ferus',dt:'c. 1895–1960 AU',ro:'Warden · Defender of the Dark Forest',bi:"Organised the Forest Alliance — a coalition of druids, rangers, and wild-speaking mages — that held the Dark Forest inviolate against three successive imperial governors who sought to extract its resources."}],[{id:'rhae',nm:'Rhaegor Ferus',dt:'c. 2126 AU –',ro:'Current · Bard-Warrior',bi:"Rising as a bard-warrior, Rhaegor seeks to rally the clans of Gothia under the ancient banner of House Ferus, seeking unity through song and strength. His compositions are said to be heard in the deep forest at night — animals following the melodies to the edges of settlements."}]]},
+{id:'asturokarunia',r:'gothia',n:"House Ásturokarunia",co:'Gothia',fd:'c. 2000 BU',st:'diminished',col:'#b36b6b',em:'☀',mot:'"By Grief and Glory, We Guard."',sig:'A black sun partially eclipsed by a crimson crescent, on ash-grey.',ov:"The House of Ásturokarunia was founded by Àsturas and Karun, two of the legendary First Seventeens who chose to remain at the site where their revered leader Sin perished. Their decision to stay marked the beginning of the Gothian people. The house embodies grief, resilience, and eternal guardianship — its very foundation tied to mourning and honour.",
+evs:[{y:'c. 2000 BU',t:"Founded by Àsturas and Karun at the site of Sin's death."},{y:'865 BU',t:'King Rhaegon unifies the Gothian tribes, founding the Kingdom of Ásturokarunia.'},{y:'304 AU',t:"Queen Lysandra navigates the rising As'hikan Empire, ensuring Gothia's autonomy through diplomacy."},{y:'1935 AU',t:'High Warden Varian leads the defence of the Gramen Delta.'},{y:'2118 AU',t:'Duke Malrik rises as a controversial figure attempting to reunite Gothia.'}],
+tree:[[{id:'ast_f',nm:'Àsturas',dt:'c. 2000 BU',ro:'Founder · Sacred Guardian',bi:"One of the legendary First Seventeens who chose to remain at the site of Sin's death. Àsturas was the first to establish the mourning rites for Sin — rites that became the foundation of all Gothian spiritual practice. It is said she wept for forty days, and where her tears fell, the earth became fertile.",isMar:true},{id:'kar',nm:'Karun',dt:'c. 2000 BU',ro:'Founder · Guardian of Sacred Ground',bi:"The warrior who protected the sacred site from those who would desecrate it. He established the first Gothian martial traditions — not conquest-minded, but guardian-minded. The Karun Desert in the south is named for him, representing the harsh endurance he embodied."}],[{id:'rhae_a',nm:'King Rhaegon',dt:'c. 865–810 BU',ro:'Unifier · King of Gothia',bi:"The king who unified the Gothian tribes, founding the Kingdom of Ásturokarunia. Where others ruled through fear, Rhaegon ruled through memory — invoking the sacred covenant of the First Seventeens to bind clans that had been enemies for generations."}],[{id:'lys_a',nm:'Queen Lysandra',dt:'c. 290–340 AU',ro:"Diplomat · Secured Gothia's Autonomy",bi:"Navigated the complex political landscape of the rising As'hikan Empire, ensuring Gothia's autonomy through masterful cultural preservation, strategic alliance, and calculated distance. She never refused imperial fealty in letter while refusing it entirely in spirit."}],[{id:'var_a',nm:'High Warden Varian',dt:'c. 1930–1990 AU',ro:'Warden · Defender of the Delta',bi:"Held the Gramen Delta against three competing factions simultaneously during the Empire's decline, refusing to cede sovereignty to any of them. He became a symbol of Gothic resilience at the dynasty's lowest point."}],[{id:'malr',nm:'Duke Malrik',dt:'c. 2118 AU –',ro:'Claimant · Controversial Reunifier',bi:"A powerful and controversial figure attempting to reunite Gothia under the ancient banner of his house. His methods are questioned even by those who support his goal — accused of suppressing dissenting clans while presenting himself as a unifier."}]]},
+{id:'caerwyn',r:'gothia',n:'House Caerwyn',co:'Latum / Aquilonem Wilds',fd:'716 BU',st:'active',col:'#5a8a6a',em:'🏹',mot:'"By Arrow and Ancient Oak, We Stand."',sig:'Deep green and silver — a longbow crossed with an oak branch.',ov:"The House of Caerwyn traces its lineage to the House of Amala, through Lady Elyssia Amala who married Lord Alric Caerwyn. Founded in 716 BU at the end of the Coalition Wars, the house established its domain over the Aquilonem Wilds of Latum. They are masters of archery, guardians of the forest, and keepers of the old Chamalian ways. Their Starlight Longbows are legendary.",
+evs:[{y:'716 BU',t:'Founded by Lady Elyssia Amala and Lord Alric Caerwyn at the end of the Coalition Wars.'},{y:'c. 300 BU',t:'Caerwyn Hall raised deep within the Aquilonem Wilds.'},{y:'c. 200 AU',t:'Lord Eadric Caerwyn "The Shadow of the Aquilonem" leads a masterful ambush in the Battle of the Whispering Glade.'}],
+tree:[[{id:'ely',nm:'Lady Elyssia Amala',dt:'c. 740–680 BU',ro:'Founder · from House Amala',bi:"A daughter of the ancient House of Amala who brought the maritime adventuring spirit of her founding ancestors into the forests of the north. She traded sea routes for forest paths and found them equally full of discovery. Her marriage to Lord Alric Caerwyn united coastal Imvien traditions with the deep woodland culture of northern Latum.",fh:'amala',isMar:true},{id:'alr_c',nm:'Lord Alric Caerwyn',dt:'c. 745–675 BU',ro:'Founder · Knight of Woodland Warfare',bi:"A knight of peerless valour and master of woodland warfare who established the house's domain in the Aquilonem Wilds. He designed the Caerwyn Code — a doctrine governing the stewardship of woodland realms, balancing the needs of the realm with the sanctity of nature."}],[{id:'ead_c',nm:'Lord Eadric Caerwyn',dt:'c. 210–270 AU',ro:'"The Shadow of the Aquilonem"',bi:"In the Battle of the Whispering Glade, Eadric led his rangers in a masterful ambush against a Szewian war host — his forces vanishing into the forest like spirits, striking unseen and felling their foes before the enemy knew the battle had begun."}],[{id:'rod_c',nm:'Duke Roderic Caerwyn',dt:'c. 2060 AU –',ro:'Current · Duke of the Aquilonem March',bi:"A ranger-lord of unmatched skill whose wisdom shapes both courtly intrigues and the defence of his lands. His sister Lady Isolte holds the Margraviate of Veldmere; his cousin Sir Aldwin serves as Lord Warden of the Aquilonem, commanding the woodland scouts who patrol the Eldgrove Forest."}]]},
+];
+
+let aid=null;
+const NW=145,NGX=26,NGY=68;
+
+function hb(id){return H.find(x=>x.id===id)||null;}
+function renderSB(q=''){
+  const sb=document.getElementById('sb'); sb.innerHTML='';
+  const grouped={};
+  H.forEach(h=>{
+    if(q){
+      const lq=q.toLowerCase();
+      const ok=h.n.toLowerCase().includes(lq)||h.r.toLowerCase().includes(lq)||h.co.toLowerCase().includes(lq)||h.tree.flat().some(p=>p.nm.toLowerCase().includes(lq));
+      if(!ok)return;
+    }
+    if(!grouped[h.r])grouped[h.r]=[];
+    grouped[h.r].push(h);
+  });
+  Object.entries(REGS).forEach(([rk,rv])=>{
+    const hs=grouped[rk]; if(!hs||!hs.length)return;
+    const g=document.createElement('div'); g.className='rg open';
+    g.innerHTML=`<div class="rh"><span>${rv.l}</span><span class="rarr">▶</span></div><div class="rhs"></div>`;
+    g.querySelector('.rh').onclick=()=>g.classList.toggle('open');
+    const rhd=g.querySelector('.rhs');
+    hs.forEach(h=>{
+      const b=document.createElement('button'); b.className='hbtn'; b.dataset.id=h.id;
+      b.innerHTML=`<span class="hdot" style="background:${h.col};box-shadow:0 0 5px ${h.col}44;"></span><div class="hi"><div class="hn">${h.em} ${h.n}</div><div class="hf">Founded ${h.fd}</div></div><span class="hst s-${h.st}">${h.st}</span>`;
+      b.onclick=()=>sel(h.id);
+      rhd.appendChild(b);
+    });
+    sb.appendChild(g);
+  });
+}
+function sel(id){
+  const h=hb(id); if(!h)return;
+  aid=id;
+  document.querySelectorAll('.hbtn').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  const hdr=document.getElementById('hdr'); hdr.style.display='flex';
+  hdr.innerHTML=`
+    <div class="hcrest" style="background:radial-gradient(circle at 35% 30%,${h.col}88,${h.col}44);border:2px solid ${h.col}66;">
+      <span>${h.em}</span>
+    </div>
+    <div>
+      <div class="hname" style="color:${h.col}">${h.n}</div>
+      <div class="hreg">${REGS[h.r].l} · ${h.co}</div>
+      <div class="hmotto" style="color:${h.col}cc">${h.mot}</div>
+      <div class="hmeta">
+        <div class="hmi"><strong>Founded</strong> ${h.fd}</div>
+        <div class="hmi"><strong>Status</strong> <span class="hst s-${h.st}" style="font-size:9px;padding:2px 7px;">${h.st}</span></div>
+      </div>
+    </div>
+    <div class="hsigil">${h.sig}</div>
+  `;
+  document.getElementById('tabs').style.display='flex';
+  renderTree(h); renderDet(h);
+}
+function renderTree(h){
+  const emp=document.getElementById('emp'); emp.style.display='none';
+  const tc=document.getElementById('tc'); tc.style.display='block'; tc.innerHTML='';
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.id='tsvg'; tc.appendChild(svg);
+  h.tree.forEach((gen,gi)=>{
+    const row=document.createElement('div'); row.className='tgen'; row.dataset.gen=gi;
+    row.style.marginTop=gi===0?'16px':`${NGY}px`; row.style.gap=`${NGX}px`;
+    gen.forEach((p,pi)=>{
+      const nw=document.createElement('div'); nw.className='nwrap';
+      const node=document.createElement('div'); node.className='pnode';
+      node.style.borderColor=p.fh?'#67e8f9':h.col+'88';
+      node.style.boxShadow=`0 2px 12px ${h.col}1a`;
+      node.dataset.pid=p.id;
+      node.innerHTML=`<div class="pr" style="color:${p.fh?'#67e8f9':h.col}">${p.ro||''}</div><div class="pname">${p.nm}</div><div class="pdates">${p.dt}</div>${p.fh?`<span class="pfrom">from ${hb(p.fh)?.n||p.fh}</span>`:''} ${p.th?`<span class="pto">→ ${hb(p.th)?.n||p.th}</span>`:''}`;
+      node.onclick=()=>openMod(p,h);
+      nw.appendChild(node); row.appendChild(nw);
+      if(p.isMar&&pi<gen.length-1){const ms=document.createElement('div');ms.className='nwrap';ms.innerHTML=`<div class="msym" style="color:${h.col};margin-top:24px;">⚭</div>`;row.appendChild(ms);}
+      else if(pi<gen.length-1){const g=document.createElement('div');g.style.width=NGX+'px';g.style.flexShrink=0;row.appendChild(g);}
+    });
+    tc.appendChild(row);
+  });
+  requestAnimationFrame(()=>drawLines(h,svg,tc));
+}
+function drawLines(h,svg,tc){
+  const ns={};
+  tc.querySelectorAll('.pnode').forEach(el=>{
+    const r=el.getBoundingClientRect(),cr=tc.getBoundingClientRect();
+    ns[el.dataset.pid]={cx:r.left-cr.left+r.width/2,cy:r.top-cr.top+r.height/2,top:r.top-cr.top,bot:r.top-cr.top+r.height};
+  });
+  svg.setAttribute('width',tc.scrollWidth); svg.setAttribute('height',tc.scrollHeight);
+  svg.style.width=tc.scrollWidth+'px'; svg.style.height=tc.scrollHeight+'px';
+  h.tree.forEach((gen,gi)=>{
+    if(gi===0)return;
+    const pg=h.tree[gi-1];
+    const pids=pg.slice(0,2).map(p=>p.id).filter(id=>ns[id]);
+    if(!pids.length)return;
+    const mx=pids.length===2?(ns[pids[0]].cx+ns[pids[1]].cx)/2:ns[pids[0]].cx;
+    const my=pids.length?ns[pids[0]].bot:0;
+    const dy=my+NGY*0.38;
+    if(pids.length===2&&ns[pids[0]]&&ns[pids[1]]){
+      const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+      l.setAttribute('x1',ns[pids[0]].cx);l.setAttribute('y1',ns[pids[0]].cy);
+      l.setAttribute('x2',ns[pids[1]].cx);l.setAttribute('y2',ns[pids[1]].cy);
+      l.setAttribute('stroke',h.col);l.setAttribute('stroke-width','1.4');l.setAttribute('stroke-dasharray','5,4');l.setAttribute('opacity','.5');
+      svg.appendChild(l);
+    }
+    gen.forEach(child=>{
+      if(!ns[child.id])return;
+      const cn=ns[child.id];
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d',`M ${mx} ${my} L ${mx} ${dy} L ${cn.cx} ${dy} L ${cn.cx} ${cn.top}`);
+      path.setAttribute('stroke',h.col);path.setAttribute('stroke-width','1.4');path.setAttribute('fill','none');path.setAttribute('opacity','.42');
+      svg.appendChild(path);
+    });
+  });
+}
+function renderDet(h){
+  const p=document.getElementById('pane-detail');
+  p.style.setProperty('--goldD',h.col+'aa');
+  p.innerHTML=`
+    <div class="ds"><h3 style="color:${h.col}aa">Ancestral Overview</h3><div class="dt">${h.ov}</div></div>
+    <div class="ds"><h3 style="color:${h.col}aa">Key Events in House History</h3>
+      ${h.evs.map(e=>`<div class="erow"><div class="eyr" style="color:${h.col}">${e.y}</div><div class="etxt">${e.t}</div></div>`).join('')}
+    </div>
+    <div class="ds"><h3 style="color:${h.col}aa">Notable Members</h3>
+      ${h.tree.flat().map(p=>`
+        <div class="mcard" style="border-color:${p.fh?'#67e8f9':h.col}44;">
+          <div><div class="mcard-name" style="color:${p.fh?'#67e8f9':h.col}">${p.nm}</div><div class="mcard-role">${p.ro||''}</div></div>
+          <div class="mcard-dates">${p.dt}</div>
+        </div>`).join('')}
+    </div>
+  `;
+}
+function openMod(person,house){
+  const ov=document.getElementById('mov'); const mc=document.getElementById('mc2');
+  const mod=document.getElementById('mod'); mod.style.borderColor=house.col+'66';
+  document.getElementById('mc').style.borderColor=house.col+'55';
+  mc.innerHTML=`
+    <div class="mrole" style="color:${house.col}">${person.ro||'Member'}</div>
+    <div class="mname" style="color:${person.fh?'#67e8f9':house.col}">${person.nm}</div>
+    <div class="mdates">${person.dt}</div>
+    <div class="mdiv" style="background:linear-gradient(90deg,transparent,${house.col},transparent);"></div>
+    <div class="mbio">${person.bi||'No further record survives.'}</div>
+    <div class="mhouse" style="border-color:${house.col};color:${house.col};">${house.em} ${house.n} · ${house.mot}</div>
+    ${person.fh?`<div class="mhouse" style="border-color:#67e8f9;color:#67e8f9;margin-top:7px;">↗ Originally from ${hb(person.fh)?.n||person.fh}</div>`:''}
+    ${person.th?`<div class="mhouse" style="border-color:#fac840;color:#fac840;margin-top:7px;">→ Married into ${hb(person.th)?.n||person.th}</div>`:''}
+  `;
+  ov.classList.add('open');
+}
+document.getElementById('mc').onclick=()=>document.getElementById('mov').classList.remove('open');
+document.getElementById('mov').onclick=e=>{if(e.target===document.getElementById('mov'))document.getElementById('mov').classList.remove('open');};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('mov').classList.remove('open');});
+document.querySelectorAll('.tbtn').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.tbtn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tpane').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('pane-'+b.dataset.tab).classList.add('active');
+    if(b.dataset.tab==='tree'&&aid){const h=hb(aid);if(h)setTimeout(()=>{const sv=document.getElementById('tsvg');const tc=document.getElementById('tc');if(sv&&tc)drawLines(h,sv,tc);},60);}
+  };
+});
+document.getElementById('srch').addEventListener('input',e=>renderSB(e.target.value));
+renderSB();
+sel('chliarinos');
+</script>
+
+<style id="ep-styles">
+.ep-fab{position:fixed;bottom:22px;right:22px;z-index:800;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#1a0d04,#240808);border:1px solid rgba(212,164,74,.55);box-shadow:0 4px 20px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .22s;color:#d4a44a;}
+.ep-fab:hover{transform:scale(1.12);box-shadow:0 6px 24px rgba(0,0,0,.6),0 0 0 6px rgba(212,164,74,.12);}
+.ep-fab.active{background:linear-gradient(135deg,#d4a44a,#b8893b);color:#1a0800;border-color:#f0cc72;}
+.ep-ov{position:fixed;inset:0;z-index:900;background:rgba(3,1,8,.97);backdrop-filter:blur(12px);display:none;flex-direction:column;overflow:hidden;}
+.ep-ov.open{display:flex;}
+.ep-tb{flex-shrink:0;height:52px;background:rgba(5,2,12,.98);border-bottom:1px solid rgba(212,164,74,.2);display:flex;align-items:center;gap:12px;padding:0 18px;}
+.ep-tb-title{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:#d4a44a;flex:1;}
+.ep-count{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;padding:3px 8px;border-radius:2px;background:rgba(212,164,74,.12);color:rgba(212,164,74,.7);border:1px solid rgba(212,164,74,.25);}
+.ep-x{width:28px;height:28px;border-radius:50%;border:1px solid rgba(212,164,74,.35);background:transparent;color:rgba(212,164,74,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .14s;}
+.ep-x:hover{background:rgba(212,164,74,.14);color:#d4a44a;}
+.ep-body{flex:1;display:grid;grid-template-columns:290px 1fr;overflow:hidden;}
+.ep-lcol{display:flex;flex-direction:column;border-right:1px solid rgba(212,164,74,.12);overflow:hidden;}
+.ep-lhdr{flex-shrink:0;padding:10px 12px;border-bottom:1px solid rgba(212,164,74,.1);display:flex;gap:7px;align-items:center;}
+.ep-srch{flex:1;padding:6px 9px;background:rgba(232,223,200,.06);border:1px solid rgba(212,164,74,.22);border-radius:2px;color:#e8dfc8;font-family:'EB Garamond',serif;font-size:13px;outline:none;}
+.ep-srch:focus{border-color:rgba(212,164,74,.5);}
+.ep-srch::placeholder{color:rgba(232,223,200,.25);}
+.ep-new{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:6px 10px;border:1px solid rgba(212,164,74,.45);border-radius:2px;background:rgba(212,164,74,.08);color:#d4a44a;cursor:pointer;white-space:nowrap;transition:all .14s;}
+.ep-new:hover{background:rgba(212,164,74,.2);}
+.ep-tags{display:flex;gap:5px;flex-wrap:wrap;padding:7px 12px 4px;border-bottom:1px solid rgba(212,164,74,.07);}
+.ep-tg{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:2px 7px;border-radius:10px;border:1px solid rgba(212,164,74,.18);color:rgba(212,164,74,.4);cursor:pointer;transition:all .12s;}
+.ep-tg.on{border-color:rgba(212,164,74,.6);color:#d4a44a;background:rgba(212,164,74,.12);}
+.ep-list{flex:1;overflow-y:auto;padding:4px 0;scrollbar-width:thin;scrollbar-color:rgba(124,90,31,.3) transparent;}
+.ep-list::-webkit-scrollbar{width:3px}.ep-list::-webkit-scrollbar-thumb{background:rgba(124,90,31,.3);}
+.ep-li{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(212,164,74,.05);transition:background .1s;position:relative;}
+.ep-li:hover{background:rgba(212,164,74,.06);}
+.ep-li.sel{background:rgba(212,164,74,.12);}
+.ep-li-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.ep-li-info{flex:1;min-width:0;}
+.ep-li-name{font-family:'Cinzel',serif;font-size:11px;font-weight:500;color:#e8dfc8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
+.ep-li-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:rgba(232,223,200,.38);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ep-li-del{opacity:0;background:none;border:none;cursor:pointer;color:rgba(248,113,113,.55);font-size:13px;padding:2px 3px;transition:all .1s;flex-shrink:0;}
+.ep-li:hover .ep-li-del{opacity:1;}
+.ep-li-del:hover{color:#f87171;}
+.ep-rcol{display:flex;flex-direction:column;overflow:hidden;}
+.ep-fwrap{flex:1;overflow-y:auto;padding:18px 22px;scrollbar-width:thin;scrollbar-color:rgba(124,90,31,.3) transparent;}
+.ep-fwrap::-webkit-scrollbar{width:3px}.ep-fwrap::-webkit-scrollbar-thumb{background:rgba(124,90,31,.3);}
+.ep-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:9px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(232,223,200,.3);}
+.ep-ph span{font-size:28px;}
+.ep-ftitle{font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:.07em;color:#d4a44a;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(212,164,74,.14);}
+.ep-field{margin-bottom:13px;}
+.ep-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(212,164,74,.65);display:block;margin-bottom:4px;}
+.ep-inp,.ep-ta,.ep-sel{width:100%;padding:7px 10px;background:rgba(232,223,200,.05);border:1px solid rgba(212,164,74,.22);border-radius:2px;color:#e8dfc8;font-family:'EB Garamond',serif;font-size:14px;outline:none;transition:border-color .13s;}
+.ep-inp:focus,.ep-ta:focus,.ep-sel:focus{border-color:rgba(212,164,74,.5);background:rgba(232,223,200,.09);}
+.ep-inp::placeholder,.ep-ta::placeholder{color:rgba(232,223,200,.22);}
+.ep-ta{resize:vertical;min-height:75px;line-height:1.5;}
+.ep-sel{cursor:pointer;}.ep-sel option{background:#0d0a1a;color:#e8dfc8;}
+.ep-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ep-row4{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.ep-ans-w{display:flex;gap:5px;align-items:center;}
+.ep-ans-l{font-family:'Cinzel',serif;font-size:9px;color:rgba(212,164,74,.5);width:12px;flex-shrink:0;}
+.ep-corr{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:5px;}
+.ep-co{display:flex;align-items:center;gap:5px;padding:5px 7px;border:1px solid rgba(212,164,74,.18);border-radius:2px;cursor:pointer;transition:all .12s;}
+.ep-co.on{border-color:#7c9e6b;background:rgba(124,158,107,.14);}
+.ep-co input{accent-color:#7c9e6b;cursor:pointer;}
+.ep-co label{font-family:'Cinzel',serif;font-size:9px;color:#e8dfc8;cursor:pointer;}
+.ep-fftr{flex-shrink:0;padding:10px 22px;border-top:1px solid rgba(212,164,74,.1);background:rgba(4,2,10,.9);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.ep-sv{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:8px 18px;border:1px solid rgba(212,164,74,.55);border-radius:2px;background:rgba(212,164,74,.13);color:#d4a44a;cursor:pointer;transition:all .14s;}
+.ep-sv:hover{background:rgba(212,164,74,.28);color:#f0cc72;}
+.ep-dv{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:8px 14px;border:1px solid rgba(248,113,113,.3);border-radius:2px;background:rgba(248,113,113,.06);color:rgba(248,113,113,.65);cursor:pointer;transition:all .14s;}
+.ep-dv:hover{background:rgba(248,113,113,.16);color:#f87171;}
+.ep-rst{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;padding:7px 10px;border:1px solid rgba(212,164,74,.15);border-radius:2px;background:transparent;color:rgba(212,164,74,.35);cursor:pointer;transition:all .13s;margin-left:auto;}
+.ep-rst:hover{background:rgba(212,164,74,.07);color:rgba(212,164,74,.65);}
+.ep-exp{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:7px 9px;border:1px solid rgba(103,232,249,.22);border-radius:2px;background:transparent;color:rgba(103,232,249,.45);cursor:pointer;transition:all .13s;}
+.ep-exp:hover{background:rgba(103,232,249,.07);color:rgba(103,232,249,.75);}
+.ep-imp-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:7px 9px;border:1px solid rgba(103,232,249,.22);border-radius:2px;background:transparent;color:rgba(103,232,249,.45);cursor:pointer;transition:all .13s;}
+.ep-imp-lbl:hover{background:rgba(103,232,249,.07);color:rgba(103,232,249,.75);}
+.ep-imp{display:none;}
+.ep-subl{display:grid;gap:5px;margin-top:6px;}
+.ep-sub{display:flex;gap:6px;align-items:flex-start;}
+.ep-sub .ep-inp{flex:1;}
+.ep-sdel{background:none;border:none;color:rgba(248,113,113,.45);cursor:pointer;font-size:13px;padding:7px 3px;flex-shrink:0;transition:color .11s;}
+.ep-sdel:hover{color:#f87171;}
+.ep-sadd{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:5px 10px;border:1px dashed rgba(212,164,74,.28);border-radius:2px;background:transparent;color:rgba(212,164,74,.45);cursor:pointer;transition:all .12s;margin-top:4px;}
+.ep-sadd:hover{border-color:rgba(212,164,74,.55);color:#d4a44a;}
+.ep-toast{position:fixed;bottom:80px;right:22px;z-index:1000;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;padding:9px 16px;border-radius:3px;border:1px solid rgba(134,239,172,.4);background:rgba(58,102,56,.25);color:#86efac;animation:tIn .3s ease,tOut .3s ease 1.7s both;pointer-events:none;}
+@keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tOut{to{opacity:0;transform:translateY(8px)}}
+@media(max-width:700px){.ep-body{grid-template-columns:1fr;}.ep-rcol{position:fixed;inset:52px 0 0 0;background:rgba(4,2,10,.98);z-index:5;display:none;}.ep-rcol.mob{display:flex;flex-direction:column;}}
+</style>
+
+<div class="ep-fab" id="lFab" title="Edit Houses & Members" onclick="lEpOpen()">✏</div>
+<div class="ep-ov" id="lEp">
+  <div class="ep-tb">
+    <span class="ep-tb-title">⚜ Lineage Editor — Dynastiae Exeliae</span>
+    <span class="ep-count" id="lEpCount">0 houses</span>
+    <button class="ep-exp" onclick="lExport()">Export</button>
+    <label class="ep-imp-lbl">Import<input class="ep-imp" type="file" accept=".json" onchange="lImport(this)"></label>
+    <button class="ep-rst" onclick="lReset()">Reset</button>
+    <button class="ep-x" onclick="lEpClose()">✕</button>
+  </div>
+  <div class="ep-body">
+    <div class="ep-lcol">
+      <div class="ep-lhdr">
+        <input class="ep-srch" id="lSrch" placeholder="Search houses…" oninput="lRenderList()">
+        <button class="ep-new" onclick="lNewHouse()">+ House</button>
+      </div>
+      <div class="ep-tags" id="lReg">
+        <span class="ep-tg on" data-r="all" onclick="lSetReg(this)">All</span>
+        <span class="ep-tg" data-r="imvia" onclick="lSetReg(this)">Imvia</span>
+        <span class="ep-tg" data-r="armorica" onclick="lSetReg(this)">Armorica</span>
+        <span class="ep-tg" data-r="szewia" onclick="lSetReg(this)">Szewia</span>
+        <span class="ep-tg" data-r="gothia" onclick="lSetReg(this)">Gothia</span>
+      </div>
+      <div class="ep-list" id="lList"></div>
+    </div>
+    <div class="ep-rcol" id="lRcol">
+      <div class="ep-fwrap" id="lFwrap">
+        <div class="ep-ph"><span>⚜</span>Select a house to edit,<br>or click + House to add one.</div>
+      </div>
+      <div class="ep-fftr" id="lFftr" style="display:none;">
+        <button class="ep-sv" onclick="lSave()">✦ Save House</button>
+        <button class="ep-dv" onclick="lDeleteHouse()">✕ Delete House</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  try{const s=localStorage.getItem('arshmunnu_lineage_h');if(s){const d=JSON.parse(s);if(Array.isArray(d)&&d.length){H.length=0;H.push(...d);renderSB();if(aid)sel(aid);}}}catch(e){}
+})();
+
+function epToast(m,ok=true){
+  const t=document.createElement('div');t.className='ep-toast';t.textContent=m;
+  if(!ok)t.style.cssText='border-color:rgba(248,113,113,.4);background:rgba(120,40,40,.25);color:#f87171;';
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2100);
+}
+
+let lRegF='all', lSelIdx=null;
+
+function lEpOpen(){document.getElementById('lEp').classList.add('open');document.getElementById('lFab').classList.add('active');lRenderList();}
+function lEpClose(){document.getElementById('lEp').classList.remove('open');document.getElementById('lFab').classList.remove('active');}
+function lSetReg(el){document.querySelectorAll('#lReg .ep-tg').forEach(t=>t.classList.remove('on'));el.classList.add('on');lRegF=el.dataset.r;lRenderList();}
+function lRenderList(){
+  const q=(document.getElementById('lSrch').value||'').toLowerCase();
+  const list=document.getElementById('lList'); list.innerHTML='';
+  const items=H.map((h,i)=>({h,i})).filter(({h})=>(lRegF==='all'||h.r===lRegF)&&(!q||h.n.toLowerCase().includes(q)));
+  document.getElementById('lEpCount').textContent=H.length+' houses';
+  items.forEach(({h,i})=>{
+    const el=document.createElement('div'); el.className='ep-li'+(lSelIdx===i?' sel':'');
+    el.innerHTML=`<span class="ep-li-dot" style="background:${h.col||'#888'}"></span>
+      <div class="ep-li-info">
+        <div class="ep-li-name">${h.em||''} ${h.n}</div>
+        <div class="ep-li-sub">${{imvia:'Imvia',armorica:'Armorica',szewia:'Szewia',gothia:'Gothia'}[h.r]||''} · ${h.fd||''} · <span style="color:${{active:'#86efac',diminished:'#fbbf24',fallen:'#f87171',reborn:'#67e8f9'}[h.st]||'#888'}">${h.st}</span></div>
+      </div>
+      <button class="ep-li-del" onclick="event.stopPropagation();lDeleteIdx(${i})">✕</button>`;
+    el.onclick=()=>lSelect(i);
+    list.appendChild(el);
+  });
+}
+function lSelect(i){lSelIdx=i;lRenderList();lRenderForm(H[i]);document.getElementById('lFftr').style.display='flex';document.getElementById('lRcol').classList.add('mob');}
+function lRenderForm(h){
+  const evRows=(h?.evs||[]).map((e,i)=>`<div class="ep-sub" id="lEv${i}"><input class="ep-inp" style="width:90px;flex-shrink:0;" value="${e.y||''}" placeholder="Year"><input class="ep-inp" style="flex:1;" value="${(e.t||'').replace(/"/g,'&quot;')}" placeholder="Event text"><button class="ep-sdel" onclick="lRemoveEv(${i})">✕</button></div>`).join('');
+  document.getElementById('lFwrap').innerHTML=`
+    <div class="ep-ftitle">${lSelIdx===null||lSelIdx>=H.length?'New House':'Editing: '+h?.em+' '+h?.n}</div>
+    <div class="ep-row2">
+      <div class="ep-field"><label class="ep-lbl">House ID (slug)</label><input class="ep-inp" id="lId" value="${h?.id||''}"></div>
+      <div class="ep-field"><label class="ep-lbl">Emoji</label><input class="ep-inp" id="lEm" value="${h?.em||''}" style="font-size:20px;"></div>
+    </div>
+    <div class="ep-field"><label class="ep-lbl">House Name</label><input class="ep-inp" id="lN" value="${(h?.n||'').replace(/"/g,'&quot;')}"></div>
+    <div class="ep-row2">
+      <div class="ep-field"><label class="ep-lbl">Region</label><select class="ep-sel" id="lReg2">
+        <option value="imvia" ${h?.r==='imvia'?'selected':''}>Imvia</option>
+        <option value="armorica" ${h?.r==='armorica'?'selected':''}>Armorica</option>
+        <option value="szewia" ${h?.r==='szewia'?'selected':''}>Szewia</option>
+        <option value="gothia" ${h?.r==='gothia'?'selected':''}>Gothia</option>
+      </select></div>
+      <div class="ep-field"><label class="ep-lbl">Status</label><select class="ep-sel" id="lSt">
+        <option value="active" ${h?.st==='active'?'selected':''}>Active</option>
+        <option value="diminished" ${h?.st==='diminished'?'selected':''}>Diminished</option>
+        <option value="fallen" ${h?.st==='fallen'?'selected':''}>Fallen</option>
+        <option value="reborn" ${h?.st==='reborn'?'selected':''}>Reborn</option>
+      </select></div>
+    </div>
+    <div class="ep-row2">
+      <div class="ep-field"><label class="ep-lbl">Country / Origin</label><input class="ep-inp" id="lCo" value="${(h?.co||'').replace(/"/g,'&quot;')}"></div>
+      <div class="ep-field"><label class="ep-lbl">Founded</label><input class="ep-inp" id="lFd" value="${h?.fd||''}"></div>
+    </div>
+    <div class="ep-row2">
+      <div class="ep-field"><label class="ep-lbl">Colour (hex)</label><input class="ep-inp" id="lCol" type="color" value="${h?.col||'#b8893b'}" style="height:34px;padding:2px;"></div>
+      <div class="ep-field"><label class="ep-lbl">Motto</label><input class="ep-inp" id="lMot" value="${(h?.mot||'').replace(/"/g,'&quot;')}"></div>
+    </div>
+    <div class="ep-field"><label class="ep-lbl">Sigil Description</label><input class="ep-inp" id="lSig" value="${(h?.sig||'').replace(/"/g,'&quot;')}"></div>
+    <div class="ep-field"><label class="ep-lbl">Overview</label><textarea class="ep-ta" id="lOv" rows="4">${h?.ov||''}</textarea></div>
+    <div class="ep-field"><label class="ep-lbl">Key Events <button class="ep-sadd" onclick="lAddEv()" style="margin-left:10px;">+ Add Event</button></label>
+      <div class="ep-subl" id="lEvList">${evRows}</div>
+    </div>
+    <div class="ep-field"><label class="ep-lbl">Tree Members (JSON array of generations)</label>
+      <textarea class="ep-ta" id="lTree" rows="8" style="font-size:11px;font-family:monospace;">${JSON.stringify(h?.tree||[],null,2)}</textarea>
+      <small style="color:rgba(212,164,74,.45);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;">Each generation is an array of member objects: {id,nm,dt,ro,bi,fh?,th?,isMar?}</small>
+    </div>
+  `;
+}
+function lAddEv(){
+  const list=document.getElementById('lEvList'); if(!list)return;
+  const i=list.children.length;
+  const div=document.createElement('div'); div.className='ep-sub'; div.id='lEv'+i;
+  div.innerHTML=`<input class="ep-inp" style="width:90px;flex-shrink:0;" placeholder="Year"><input class="ep-inp" style="flex:1;" placeholder="Event text"><button class="ep-sdel" onclick="lRemoveEv(${i})">✕</button>`;
+  list.appendChild(div);
+}
+function lRemoveEv(i){const el=document.getElementById('lEv'+i);if(el)el.remove();}
+function lNewHouse(){lSelIdx=H.length;lRenderForm(null);document.getElementById('lFftr').style.display='flex';document.getElementById('lRcol').classList.add('mob');}
+function lSave(){
+  const id=document.getElementById('lId')?.value?.trim().toLowerCase().replace(/\s+/g,'-');
+  const n=document.getElementById('lN')?.value?.trim();
+  if(!id||!n){epToast('ID and Name required',false);return;}
+  const evsList=document.getElementById('lEvList'); const evs=[];
+  if(evsList){[...evsList.children].forEach(el=>{const ins=[...el.querySelectorAll('input')];const y=ins[0]?.value?.trim();const t=ins[1]?.value?.trim();if(y||t)evs.push({y,t});});}
+  let tree=[];try{tree=JSON.parse(document.getElementById('lTree')?.value||'[]');}catch(e){epToast('Invalid JSON in tree — check format',false);return;}
+  const obj={id,r:document.getElementById('lReg2')?.value,n,co:document.getElementById('lCo')?.value?.trim(),fd:document.getElementById('lFd')?.value?.trim(),st:document.getElementById('lSt')?.value,col:document.getElementById('lCol')?.value,em:document.getElementById('lEm')?.value?.trim(),mot:document.getElementById('lMot')?.value?.trim(),sig:document.getElementById('lSig')?.value?.trim(),ov:document.getElementById('lOv')?.value?.trim(),evs,tree};
+  if(lSelIdx!==null&&lSelIdx<H.length) H[lSelIdx]=obj;
+  else{H.push(obj);lSelIdx=H.length-1;}
+  lSaveLS();renderSB();lRenderList();epToast('House saved ✦');
+}
+function lDeleteHouse(){if(lSelIdx===null||lSelIdx>=H.length)return;if(!confirm('Delete '+H[lSelIdx].n+'?'))return;lDeleteIdx(lSelIdx);}
+function lDeleteIdx(i){H.splice(i,1);lSaveLS();renderSB();lSelIdx=null;document.getElementById('lFwrap').innerHTML='<div class="ep-ph"><span>⚜</span>Select a house.</div>';document.getElementById('lFftr').style.display='none';document.getElementById('lRcol').classList.remove('mob');lRenderList();epToast('House deleted');}
+function lSaveLS(){localStorage.setItem('arshmunnu_lineage_h',JSON.stringify(H));}
+function lReset(){if(!confirm('Reset all houses to defaults?'))return;localStorage.removeItem('arshmunnu_lineage_h');location.reload();}
+function lExport(){const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(H,null,2));a.download='arshmunnu_lineage_houses.json';a.click();}
+function lImport(el){const f=el.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!Array.isArray(d)){epToast('Invalid format',false);return;}H.length=0;H.push(...d);lSaveLS();renderSB();lRenderList();epToast('Imported '+d.length+' houses ✦');}catch(err){epToast('Parse error',false);}};r.readAsText(f);}
+</script>
+
+</body>
+</html>

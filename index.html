@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Arshmunnu — The Grand Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05030e;
+  --gold:#d4a44a; --goldD:#7c5a1f; --goldL:#f0cc72; --goldDim:rgba(212,164,74,.18);
+  --text:#e8dfc8; --tdim:rgba(232,223,200,.5); --tdimmer:rgba(232,223,200,.3);
+  --red:#c0843a; --teal:#14b8a6; --blue:#4a82b0; --purple:#9370b0; --green:#7c9e6b; --cyan:#06b6d4;
+  --border:rgba(212,164,74,.2); --forum:#cf7d63;
+
+  --nav-w:72px;
+  --nav-w-open:230px;
+  --topbar-h:54px;
+  --tr:cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{font-family:'EB Garamond',serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+
+/* ════════════════════════════════════
+   TOP BAR
+════════════════════════════════════ */
+.topbar{
+  height:var(--topbar-h);flex-shrink:0;
+  background:linear-gradient(180deg,rgba(5,3,14,.98),rgba(5,3,14,.9));
+  border-bottom:1px solid rgba(212,164,74,.22);
+  display:flex;align-items:center;gap:0;
+  z-index:200;position:relative;
+  box-shadow:0 2px 24px rgba(0,0,0,.5);
+}
+.tb-nav-toggle{
+  width:var(--nav-w);height:100%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border-right:1px solid rgba(212,164,74,.12);
+  transition:background .2s;
+  flex-direction:column;gap:5px;
+}
+.tb-nav-toggle:hover{background:rgba(212,164,74,.06);}
+.burger-line{width:18px;height:1.5px;background:var(--goldD);transition:all .3s var(--tr);}
+.tb-seal{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;margin-left:18px;
+  background:radial-gradient(circle at 35% 30%,#f0cc72,#d4a44a 50%,#7c5a1f);
+  box-shadow:0 0 0 1px #7c5a1f,0 0 12px rgba(212,164,74,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-weight:700;font-size:15px;color:#1a0800;
+  position:relative;
+}
+.tb-seal::after{
+  content:'';position:absolute;inset:5px;border-radius:50%;
+  border:1px dashed rgba(36,8,8,.4);
+}
+.tb-title{
+  margin-left:14px;flex:1;
+}
+.tb-title h1{
+  font-family:'Cinzel',serif;font-size:clamp(14px,1.6vw,20px);
+  color:var(--goldL);font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  line-height:1;
+}
+.tb-title .tb-sub{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:13px;color:var(--tdim);margin-top:2px;
+}
+.tb-breadcrumb{
+  display:flex;align-items:center;gap:8px;margin-right:20px;
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--tdim);
+}
+.tb-bc-sep{color:var(--goldD);font-size:12px;}
+.tb-bc-current{color:var(--goldL);}
+.tb-home-btn{
+  display:none;align-items:center;gap:8px;
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  padding:8px 14px;border:1px solid rgba(212,164,74,.3);border-radius:2px;
+  color:var(--goldD);cursor:pointer;margin-right:16px;
+  background:rgba(212,164,74,.06);transition:all .18s;
+}
+.tb-home-btn:hover{background:rgba(212,164,74,.14);color:var(--goldL);border-color:var(--gold);}
+.tb-home-btn.visible{display:flex;}
+
+/* ════════════════════════════════════
+   BODY LAYOUT
+════════════════════════════════════ */
+.shell{display:flex;flex:1;overflow:hidden;position:relative;}
+
+/* ════════════════════════════════════
+   SIDEBAR NAV
+════════════════════════════════════ */
+.sidenav{
+  width:var(--nav-w);flex-shrink:0;
+  background:rgba(3,1,8,.96);
+  border-right:1px solid rgba(212,164,74,.15);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  transition:width .3s var(--tr);
+  z-index:100;
+  position:relative;
+}
+.sidenav.open{width:var(--nav-w-open);}
+
+.nav-top{
+  padding:14px 0 10px;
+  border-bottom:1px solid rgba(212,164,74,.1);
+  margin-bottom:8px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:14px;
+  padding:11px 0 11px 22px;
+  cursor:pointer;
+  position:relative;
+  transition:all .18s;
+  white-space:nowrap;
+  overflow:hidden;
+}
+.nav-item::before{
+  content:'';
+  position:absolute;left:0;top:0;bottom:0;width:0;
+  background:var(--nav-accent,var(--gold));
+  transition:width .2s var(--tr);
+  opacity:.7;
+}
+.nav-item:hover{background:rgba(212,164,74,.06);}
+.nav-item:hover::before,.nav-item.active::before{width:3px;}
+.nav-item.active{background:rgba(212,164,74,.1);}
+.nav-item.active .ni-label{color:var(--goldL);}
+.ni-icon{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;border:1px solid;transition:all .18s;
+}
+.nav-item:hover .ni-icon,.nav-item.active .ni-icon{
+  box-shadow:0 0 12px var(--nav-accent,var(--gold));
+}
+.ni-label{
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--tdim);transition:color .18s;
+  opacity:0;transition:opacity .2s var(--tr), color .18s;
+}
+.sidenav.open .ni-label{opacity:1;}
+.ni-arrow{
+  margin-left:auto;margin-right:14px;font-size:10px;color:var(--goldD);
+  opacity:0;transition:opacity .2s;
+}
+.sidenav.open .ni-arrow{opacity:.6;}
+
+.nav-divider{height:1px;background:rgba(212,164,74,.1);margin:6px 14px;}
+.nav-label-group{
+  font-family:'Cinzel',serif;font-size:8px;letter-spacing:.4em;text-transform:uppercase;
+  color:var(--goldD);padding:10px 0 4px 24px;
+  opacity:0;transition:opacity .2s;white-space:nowrap;
+}
+.sidenav.open .nav-label-group{opacity:.6;}
+
+.nav-bottom{margin-top:auto;border-top:1px solid rgba(212,164,74,.1);padding:10px 0;}
+
+/* ════════════════════════════════════
+   MAIN CONTENT AREA
+════════════════════════════════════ */
+.content-area{
+  flex:1;position:relative;overflow:hidden;
+}
+
+/* ────────────────────────────────────
+   HOME SCREEN
+──────────────────────────────────── */
+#home{
+  position:absolute;inset:0;
+  overflow-y:auto;
+  background:var(--bg);
+  z-index:10;
+  transition:opacity .4s var(--tr), transform .4s var(--tr);
+}
+#home.hidden{opacity:0;transform:scale(.98);pointer-events:none;}
+#home canvas{position:fixed;inset:0;pointer-events:none;z-index:0;}
+
+.home-inner{
+  position:relative;z-index:1;
+  max-width:1080px;margin:0 auto;
+  padding:52px 32px 80px;
+}
+
+.home-hero{text-align:center;margin-bottom:56px;}
+.home-crest{
+  width:90px;height:90px;border-radius:50%;margin:0 auto 22px;
+  background:radial-gradient(circle at 35% 30%,#f0cc72,#d4a44a 50%,#7c5a1f);
+  box-shadow:0 0 0 3px var(--bg),0 0 0 4px var(--goldD),0 0 40px rgba(212,164,74,.35);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel Decorative',serif;font-weight:700;font-size:32px;color:#1a0800;
+  position:relative;animation:sealSpin 60s linear infinite;
+}
+.home-crest::after{
+  content:'';position:absolute;inset:8px;border-radius:50%;
+  border:1px dashed rgba(36,8,8,.4);
+}
+@keyframes sealSpin{to{box-shadow:0 0 0 3px var(--bg),0 0 0 4px var(--goldD),0 0 40px rgba(212,164,74,.35),0 0 80px rgba(212,164,74,.15);}}
+
+.home-title{
+  font-family:'Cinzel Decorative',serif;font-weight:900;
+  font-size:clamp(28px,5vw,60px);
+  color:var(--goldL);
+  letter-spacing:.04em;line-height:1.1;
+  text-shadow:0 0 60px rgba(212,164,74,.3),0 2px 0 rgba(0,0,0,.8);
+  margin-bottom:12px;
+  animation:fadeSlide .8s var(--tr) .1s both;
+}
+.home-subtitle{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(17px,2vw,22px);color:var(--tdim);
+  max-width:560px;margin:0 auto 28px;line-height:1.6;
+  animation:fadeSlide .8s var(--tr) .2s both;
+}
+.home-divider{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin:0 auto;max-width:380px;
+  animation:fadeSlide .8s var(--tr) .3s both;
+}
+.home-divider .hl{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--goldD));}
+.home-divider .hl.r{background:linear-gradient(90deg,var(--goldD),transparent);}
+.home-divider span{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.4em;color:var(--goldD);}
+
+@keyframes fadeSlide{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* APP CARDS GRID */
+.app-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:22px;
+  margin-top:44px;
+}
+@media(max-width:700px){.app-grid{grid-template-columns:1fr;}}
+
+.app-card{
+  position:relative;overflow:hidden;
+  border-radius:6px;
+  border:1px solid rgba(212,164,74,.15);
+  background:rgba(8,5,18,.7);
+  cursor:pointer;
+  transition:all .3s var(--tr);
+  min-height:240px;
+  display:flex;flex-direction:column;
+  animation:fadeSlide .6s var(--tr) var(--card-delay,0s) both;
+}
+.app-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 30%,var(--card-color)14,transparent 65%);
+  transition:opacity .3s;opacity:.6;
+}
+.app-card::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--card-color)06 0%,transparent 60%);
+}
+.app-card:hover{
+  transform:translateY(-5px) scale(1.012);
+  border-color:var(--card-color);
+  box-shadow:0 20px 50px rgba(0,0,0,.6),0 0 0 1px var(--card-color)55,0 0 40px var(--card-color)18;
+}
+.app-card:hover::before{opacity:1;}
+
+/* Parchment texture on cards */
+.app-card .card-texture{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/></svg>");
+  opacity:.25;mix-blend-mode:overlay;pointer-events:none;
+}
+
+.card-inner{position:relative;z-index:2;padding:28px 26px 24px;flex:1;display:flex;flex-direction:column;}
+.card-icon-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.card-icon{
+  width:58px;height:58px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,var(--card-color)88,var(--card-color)44);
+  border:2px solid var(--card-color)66;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;
+  box-shadow:0 0 20px var(--card-color)33;
+  transition:all .3s var(--tr);
+}
+.app-card:hover .card-icon{
+  box-shadow:0 0 30px var(--card-color)66;
+  transform:scale(1.08);
+}
+.card-badge{
+  font-family:'Cinzel',serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;
+  padding:4px 10px;border-radius:2px;
+  border:1px solid var(--card-color)66;color:var(--card-color);
+  background:var(--card-color)12;
+}
+.card-name{
+  font-family:'Cinzel',serif;font-size:clamp(18px,2.2vw,24px);font-weight:700;
+  letter-spacing:.04em;color:var(--text);margin-bottom:6px;
+  line-height:1.2;
+}
+.card-tagline{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:15px;color:var(--card-color);margin-bottom:12px;
+}
+.card-desc{
+  font-size:15px;line-height:1.6;color:var(--tdim);flex:1;
+}
+.card-footer{
+  margin-top:18px;padding-top:14px;
+  border-top:1px solid rgba(212,164,74,.12);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-cta{
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--card-color);display:flex;align-items:center;gap:8px;
+  transition:gap .2s;
+}
+.app-card:hover .card-cta{gap:12px;}
+.card-cta-arrow{font-size:14px;transition:transform .2s;}
+.app-card:hover .card-cta-arrow{transform:translateX(4px);}
+.card-meta{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--tdimmer);}
+
+/* Corner ornaments on cards */
+.card-corner{position:absolute;width:32px;height:32px;pointer-events:none;z-index:3;opacity:.4;}
+.card-corner svg{width:100%;height:100%;display:block;}
+.card-corner.tl{top:10px;left:10px;}
+.card-corner.br{bottom:10px;right:10px;transform:scale(-1,-1);}
+
+/* ────────────────────────────────────
+   STATS / LORE BAR
+──────────────────────────────────── */
+.lore-bar{
+  margin-top:44px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+}
+@media(max-width:700px){.lore-bar{grid-template-columns:repeat(2,1fr);}}
+.lore-stat{
+  text-align:center;padding:18px 12px;
+  border:1px solid rgba(212,164,74,.12);border-radius:4px;
+  background:rgba(8,5,18,.5);
+  transition:all .22s;
+}
+.lore-stat:hover{border-color:rgba(212,164,74,.3);background:rgba(212,164,74,.05);}
+.ls-num{
+  font-family:'Cinzel Decorative',serif;font-size:clamp(26px,3vw,38px);
+  color:var(--goldL);font-weight:700;line-height:1;margin-bottom:6px;
+  text-shadow:0 0 20px rgba(212,164,74,.3);
+}
+.ls-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--goldD);}
+.ls-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--tdimmer);margin-top:4px;}
+
+/* ────────────────────────────────────
+   QUOTE FOOTER
+──────────────────────────────────── */
+.home-quote{
+  text-align:center;margin-top:48px;padding:24px;
+  border-top:1px solid rgba(212,164,74,.12);
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:18px;color:var(--tdim);line-height:1.6;
+}
+.home-quote cite{display:block;margin-top:8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--goldD);font-style:normal;}
+
+/* ════════════════════════════════════
+   APP FRAME
+════════════════════════════════════ */
+#app-frame-wrap{
+  position:absolute;inset:0;z-index:5;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s var(--tr);
+}
+#app-frame-wrap.visible{opacity:1;pointer-events:all;}
+#app-frame{
+  width:100%;height:100%;
+  border:none;display:block;
+  background:var(--bg);
+}
+
+/* Loading screen */
+#frame-loading{
+  position:absolute;inset:0;z-index:6;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+#frame-loading.active{opacity:1;pointer-events:all;}
+.loading-seal{
+  width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f0cc72,#d4a44a 50%,#7c5a1f);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel Decorative',serif;font-size:22px;color:#1a0800;
+  animation:loadPulse 1.2s ease-in-out infinite;
+  box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--goldD);
+}
+@keyframes loadPulse{0%,100%{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--goldD),0 0 20px rgba(212,164,74,.2);}50%{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--goldD),0 0 40px rgba(212,164,74,.5);}}
+.loading-text{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--goldD);animation:loadFade 1.2s ease-in-out infinite;}
+@keyframes loadFade{0%,100%{opacity:.4;}50%{opacity:1;}}
+.loading-bar{width:200px;height:2px;background:rgba(124,90,31,.2);border-radius:1px;overflow:hidden;}
+.loading-bar-fill{height:100%;background:linear-gradient(90deg,var(--goldD),var(--goldL));animation:loadBar 1.5s ease-in-out infinite;}
+@keyframes loadBar{0%{width:0;margin-left:0;}60%{width:100%;margin-left:0;}100%{width:0;margin-left:100%;}}
+
+/* ════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════ */
+@media(max-width:600px){
+  :root{--nav-w:0px;}
+  .sidenav{display:none;}
+  .home-inner{padding:36px 18px 60px;}
+  .app-grid{gap:14px;}
+  .lore-bar{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .tb-breadcrumb{display:none;}
+  .tb-title h1{font-size:14px;}
+  .tb-account{margin-right:10px;}
+  .tb-signin{padding:7px 11px;letter-spacing:.12em;}
+  .tb-uname{max-width:78px;}
+  .acct-menu{right:0;}
+}
+
+/* Scrollbar */
+#home::-webkit-scrollbar{width:4px}
+#home::-webkit-scrollbar-thumb{background:rgba(124,90,31,.4);border-radius:2px;}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+.archive-grid{grid-template-columns:1fr;gap:20px;}
+.award-grid{grid-template-columns:1fr 1fr;}
+.header h1{font-size:clamp(24px,5vw,36px);}
+.header p{font-size:13px;}
+.nav{font-size:8px;padding:10px 14px;}
+.nav-links a{font-size:7px;padding:2px 5px;}
+.footer{font-size:8px;}
+}
+@media(max-width:480px){
+.award-grid{grid-template-columns:1fr;}
+}
+
+/* ════════════ HOME SEARCH BAR ════════════ */
+/* ─── Archive search (redesigned) ─── */
+.home-search-wrap{max-width:680px;margin:0 auto 44px;padding:0 18px;position:relative;z-index:30;}
+.home-search-field{position:relative;display:flex;align-items:center;}
+.home-search-icon{position:absolute;left:18px;color:var(--goldD);font-size:16px;pointer-events:none;transition:color .2s;}
+.home-search-field:focus-within .home-search-icon{color:var(--goldL);}
+.home-search{width:100%;background:linear-gradient(180deg,rgba(212,164,74,.07),rgba(0,0,0,.42));border:1px solid rgba(212,164,74,.32);border-radius:8px;color:var(--text);
+  padding:15px 80px 15px 46px;font-size:15px;font-family:'EB Garamond',serif;transition:border-color .2s,box-shadow .2s,background .2s;}
+.home-search::placeholder{color:rgba(232,223,200,.34);font-style:italic;}
+.home-search:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,164,74,.12),0 10px 36px rgba(0,0,0,.45);background:linear-gradient(180deg,rgba(212,164,74,.11),rgba(0,0,0,.45));}
+.home-search-kbd{position:absolute;right:48px;display:flex;align-items:center;gap:5px;pointer-events:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:var(--goldD);opacity:.7;transition:opacity .15s;}
+.home-search-kbd kbd{border:1px solid rgba(212,164,74,.3);border-radius:3px;padding:1px 5px;background:rgba(212,164,74,.06);}
+.home-search-field.has-text .home-search-kbd{opacity:0;}
+.home-search-clear{position:absolute;right:14px;width:24px;height:24px;border-radius:50%;display:none;align-items:center;justify-content:center;
+  border:1px solid rgba(212,164,74,.25);background:rgba(212,164,74,.06);color:var(--goldD);font-size:13px;cursor:pointer;transition:all .15s;}
+.home-search-clear:hover{color:var(--goldL);border-color:var(--gold);background:rgba(212,164,74,.14);}
+.home-search-field.has-text .home-search-clear{display:flex;}
+.home-search-hint{text-align:center;font-size:11px;color:var(--tdimmer);font-style:italic;margin-top:9px;letter-spacing:.04em;}
+
+.home-search-results{position:absolute;left:18px;right:18px;top:calc(100% + 9px);background:rgba(7,4,18,.98);border:1px solid rgba(212,164,74,.28);
+  border-radius:8px;max-height:64vh;overflow-y:auto;display:none;box-shadow:0 24px 60px rgba(0,0,0,.6);backdrop-filter:blur(2px);}
+.home-search-results.show{display:block;animation:hsIn .16s var(--tr);}
+@keyframes hsIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.hs-status{padding:9px 16px;color:var(--tdim);font-size:10px;font-style:italic;letter-spacing:.04em;border-bottom:1px solid rgba(212,164,74,.14);display:flex;justify-content:space-between;gap:10px;}
+.hs-status .hs-deep{font-style:normal;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--goldD);}
+.hs-group{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.32em;text-transform:uppercase;color:var(--goldD);padding:12px 16px 5px;}
+.hs-chamber{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;transition:background .12s;}
+.hs-chamber .hs-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor;}
+.hs-chamber .hs-cname{font-family:'Cinzel',serif;font-size:13.5px;color:var(--goldL);letter-spacing:.03em;}
+.hs-chamber .hs-ckind{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--tdim);}
+.hs-chamber .hs-go{margin-left:auto;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--goldD);opacity:0;transition:opacity .15s;}
+.hs-chamber:hover,.hs-chamber.sel{background:rgba(212,164,74,.08);}
+.hs-chamber:hover .hs-go,.hs-chamber.sel .hs-go{opacity:.8;}
+.hs-result{padding:11px 16px;border-top:1px dashed rgba(212,164,74,.1);cursor:pointer;transition:background .12s;}
+.hs-result:hover,.hs-result.sel{background:rgba(212,164,74,.06);}
+.hs-result-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
+.hs-source{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--goldD);}
+.hs-section{font-family:'Cinzel',serif;font-size:13px;color:var(--goldL);letter-spacing:.04em;}
+.hs-snippet{font-size:12px;color:rgba(232,223,200,.7);line-height:1.5;}
+.hs-snippet mark{background:rgba(240,204,114,.28);color:var(--goldL);padding:0 2px;border-radius:2px;}
+.hs-empty{padding:20px;color:var(--tdim);font-style:italic;text-align:center;font-size:12.5px;}
+.hs-empty b{color:var(--goldL);font-style:normal;font-weight:500;}
+
+/* ════════════ EXTERNAL FOOTER LINKS ════════════ */
+.ext-footer{max-width:980px;margin:30px auto 12px;padding:24px 18px 12px;border-top:1px solid var(--border);text-align:center;}
+.ext-footer-h{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.32em;text-transform:uppercase;color:var(--tdim);margin-bottom:14px;}
+.ext-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.ext-link{display:inline-flex;align-items:center;gap:12px;padding:11px 18px;background:linear-gradient(180deg,rgba(212,164,74,.05),rgba(0,0,0,.22));border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--text);transition:all .15s;}
+.ext-link.youtube{border-left:3px solid #ff0033;}
+.ext-link.paradox{border-left:3px solid #c0392b;}
+.ext-link:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(212,164,74,.18);background:linear-gradient(180deg,rgba(212,164,74,.1),rgba(0,0,0,.3));}
+.ext-link.youtube:hover{box-shadow:0 4px 14px rgba(255,0,51,.18);}
+.ext-link.paradox:hover{box-shadow:0 4px 14px rgba(192,57,43,.2);}
+.el-icon{font-size:22px;}
+.el-body{text-align:left;}
+.el-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--tdim);}
+.el-title{font-family:'Cinzel',serif;color:var(--goldL);font-size:13px;letter-spacing:.04em;margin-top:1px;}
+.el-arrow{color:var(--gold);font-size:16px;margin-left:6px;}
+
+/* ════════════ ACCOUNT (local Custodian profile) ════════════ */
+.tb-account{display:flex;align-items:center;margin-right:16px;margin-left:auto;flex-shrink:0;position:relative;}
+.tb-signin{
+  display:flex;align-items:center;gap:8px;
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  padding:8px 16px;border:1px solid rgba(212,164,74,.32);border-radius:2px;
+  color:var(--goldD);cursor:pointer;background:rgba(212,164,74,.06);transition:all .16s;
+}
+.tb-signin:hover{background:rgba(212,164,74,.14);color:var(--goldL);border-color:var(--gold);}
+.tb-user{display:flex;align-items:center;gap:10px;cursor:pointer;padding:5px 8px 5px 6px;border:1px solid rgba(212,164,74,.22);border-radius:24px;background:rgba(212,164,74,.05);transition:all .16s;}
+.tb-user:hover{background:rgba(212,164,74,.12);border-color:rgba(212,164,74,.45);}
+.tb-avatar{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle at 35% 30%,#f0cc72,#d4a44a 55%,#7c5a1f);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-weight:700;font-size:13px;color:#1a0800;
+  box-shadow:0 0 0 1px #7c5a1f;
+}
+.tb-uname{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.06em;color:var(--goldL);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tb-ucaret{font-size:9px;color:var(--goldD);margin-right:4px;}
+.acct-menu{
+  position:absolute;top:calc(100% + 8px);right:0;min-width:200px;
+  background:linear-gradient(180deg,#15101f,#0d0916);
+  border:1px solid rgba(212,164,74,.3);border-radius:6px;
+  box-shadow:0 18px 44px rgba(0,0,0,.6);z-index:300;
+  display:none;overflow:hidden;
+}
+.acct-menu.open{display:block;animation:fadeSlide .18s var(--tr);}
+.acct-menu-head{padding:14px 16px 12px;border-bottom:1px solid rgba(212,164,74,.14);}
+.acct-menu-head .amh-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--goldD);}
+.acct-menu-head .amh-name{font-family:'Cinzel',serif;font-size:14px;color:var(--goldL);letter-spacing:.04em;margin-top:3px;}
+.acct-menu-head .amh-role{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:var(--tdim);margin-top:3px;}
+.tb-user.admin{border-color:rgba(240,204,114,.55);background:rgba(212,164,74,.12);}
+.tb-user.admin .tb-avatar{box-shadow:0 0 0 1px #7c5a1f,0 0 12px rgba(240,204,114,.55);}
+.tb-user.admin .tb-uname{color:var(--goldL);}
+.tb-user.admin::after{content:'✦';font-size:10px;color:var(--goldL);margin:0 4px 0 -2px;}
+.acct-menu-item{
+  display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--tdim);
+  transition:all .15s;
+}
+.acct-menu-item:hover{background:rgba(212,164,74,.08);color:var(--goldL);}
+.acct-menu-item.danger:hover{background:rgba(192,57,43,.12);color:#e07a5f;}
+.acct-menu-item .ami-ic{font-size:13px;width:16px;text-align:center;}
+
+/* ── account modal ── */
+.acct-bg{position:fixed;inset:0;background:rgba(3,2,8,.82);backdrop-filter:blur(4px);z-index:400;display:none;align-items:center;justify-content:center;padding:24px;}
+.acct-bg.open{display:flex;}
+.acct-card{
+  background:linear-gradient(180deg,#17111f,#0e0a16);
+  border:1px solid rgba(212,164,74,.32);border-radius:10px;
+  max-width:420px;width:100%;padding:0;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,.7);
+  animation:fadeSlide .25s var(--tr);
+}
+.acct-top{text-align:center;padding:30px 28px 18px;border-bottom:1px solid rgba(212,164,74,.12);position:relative;}
+.acct-seal{
+  width:60px;height:60px;border-radius:50%;margin:0 auto 16px;
+  background:radial-gradient(circle at 35% 30%,#f0cc72,#d4a44a 50%,#7c5a1f);
+  box-shadow:0 0 0 3px var(--bg),0 0 0 4px var(--goldD),0 0 28px rgba(212,164,74,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel Decorative',serif;font-weight:700;font-size:24px;color:#1a0800;
+}
+.acct-top h2{font-family:'Cinzel',serif;font-size:18px;letter-spacing:.06em;color:var(--goldL);}
+.acct-top .acct-sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--tdim);font-size:14px;margin-top:6px;}
+.acct-tabs{display:flex;border-bottom:1px solid rgba(212,164,74,.12);}
+.acct-tab{flex:1;padding:13px;text-align:center;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tdim);cursor:pointer;transition:all .15s;border-bottom:2px solid transparent;}
+.acct-tab.active{color:var(--goldL);border-bottom-color:var(--gold);background:rgba(212,164,74,.05);}
+.acct-tab:hover{color:var(--text);}
+.acct-body{padding:22px 28px 26px;}
+.acct-fld{margin-bottom:15px;}
+.acct-fld label{display:block;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--goldD);margin-bottom:6px;}
+.acct-fld input{width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(212,164,74,.22);color:var(--text);padding:11px 13px;border-radius:4px;font-family:'EB Garamond',serif;font-size:15px;}
+.acct-fld input:focus{outline:none;border-color:var(--gold);background:rgba(212,164,74,.06);}
+.acct-submit{
+  width:100%;padding:13px;margin-top:6px;
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--gold),var(--goldD));color:#1a0800;
+  border:none;border-radius:4px;cursor:pointer;transition:filter .15s;
+}
+.acct-submit:hover{filter:brightness(1.12);}
+.acct-msg{font-size:13px;font-family:'Cormorant Garamond',serif;font-style:italic;margin-top:12px;text-align:center;min-height:18px;}
+.acct-msg.err{color:#e07a5f;}
+.acct-msg.ok{color:#86efac;}
+.acct-note{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--tdimmer);font-size:12px;text-align:center;padding:0 28px 22px;line-height:1.5;}
+.acct-close{position:absolute;top:14px;right:16px;font-size:20px;color:var(--goldD);cursor:pointer;line-height:1;transition:color .15s;}
+.acct-close:hover{color:var(--goldL);}
+.acct-greet{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:clamp(15px,1.8vw,18px);margin-top:-14px;margin-bottom:30px;opacity:0;transition:opacity .4s;}
+.acct-greet.show{opacity:1;}
+
+</style>
+</head>
+<body>
+
+<!-- ════ TOP BAR ════ -->
+<div class="topbar">
+  <div class="tb-nav-toggle" id="nav-toggle" title="Toggle navigation">
+    <div class="burger-line"></div>
+    <div class="burger-line"></div>
+    <div class="burger-line"></div>
+  </div>
+  <div class="tb-seal">A</div>
+  <div class="tb-title">
+    <h1>The Grand Archive of Arshmunnu</h1>
+    <div class="tb-sub">Great and Eternal World — Lore Hub</div>
+  </div>
+  <div class="tb-breadcrumb" id="breadcrumb">
+    <span>Archive</span>
+    <span class="tb-bc-sep">›</span>
+    <span class="tb-bc-current" id="bc-current">Home</span>
+  </div>
+  <button class="tb-home-btn" id="home-btn" title="Return to Archive Home">
+    ⌂ &nbsp;Return to Archive
+  </button>
+
+  <!-- ACCOUNT -->
+  <div class="tb-account" id="tb-account">
+    <button class="tb-signin" id="signin-btn" title="Sign in or create a Custodian profile">&#128100;&nbsp; Sign In</button>
+    <div class="tb-user" id="user-chip" style="display:none;">
+      <div class="tb-avatar" id="user-avatar">A</div>
+      <span class="tb-uname" id="user-name">Custodian</span>
+      <span class="tb-ucaret">▾</span>
+    </div>
+    <div class="acct-menu" id="acct-menu">
+      <div class="acct-menu-head">
+        <div class="amh-lbl">Signed in as</div>
+        <div class="amh-name" id="menu-name">Custodian</div>
+        <div class="amh-role" id="menu-role"></div>
+      </div>
+      <div class="acct-menu-item" id="menu-home"><span class="ami-ic">&#127968;</span> Return to Archive</div>
+      <div class="acct-menu-item danger" id="menu-signout"><span class="ami-ic">&#10094;</span> Sign Out</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ BODY ════ -->
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidenav" id="sidenav">
+    <div class="nav-top">
+      <div class="nav-label-group">Archive</div>
+      <div class="nav-item active" data-app="home" id="nav-home">
+        <div class="ni-icon" style="background:radial-gradient(circle,rgba(212,164,74,.3),rgba(212,164,74,.1));border-color:rgba(212,164,74,.5);">🏛</div>
+        <span class="ni-label">Home</span>
+        <span class="ni-arrow">›</span>
+      </div>
+    </div>
+
+    <div class="nav-label-group">Tools</div>
+    <div class="nav-item" data-app="scriptorium" id="nav-scriptorium" style="--nav-accent:#b67849;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(182,120,73,.3),rgba(182,120,73,.1));border-color:rgba(182,120,73,.5);">&#129534;</div>
+      <span class="ni-label">Scriptorium</span>
+      <span class="ni-arrow">&rsaquo;</span>
+    </div>
+    <div class="nav-item" data-app="folio" id="nav-folio" style="--nav-accent:#c08a3e;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(192,138,62,.3),rgba(192,138,62,.1));border-color:rgba(192,138,62,.5);">&#128214;</div>
+      <span class="ni-label">The Folio</span>
+      <span class="ni-arrow">&rsaquo;</span>
+    </div>
+
+    <div class="nav-label-group">Game</div>
+    <div class="nav-item" data-app="arshrpg" id="nav-arshrpg" style="--nav-accent:#d4a44a;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(212,164,74,.32),rgba(58,138,138,.14));border-color:rgba(212,164,74,.55);">&#9876;</div>
+      <span class="ni-label">ArshRPG</span>
+      <span class="ni-arrow">&rsaquo;</span>
+    </div>
+
+    <div class="nav-label-group">World &amp; Lore</div>
+    <div class="nav-item" data-app="atlas" id="nav-atlas" style="--nav-accent:#5A8B5A;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(90,139,90,.3),rgba(90,139,90,.1));border-color:rgba(90,139,90,.5);">&#127758;</div>
+      <span class="ni-label">World Atlas</span>
+      <span class="ni-arrow">›</span>
+    </div>
+    <div class="nav-item" data-app="quiz" id="nav-quiz" style="--nav-accent:#c0843a;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(192,132,58,.3),rgba(192,132,58,.1));border-color:rgba(192,132,58,.5);">📜</div>
+      <span class="ni-label">Codex Quiz</span>
+      <span class="ni-arrow">›</span>
+    </div>
+    <div class="nav-item" data-app="codex" id="nav-codex" style="--nav-accent:#d4a44a;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(212,164,74,.3),rgba(212,164,74,.1));border-color:rgba(212,164,74,.5);">📖</div>
+      <span class="ni-label">Encyclopaedia</span>
+      <span class="ni-arrow">›</span>
+    </div>
+    <div class="nav-item" data-app="timeline" id="nav-timeline" style="--nav-accent:#06b6d4;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(6,182,212,.3),rgba(6,182,212,.1));border-color:rgba(6,182,212,.5);">⏳</div>
+      <span class="ni-label">Chronicle</span>
+      <span class="ni-arrow">›</span>
+    </div>
+    <div class="nav-item" data-app="calendar" id="nav-calendar" style="--nav-accent:#c98a3c;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(201,138,60,.3),rgba(201,138,60,.1));border-color:rgba(201,138,60,.5);">&#9737;</div>
+      <span class="ni-label">Almanac</span>
+      <span class="ni-arrow">&rsaquo;</span>
+    </div>
+    <div class="nav-item" data-app="concordance" id="nav-concordance" style="--nav-accent:#6fa8b8;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(111,168,184,.3),rgba(111,168,184,.1));border-color:rgba(111,168,184,.5);">&#128279;</div>
+      <span class="ni-label">Concordance</span>
+      <span class="ni-arrow">&rsaquo;</span>
+    </div>
+    <div class="nav-item" data-app="lineage" id="nav-lineage" style="--nav-accent:#9370b0;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(147,112,176,.3),rgba(147,112,176,.1));border-color:rgba(147,112,176,.5);">⚜</div>
+      <span class="ni-label">Lineage Tracker</span>
+      <span class="ni-arrow">›</span>
+    </div>
+    <div class="nav-item" data-app="pantheon" id="nav-pantheon" style="--nav-accent:#c084fc;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(192,132,252,.3),rgba(192,132,252,.1));border-color:rgba(192,132,252,.5);">✦</div>
+      <span class="ni-label">Pantheon</span>
+      <span class="ni-arrow">›</span>
+    </div>
+    <div class="nav-item" data-app="sacred_pantheon" id="nav-sacred" style="--nav-accent:#a855f7;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(168,85,247,.3),rgba(168,85,247,.1));border-color:rgba(168,85,247,.5);">&#10017;</div>
+      <span class="ni-label">Sacred Pantheon</span>
+      <span class="ni-arrow">›</span>
+    </div>
+    <div class="nav-item" data-app="strategium" id="nav-strategium" style="--nav-accent:#c0392b;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(192,57,43,.3),rgba(192,57,43,.1));border-color:rgba(192,57,43,.5);">&#9822;</div>
+      <span class="ni-label">Strategium</span>
+      <span class="ni-arrow">›</span>
+    </div>
+
+    <div class="nav-item" data-app="publications" id="nav-publications" style="--nav-accent:#e0b04f;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(224,176,79,.3),rgba(224,176,79,.1));border-color:rgba(224,176,79,.5);">&#128218;</div>
+      <span class="ni-label">Books &amp; Plan</span>
+      <span class="ni-arrow">&rsaquo;</span>
+    </div>
+    <div class="nav-item" data-app="arshcrusaders" id="nav-arshcrusaders" style="--nav-accent:#c0392b;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(192,57,43,.3),rgba(192,57,43,.1));border-color:rgba(192,57,43,.5);">&#9876;</div>
+      <span class="ni-label">ArshCrusaders</span>
+      <span class="ni-arrow">&rsaquo;</span>
+    </div>
+
+    <div class="nav-label-group">Media</div>
+    <div class="nav-item" data-app="music" id="nav-music" style="--nav-accent:#cf86b0;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(207,134,176,.3),rgba(207,134,176,.1));border-color:rgba(207,134,176,.5);">&#127925;</div>
+      <span class="ni-label">Songs of Arshmunnu</span>
+      <span class="ni-arrow">&rsaquo;</span>
+    </div>
+
+    <div class="nav-label-group">Community</div>
+    <div class="nav-item" data-app="forum" id="nav-forum" style="--nav-accent:#cf7d63;">
+      <div class="ni-icon" style="background:radial-gradient(circle,rgba(207,125,99,.3),rgba(207,125,99,.1));border-color:rgba(207,125,99,.5);">&#128488;</div>
+      <span class="ni-label">The Commons</span>
+      <span class="ni-arrow">&rsaquo;</span>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-bottom">
+      <div class="nav-item" style="--nav-accent:#7c5a1f;opacity:.6;cursor:default;">
+        <div class="ni-icon" style="background:rgba(124,90,31,.1);border-color:rgba(124,90,31,.3);">🗺</div>
+        <span class="ni-label">World Map <em style="font-size:9px;">(coming)</em></span>
+      </div>
+      <div class="nav-item" style="--nav-accent:#7c5a1f;opacity:.6;cursor:default;">
+        <div class="ni-icon" style="background:rgba(124,90,31,.1);border-color:rgba(124,90,31,.3);">⚔</div>
+        <span class="ni-label">Bestiary <em style="font-size:9px;">(coming)</em></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="content-area">
+
+    <!-- HOME SCREEN -->
+    <div id="home">
+      <canvas id="starfield"></canvas>
+      <div class="home-inner">
+
+        <!-- HERO -->
+        <div class="home-hero">
+          <div class="home-crest">A</div>
+          <div class="home-title">The Grand Archive</div>
+          <div class="home-subtitle">Eighteen interlinked tools for the world of Arshmunnu — from chronicles to codices, from dynasties to deities, from maps and music to the war-gaming table and the Commons.</div>
+          <div class="home-divider">
+            <span class="hl"></span>
+            <span>Select Your Chamber</span>
+            <span class="hl r"></span>
+          </div>
+          <div class="acct-greet" id="acct-greet"></div>
+        </div>
+
+        <!-- ARCHIVE SEARCH -->
+        <div class="home-search-wrap">
+          <div class="home-search-field" id="home-search-field">
+            <span class="home-search-icon">&#128269;</span>
+            <input id="home-search" class="home-search" type="text" placeholder="Search the Archive — a name, place, event, deity, house, or chamber…" autocomplete="off" aria-label="Search the Archive">
+            <span class="home-search-kbd"><kbd>/</kbd></span>
+            <button class="home-search-clear" id="home-search-clear" type="button" aria-label="Clear search">&#10005;</button>
+          </div>
+          <div class="home-search-hint">Jumps to any chamber instantly — and reads inside the codex, pantheon, chronicle and guides when the Archive is served online.</div>
+          <div class="home-search-results" id="home-search-results" role="listbox"></div>
+        </div>
+
+        <!-- APP CARDS -->
+        <div class="app-grid">
+
+
+
+          <!-- ARSHRPG HUB (featured) -->
+          <div class="app-card" data-app="arshrpg" style="--card-color:#d4a44a;--card-delay:.04s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#d4a44a" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#d4a44a"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#d4a44a" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#d4a44a"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#9876;</div>
+                <span class="card-badge" style="border-color:rgba(212,164,74,.45);color:#f0cc72;">The Tabletop</span>
+              </div>
+              <div class="card-name">ArshRPG</div>
+              <div class="card-tagline">Play in the world of Arshmunnu</div>
+              <div class="card-desc">The whole game in one place — the Character Creator and Characters workshop, Campaigns, the Virtual Tabletop battle map, and every rule: the Player&rsquo;s Guide, the GM Explanadium, Callings, Species, and the Bestiary. Build heroes, gather a party, and take the field.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#d4a44a;">Enter ArshRPG <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">Creator &middot; Campaigns &middot; Battle Map &middot; Rules</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAMPAIGNS -->
+          <div class="app-card" data-app="campaigns" style="--card-color:#9370b0;--card-delay:.06s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#9370b0" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#9370b0"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#9370b0" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#9370b0"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#10070;</div>
+                <span class="card-badge" style="border-color:rgba(147,112,176,.45);color:#c4a8de;">New</span>
+              </div>
+              <div class="card-name">Campaigns</div>
+              <div class="card-tagline">Found a saga, gather a party</div>
+              <div class="card-desc">Create or join a campaign, draw characters from your roster into the party, keep a session log and campaign notes, then launch the whole table straight onto the battle map as tokens.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#9370b0;">Open Campaigns <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">Party &middot; Sessions &middot; Launch to VTT</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SCRIPTORIUM -->
+          <div class="app-card" data-app="scriptorium" style="--card-color:#b67849;--card-delay:.08s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#b67849" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#b67849"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#b67849" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#b67849"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#129534;</div>
+                <span class="card-badge" style="border-color:rgba(182,120,73,.4);color:#b67849;">A Writer&rsquo;s Desk</span>
+              </div>
+              <div class="card-name">Scriptorium</div>
+              <div class="card-tagline">For thine own scrolls and chronicles</div>
+              <div class="card-desc">A private editor for drafts, chronicles, and chapters — saves automatically to thy browser, never to any distant server. Full formatting, multiple documents, library view, search within and across pages. Export to HTML, Markdown, or plaintext; back up the entire library to a single file.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#b67849;">Open the Scriptorium <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">Local-first &middot; Offline &middot; Encrypted by isolation</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- THE FOLIO -->
+          <div class="app-card" data-app="folio" style="--card-color:#c08a3e;--card-delay:.09s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c08a3e" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c08a3e"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c08a3e" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c08a3e"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#128214;</div>
+                <span class="card-badge" style="border-color:rgba(192,138,62,.4);color:#c08a3e;">Reading Room</span>
+              </div>
+              <div class="card-name">The Folio</div>
+              <div class="card-tagline">Read thy works as bound books</div>
+              <div class="card-desc">A reading room where documents open as real books &mdash; turn each leaf by hand with a true page-flip. Reads PDF, Word (.docx), rich text (.rtf), Markdown, plaintext and HTML, and shelves every manuscript from thy Scriptorium beside them. Send any document back to the Writer&rsquo;s Desk to edit.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#c08a3e;">Enter the Reading Room <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">PDF &middot; DOCX &middot; RTF &middot; Scriptorium-linked</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- QUIZ -->
+          <div class="app-card" data-app="quiz" style="--card-color:#c0843a;--card-delay:.1s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c0843a" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c0843a"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c0843a" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c0843a"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">📜</div>
+                <span class="card-badge">3 Modes · Editable</span>
+              </div>
+              <div class="card-name">The Codex Examination</div>
+              <div class="card-tagline">Test the depth of thy knowledge</div>
+              <div class="card-desc">120 questions drawn from the chronicles, magicks, and bloody ledgers of empire. Answer truly, declare "I Know Not," and earn one of five ranks — from Beginner to Chronicler. Short, Normal, or Extended mode.</div>
+              <div class="card-footer">
+                <div class="card-cta">Open the Trial <span class="card-cta-arrow">›</span></div>
+                <div class="card-meta">120 questions · 5 ranks</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ENCYCLOPAEDIA -->
+          <div class="app-card" data-app="codex" style="--card-color:#d4a44a;--card-delay:.2s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#d4a44a" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#d4a44a"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#d4a44a" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#d4a44a"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">📖</div>
+                <span class="card-badge">68 Entries · Editable</span>
+              </div>
+              <div class="card-name">The Codex of Arshmunnu</div>
+              <div class="card-tagline">Encyclopaedia of the Great and Eternal World</div>
+              <div class="card-desc">68 fully written entries across 8 categories — World, History, People, Orders, Magic, Politics, Species, and Culture. Each entry is cross-linked and searchable. The definitive reference for the world of Arshmunnu.</div>
+              <div class="card-footer">
+                <div class="card-cta">Open the Codex <span class="card-cta-arrow">›</span></div>
+                <div class="card-meta">68 entries · 8 categories</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TIMELINE -->
+          <div class="app-card" data-app="timeline" style="--card-color:#06b6d4;--card-delay:.3s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#06b6d4" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#06b6d4"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#06b6d4" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#06b6d4"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">⏳</div>
+                <span class="card-badge" style="border-color:rgba(6,182,212,.4);color:#06b6d4;">8 Ages · Editable</span>
+              </div>
+              <div class="card-name">The Great Chronicle</div>
+              <div class="card-tagline">From the gods' first breath to the present hour</div>
+              <div class="card-desc">An interactive timeline spanning eight ages — from Ancient Times and the Four Gods through the Imperial Age, the Age of Revolutions, and into the living Seventh Age of diesel, magic, and information. Click to expand each era's events.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#06b6d4;">Open the Chronicle <span class="card-cta-arrow">›</span></div>
+                <div class="card-meta">8 ages · ∞ to 4069+ AU</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LINEAGE -->
+          <div class="app-card" data-app="lineage" style="--card-color:#9370b0;--card-delay:.4s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#9370b0" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#9370b0"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#9370b0" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#9370b0"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">⚜</div>
+                <span class="card-badge" style="border-color:rgba(147,112,176,.4);color:#9370b0;">12 Houses · Editable</span>
+              </div>
+              <div class="card-name">Dynastiae Exeliae</div>
+              <div class="card-tagline">Interactive house lineage tracker</div>
+              <div class="card-desc">Twelve noble houses across four regions — from the commoner dynasty of Chliarinos to the ancient houses of Charan, Ferus, Amala, and Ásturokarunia. Visual family trees, biographical modals, cross-house connections, and searchable member rosters.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#9370b0;">Open the Dynastiae <span class="card-cta-arrow">›</span></div>
+                <div class="card-meta">12 houses · 60+ members</div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+          <!-- ATLAS -->
+          <div class="app-card" data-app="atlas" style="--card-color:#5A8B5A;--card-delay:.45s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#5A8B5A" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#5A8B5A"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#5A8B5A" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#5A8B5A"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#127758;</div>
+                <span class="card-badge" style="border-color:rgba(90,139,90,.4);color:#5A8B5A;">2 Maps &middot; 15+ Regions</span>
+              </div>
+              <div class="card-name">Atlas of Arshmunnu</div>
+              <div class="card-tagline">Interactive cartography of the known world</div>
+              <div class="card-desc">Explore two eras of Arshmunnu through interactive maps — the World Atlas and the Political Era view. Click any nation to discover its government, ruler, military, allies, enemies, and linked archive entries. Full search and filter by government type.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#5A8B5A;">Open the Atlas <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">15 nations &middot; 2 map views</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANTHEON -->
+          <div class="app-card" data-app="pantheon" style="--card-color:#c084fc;--card-delay:.5s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c084fc" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c084fc"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c084fc" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c084fc"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">✦</div>
+                <span class="card-badge" style="border-color:rgba(192,132,252,.4);color:#c084fc;">31 Deities · Editable</span>
+              </div>
+              <div class="card-name">The Pantheon of Arshmunnu</div>
+              <div class="card-tagline">From the Aethernum Nexus they emerged</div>
+              <div class="card-desc">31 deities spanning the full divine hierarchy — the four Primordial gods who shaped the cosmos, the divine host, Archangels, and Archdemons. Filter by tier, domain, or alignment. Full deity profiles with divine relations, creations, and worship detail.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#c084fc;">Open the Pantheon <span class="card-cta-arrow">›</span></div>
+                <div class="card-meta">4 tiers · 9 domains</div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- SACRED PANTHEON -->
+          <div class="app-card" data-app="sacred_pantheon" style="--card-color:#a855f7;--card-delay:.55s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#a855f7" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#a855f7"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#a855f7" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#a855f7"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#10017;</div>
+                <span class="card-badge" style="border-color:rgba(168,85,247,.4);color:#a855f7;">29 Deities &middot; Editable</span>
+              </div>
+              <div class="card-name">Divinity of Arshmunnu</div>
+              <div class="card-tagline">The Sacred Pantheon of the Great and Eternal World</div>
+              <div class="card-desc">29 deities across four tiers &mdash; from the Primordial Four who shaped creation to archangels, archdemons, elder powers, and the Nine Seats of Gehennom. Includes the full Creation Myth, divine relationships, and two competing religious traditions.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#a855f7;">Open the Sacred Pantheon <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">29 deities &middot; Creation myth included</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STRATEGIUM -->
+          <div class="app-card" data-app="strategium" style="--card-color:#c0392b;--card-delay:.6s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c0392b"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c0392b"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#9822;</div>
+                <span class="card-badge" style="border-color:rgba(192,57,43,.4);color:#c0392b;">PvP &middot; vs AI &middot; Mobile</span>
+              </div>
+              <div class="card-name">Strategium: The Game of Commands</div>
+              <div class="card-tagline">The traditional war game of the As&#8217;hikan Nobility</div>
+              <div class="card-desc">A chess-like strategy game played on a 10&times;8 battlefield. Command the Imperial Legion or the Free Coalition across 10 unique piece types &mdash; from shield-walled Spearmen to arcane-pushing Mages. Features AI opponent, sound effects, move history, post-battle statistics, and rotating board in PvP.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#c0392b;">Enter the Battlefield <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">10 pieces &middot; 2 victory conditions</div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- PUBLICATIONS -->
+          <div class="app-card" data-app="publications" style="--card-color:#e0b04f;--card-delay:.62s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#e0b04f" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#e0b04f"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#e0b04f" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#e0b04f"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">📚</div>
+                <span class="card-badge" style="border-color:rgba(224,176,79,.4);color:#e0b04f;">35 Volumes · 7 Eras</span>
+              </div>
+              <div class="card-name">Books &amp; Publication Plan</div>
+              <div class="card-tagline">The Grand Chronicle &mdash; in publication and in-world order</div>
+              <div class="card-desc">Every volume of the Arshmunnu saga enumerated one by one. The strategic publication order (Empire first, then After, then Before, then Compendiums), and the full chronological view by era with each book&rsquo;s synopsis and status. Tap the pencil to edit anything.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#e0b04f;">Open the Library <span class="card-cta-arrow">›</span></div>
+                <div class="card-meta">Publication plan · chronology · editable</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ARSHCRUSADERS -->
+          <div class="app-card" data-app="arshcrusaders" style="--card-color:#c0392b;--card-delay:.65s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c0392b"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c0392b"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">⚔</div>
+                <span class="card-badge" style="border-color:rgba(192,57,43,.4);color:#e74c3c;">CK3 Total Conversion</span>
+              </div>
+              <div class="card-name">ArshCrusaders Devlog</div>
+              <div class="card-tagline">States of Exelia &mdash; the mod in motion</div>
+              <div class="card-desc">Development log for the Crusader Kings III total conversion. Project snapshot (version, map coverage, roadmap), timeline of milestones and patches, and direct links to the Paradox mod page and the YouTube channel. Editable, exportable, persistent.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#e74c3c;">Open the Devlog <span class="card-cta-arrow">›</span></div>
+                <div class="card-meta">Paradox link · YouTube link · editable timeline</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SONGS OF ARSHMUNNU -->
+          <div class="app-card" data-app="music" style="--card-color:#cf86b0;--card-delay:.68s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#cf86b0" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#cf86b0"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#cf86b0" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#cf86b0"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#127925;</div>
+                <span class="card-badge" style="border-color:rgba(207,134,176,.4);color:#cf86b0;">Soundtrack &middot; YouTube</span>
+              </div>
+              <div class="card-name">Songs of Arshmunnu</div>
+              <div class="card-tagline">The music of the Great and Eternal World</div>
+              <div class="card-desc">The world&rsquo;s songbook &mdash; anthems, marches, laments, and lyre-songs, each with the tale of how it sounds and what it carries. Paste a YouTube link to any piece and it plays inline. Links straight to the <strong style="color:#cf86b0;">@ArshmunnuTunes</strong> channel for the full soundtrack. Editable, exportable, local-first.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#cf86b0;">Open the Songbook <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">Inline player &middot; @ArshmunnuTunes</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- THE ALMANAC (CALENDAR) -->
+          <div class="app-card" data-app="calendar" style="--card-color:#c98a3c;--card-delay:.66s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c98a3c" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c98a3c"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#c98a3c" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#c98a3c"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#9737;</div>
+                <span class="card-badge" style="border-color:rgba(201,138,60,.45);color:#e0a85a;">New</span>
+              </div>
+              <div class="card-name">The Almanac</div>
+              <div class="card-tagline">The calendar of Arshmunnu</div>
+              <div class="card-desc">The wheel of the year &mdash; sixteen months across four seasons, four hundred and eighty days. Turn the wheel, read any month&rsquo;s decades, mark festivals and the present day of the Chronicle, reckon a day-of-year to its date, and convert between the reckonings: After Unification, the Foundation of Gothia, the Calendar of the Fall, and the Marian count. Day-notes link straight into the Concordance.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#c98a3c;">Open the Almanac <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">16 months &middot; Festivals &middot; Era converter</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- THE CONCORDANCE (CROSS-REFERENCE) -->
+          <div class="app-card" data-app="concordance" style="--card-color:#6fa8b8;--card-delay:.68s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#6fa8b8" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#6fa8b8"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#6fa8b8" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#6fa8b8"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#128279;</div>
+                <span class="card-badge" style="border-color:rgba(111,168,184,.45);color:#9fc6d4;">New</span>
+              </div>
+              <div class="card-name">The Concordance</div>
+              <div class="card-tagline">One canon, cross-referenced</div>
+              <div class="card-desc">The Archive&rsquo;s shared register of people, houses, gods, places, and events. Each record carries a summary, aliases, and source, and any text across the suite can link to it with <strong style="color:#9fc6d4;">[[double brackets]]</strong> &mdash; with backlinks showing everything that mentions a given name. The spine that turns many tools into one Archive.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#6fa8b8;">Open the Concordance <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">Entities &middot; Aliases &middot; Backlinks</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- THE COMMONS (FORUM) -->
+          <div class="app-card" data-app="forum" style="--card-color:#cf7d63;--card-delay:.7s;">
+            <div class="card-texture"></div>
+            <div class="card-corner tl"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#cf7d63" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#cf7d63"/></svg></div>
+            <div class="card-corner br"><svg viewBox="0 0 32 32" fill="none"><path d="M2 2L2 18M2 2L18 2M2 9Q9 2 16 5M9 2Q2 9 5 16" stroke="#cf7d63" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="1.5" fill="#cf7d63"/></svg></div>
+            <div class="card-inner">
+              <div class="card-icon-row">
+                <div class="card-icon">&#128488;</div>
+                <span class="card-badge" style="border-color:rgba(207,125,99,.45);color:#e3a085;">New</span>
+              </div>
+              <div class="card-name">The Commons</div>
+              <div class="card-tagline">The forum of the Custodians</div>
+              <div class="card-desc">A gathering-hall for everyone who keeps the Archive &mdash; open a thread, answer one, and argue the lore. Five halls await: the War Table for Strategium and tactics, the Loremasters&rsquo; Hall, the Scriptorium Annex for the novels, the Cartographers&rsquo; Table for campaigns and play, and the Tavern for all else. Posts under your Custodian name, kept on this device. Local-first, no server.</div>
+              <div class="card-footer">
+                <div class="card-cta" style="color:#cf7d63;">Enter the Commons <span class="card-cta-arrow">&rsaquo;</span></div>
+                <div class="card-meta">Threads &middot; Replies &middot; Five halls</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="lore-bar">
+          <div class="lore-stat">
+            <div class="ls-num">18</div>
+            <div class="ls-label">Tools in the Archive</div>
+            <div class="ls-sub">Games, codices &amp; chronicles</div>
+          </div>
+          <div class="lore-stat">
+            <div class="ls-num">68</div>
+            <div class="ls-label">Codex Entries</div>
+            <div class="ls-sub">World, History, Magic &amp; more</div>
+          </div>
+          <div class="lore-stat">
+            <div class="ls-num">60+</div>
+            <div class="ls-label">Noble Houses &amp; Members</div>
+            <div class="ls-sub">Interactive family trees</div>
+          </div>
+          <div class="lore-stat">
+            <div class="ls-num">8</div>
+            <div class="ls-label">Ages of History</div>
+            <div class="ls-sub">∞ BU to 4069+ AU</div>
+          </div>
+        </div>
+
+        <!-- QUOTE -->
+        <div class="home-quote">
+          "Let the stars bear witness, and the ink of memory flow like the rivers of Ruden.<br>For this is the full and sacred Chronicle of Arshmunnu."
+          <cite>— Opening of the Grand Chronicle</cite>
+        </div>
+
+        <!-- EXTERNAL LINKS FOOTER -->
+        <div class="ext-footer">
+          <div class="ext-footer-h">Beyond the Archive</div>
+          <div class="ext-links">
+            <a class="ext-link paradox" href="https://mods.paradoxplaza.com/mods/134789/Any" target="_blank" rel="noopener">
+              <div class="el-icon">⚔</div>
+              <div class="el-body">
+                <div class="el-lbl">Paradox Mod Page</div>
+                <div class="el-title">ArshCrusaders on Paradox Mods</div>
+              </div>
+              <div class="el-arrow">↗</div>
+            </a>
+            <a class="ext-link youtube" href="https://www.youtube.com/@NobilisAelarionWarren" target="_blank" rel="noopener">
+              <div class="el-icon">▶</div>
+              <div class="el-body">
+                <div class="el-lbl">YouTube Channel</div>
+                <div class="el-title">@NobilisAelarionWarren</div>
+              </div>
+              <div class="el-arrow">↗</div>
+            </a>
+            <a class="ext-link youtube" href="https://www.youtube.com/@ArshmunnuTunes" target="_blank" rel="noopener">
+              <div class="el-icon">♫</div>
+              <div class="el-body">
+                <div class="el-lbl">Soundtrack Channel</div>
+                <div class="el-title">@ArshmunnuTunes</div>
+              </div>
+              <div class="el-arrow">↗</div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- APP FRAME -->
+    <div id="app-frame-wrap">
+      <div id="frame-loading">
+        <div class="loading-seal">A</div>
+        <div class="loading-text">Opening the Archive…</div>
+        <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+      </div>
+      <iframe id="app-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" title="Archive Application"></iframe>
+    </div>
+
+  </div><!-- /content-area -->
+</div><!-- /shell -->
+
+<!-- ════ ACCOUNT MODAL ════ -->
+<div class="acct-bg" id="acct-bg">
+  <div class="acct-card">
+    <div class="acct-top">
+      <span class="acct-close" id="acct-close" title="Close">&times;</span>
+      <div class="acct-seal">A</div>
+      <h2 id="acct-heading">Enter the Archive</h2>
+      <div class="acct-sub" id="acct-subheading">Open a Custodian&rsquo;s profile to mark this Archive as thine own.</div>
+    </div>
+    <div class="acct-tabs">
+      <div class="acct-tab active" id="tab-signin" data-mode="signin">Sign In</div>
+      <div class="acct-tab" id="tab-register" data-mode="register">Create Profile</div>
+    </div>
+    <div class="acct-body">
+      <div class="acct-fld">
+        <label for="acct-username">Custodian Name</label>
+        <input id="acct-username" type="text" autocomplete="username" placeholder="The name you keep here" maxlength="40">
+      </div>
+      <div class="acct-fld">
+        <label for="acct-pass">Passphrase</label>
+        <input id="acct-pass" type="password" autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <div class="acct-fld" id="acct-confirm-fld" style="display:none;">
+        <label for="acct-confirm">Confirm Passphrase</label>
+        <input id="acct-confirm" type="password" autocomplete="new-password" placeholder="••••••••">
+      </div>
+      <button class="acct-submit" id="acct-submit">Sign In</button>
+      <div class="acct-msg" id="acct-msg"></div>
+    </div>
+    <div class="acct-note">This profile lives only in this browser — local-first, nothing is ever sent to any server. Keep your passphrase safe; it cannot be recovered.</div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   STAR FIELD
+══════════════════════════════════════════════ */
+(function(){
+  const c=document.getElementById('starfield');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  let stars=[];
+  function resize(){
+    c.width=window.innerWidth;c.height=window.innerHeight;
+    stars=[];
+    for(let i=0;i<180;i++)stars.push({
+      x:Math.random()*c.width,y:Math.random()*c.height,
+      r:Math.random()*.7+.15,a:Math.random()*Math.PI*2,
+      speed:Math.random()*.0004+.0001
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{
+      s.a+=s.speed;
+      ctx.globalAlpha=Math.abs(Math.sin(s.a))*.65+.12;
+      ctx.fillStyle='#e8dfc8';
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+    });
+    ctx.globalAlpha=1;
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);
+  resize();draw();
+})();
+
+/* ══════════════════════════════════════════════
+   APP ROUTING
+══════════════════════════════════════════════ */
+const APPS = {
+  scriptorium:    { file:'scriptorium.html',             label:'Scriptorium — The Writer\u2019s Desk', color:'#b67849' },
+  folio:          { file:'arshmunnu_folio.html',         label:'The Folio — Reading Room',        color:'#c08a3e' },
+  arshrpg:        { file:'arshmunnu_arshrpg.html',       label:'ArshRPG — The Tabletop',          color:'#d4a44a' },
+  characters:     { file:'arshmunnu_characters.html',    label:'Characters — Roster & Workshop',  color:'#14b8a6' },
+  campaigns:      { file:'arshmunnu_campaigns.html',     label:'Campaigns',                       color:'#9370b0' },
+  races:          { file:'arshmunnu_races.html',          label:'Species of Arshmunnu',           color:'#6B8E6B' },
+  archetypes:     { file:'arshmunnu_archetypes.html',    label:'Callings of Arshmunnu',          color:'#c9a84c' },
+  players_guide:  { file:'arshmunnu_players_guide.html',  label:'Guide for Players',               color:'#2E8B57' },
+  gm_guide:       { file:'arshmunnu_gm_guide.html',       label:'Explanadium for Game Masters',    color:'#8B4513' },
+  monsterium:     { file:'arshmunnu_monsterium.html',     label:'Monsterium of Arshmunnu',         color:'#4A0000' },
+  bestiary:       { file:'arshmunnu_bestiary.html',        label:'Bestiary — ArshRPG Stat Blocks', color:'#b03a3a' },
+  vtt:            { file:'arshmunnu_vtt.html',             label:'Virtual Tabletop — Battle Map',  color:'#3a8a8a' },
+  atlas:          { file:'arshmunnu_map.html',             label:'Atlas of Arshmunnu',              color:'#5A8B5A' },
+  pantheon:       { file:'arshmunnu_pantheon.html',      label:'The Pantheon of Arshmunnu',       color:'#c084fc' },
+  sacred_pantheon:{ file:'arshmunnu_pantheon(1).html',   label:'Divinity of Arshmunnu',           color:'#a855f7' },
+  strategium:     { file:'strategium.html',              label:'Strategium',                      color:'#c0392b' },
+  creator:        { file:'arshmunnu_creator.html',           label:'Character Creator',          color:'#14b8a6' },
+  quiz:           { file:'arshmunnu_quiz.html',          label:'The Codex Examination',           color:'#c0843a' },
+  codex:          { file:'arshmunnu_codex.html',         label:'The Codex of Arshmunnu',          color:'#d4a44a' },
+  timeline:       { file:'arshmunnu_timeline.html',      label:'The Great Chronicle',             color:'#06b6d4' },
+  lineage:        { file:'arshmunnu_lineage.html',       label:'Dynastiae Exeliae',               color:'#9370b0' },
+  publications:   { file:'arshmunnu_publications.html',  label:'Books &amp; Publication Plan',     color:'#e0b04f' },
+  arshcrusaders:  { file:'arshcrusaders_devlog.html',    label:'ArshCrusaders Devlog',            color:'#c0392b' },
+  music:          { file:'arshmunnu_music.html',         label:'Songs of Arshmunnu',              color:'#cf86b0' },
+  forum:          { file:'arshmunnu_forum.html',         label:'The Commons — Forum',             color:'#cf7d63' },
+  calendar:       { file:'arshmunnu_calendar.html',      label:'The Almanac — Calendar',          color:'#c98a3c' },
+  concordance:    { file:'arshmunnu_concordance.html',   label:'The Concordance — Cross-Reference', color:'#6fa8b8' },
+  lore_search:    { file:'arshmunnu_lore_search.html',   label:'Lore Cross-Reference',            color:'#06b6d4' },
+};
+
+let currentApp = null;
+const homeEl       = document.getElementById('home');
+const frameWrap    = document.getElementById('app-frame-wrap');
+const frameEl      = document.getElementById('app-frame');
+const frameLoading = document.getElementById('frame-loading');
+const homeBtnEl    = document.getElementById('home-btn');
+const bcCurrentEl  = document.getElementById('bc-current');
+
+function openApp(appId){
+  if(appId==='home'){ goHome(); return; }
+  const app = APPS[appId]; if(!app) return;
+  currentApp = appId;
+
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active', n.dataset.app===appId);
+  });
+
+  // Update breadcrumb
+  bcCurrentEl.textContent = app.label;
+  bcCurrentEl.style.color = app.color;
+
+  // Show home btn
+  homeBtnEl.classList.add('visible');
+
+  // Hide home, show loading
+  homeEl.classList.add('hidden');
+  frameLoading.classList.add('active');
+  frameWrap.classList.add('visible');
+
+  // Load iframe
+  frameEl.onload = () => {
+    setTimeout(()=>{
+      frameLoading.classList.remove('active');
+    }, 300);
+  };
+  // Safety: clear the loader even if onload is delayed.
+  setTimeout(()=>{ frameLoading.classList.remove('active'); }, 1400);
+  // Append a unique token so the frame ALWAYS reloads — even when the target URL
+  // equals the current one (e.g. re-opening the Creator after switching to the
+  // roster in-app). Browsers skip reloading an iframe if src is unchanged.
+  var sep = app.file.indexOf('?')>=0 ? '&' : '?';
+  frameEl.src = app.file + sep + '_n=' + Date.now();
+}
+
+function goHome(){
+  currentApp = null;
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active', n.dataset.app==='home');
+  });
+  bcCurrentEl.textContent = 'Home';
+  bcCurrentEl.style.color = '';
+  homeBtnEl.classList.remove('visible');
+  homeEl.classList.remove('hidden');
+  frameWrap.classList.remove('visible');
+  frameLoading.classList.remove('active');
+  // Clear iframe after transition
+  setTimeout(()=>{ if(!currentApp) frameEl.src=''; }, 400);
+}
+
+// Nav item clicks
+document.querySelectorAll('.nav-item[data-app]').forEach(n=>{
+  n.addEventListener('click',()=>openApp(n.dataset.app));
+});
+
+// Home card clicks
+document.querySelectorAll('.app-card[data-app]').forEach(c=>{
+  c.addEventListener('click',()=>openApp(c.dataset.app));
+  c.setAttribute('tabindex','0');
+  c.setAttribute('role','button');
+  c.setAttribute('aria-label',`Open ${c.querySelector('.card-name').textContent}`);
+  c.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' ') openApp(c.dataset.app); });
+});
+
+// Home button
+homeBtnEl.addEventListener('click', goHome);
+
+// Allow embedded apps to request opening another chamber (e.g. the Folio
+// surfacing the Scriptorium after "Send to Scriptorium").
+window.addEventListener('message', function(e){
+  var d = e && e.data;
+  if(d && d.type === 'arsh-open' && d.app && APPS[d.app]) openApp(d.app);
+});
+
+/* ══════════════════════════════════════════════
+   SIDEBAR TOGGLE
+══════════════════════════════════════════════ */
+const sidenav   = document.getElementById('sidenav');
+const navToggle = document.getElementById('nav-toggle');
+let navOpen = false;
+
+navToggle.addEventListener('click',()=>{
+  navOpen = !navOpen;
+  sidenav.classList.toggle('open', navOpen);
+  // Animate burger
+  const lines = navToggle.querySelectorAll('.burger-line');
+  if(navOpen){
+    lines[0].style.transform='translateY(6.5px) rotate(45deg)';
+    lines[1].style.opacity='0';
+    lines[2].style.transform='translateY(-6.5px) rotate(-45deg)';
+  } else {
+    lines.forEach(l=>{l.style.transform='';l.style.opacity='';});
+  }
+});
+
+// Close nav when clicking an item on mobile
+document.querySelectorAll('.nav-item').forEach(n=>{
+  n.addEventListener('click',()=>{
+    if(window.innerWidth<700){
+      navOpen=false;
+      sidenav.classList.remove('open');
+      const lines=navToggle.querySelectorAll('.burger-line');
+      lines.forEach(l=>{l.style.transform='';l.style.opacity='';});
+    }
+  });
+});
+
+/* ══════════════════════════════════════════════
+   CARD HOVER GLOW EFFECT
+══════════════════════════════════════════════ */
+document.querySelectorAll('.app-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width*100;
+    const y=(e.clientY-r.top)/r.height*100;
+    card.style.setProperty('--mx',x+'%');
+    card.style.setProperty('--my',y+'%');
+  });
+});
+
+/* ══════════════════════════════════════════════
+   KEYBOARD NAV
+══════════════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&currentApp) goHome();
+});
+</script>
+
+<script>
+/* ════════════ ARCHIVE SEARCH ════════════
+   Two layers:
+   1) CATALOGUE — every chamber, searched instantly in-memory. Always works,
+      even from file://. Selecting a result opens that chamber.
+   2) DEEP — full text pulled from the lore volumes, used to jump to a specific
+      section. Loaded lazily on first focus; if the files can't be fetched
+      (e.g. opened from file://), search quietly falls back to catalogue only.
+*/
+(function(){
+  var CATALOG=[
+    {key:'forum',          name:'The Commons',                kind:'Forum of the Custodians',  kw:'forum commons community discussion threads posts replies talk board halls tavern war table loremasters scriptorium annex cartographers'},
+    {key:'arshrpg',        name:'ArshRPG',                    kind:'The Tabletop',             kw:'play game rules tabletop ttrpg roleplay party dice hub'},
+    {key:'creator',        name:'Character Creator',          kind:'Build a Hero',             kw:'create character build hero species calling path abilities equipment'},
+    {key:'characters',     name:'Characters',                 kind:'Roster & Workshop',        kw:'roster characters spells items vault npc combat tracker downtime workshop'},
+    {key:'campaigns',      name:'Campaigns',                  kind:'Sagas',                    kw:'campaign party session log saga adventure notes'},
+    {key:'vtt',            name:'Virtual Tabletop',           kind:'Battle Map',               kw:'vtt virtual tabletop battle map hex fog of war initiative tokens combat'},
+    {key:'races',          name:'Species of Arshmunnu',       kind:'Peoples',                  kw:'races species peoples ancestry traits folk'},
+    {key:'archetypes',     name:'Callings of Arshmunnu',      kind:'Archetypes',               kw:'calling class archetype path profession'},
+    {key:'players_guide',  name:'Guide for Players',          kind:'Core Rules',               kw:'rules players guide how to play roll fight act survive'},
+    {key:'gm_guide',       name:'Explanadium for Game Masters',kind:'GM Guide',                kw:'gm game master running encounters world void explanadium'},
+    {key:'bestiary',       name:'Bestiary',                   kind:'Stat Blocks',              kw:'bestiary monsters creatures stat blocks enemies beasts'},
+    {key:'pantheon',       name:'The Pantheon of Arshmunnu',  kind:'Gods',                     kw:'pantheon gods deities divine faith religion worship'},
+    {key:'sacred_pantheon',name:'Divinity of Arshmunnu',      kind:'Sacred Pantheon',          kw:'divinity sacred gods worship faith religion rites'},
+    {key:'codex',          name:'The Codex of Arshmunnu',     kind:'Encyclopaedia',            kw:'codex encyclopaedia lore world history magic geography reference'},
+    {key:'timeline',       name:'The Great Chronicle',        kind:'Timeline',                 kw:'timeline chronicle history ages events dates eras wars'},
+    {key:'lineage',        name:'Dynastiae Exeliae',          kind:'Lineage Tracker',          kw:'lineage dynasty houses family tree nobles bloodline heirs'},
+    {key:'quiz',           name:'The Codex Examination',      kind:'Quiz',                     kw:'quiz examination test trivia knowledge codex'},
+    {key:'publications',   name:'Books & Publication Plan',   kind:'Library',                  kw:'books novels publications reading plan tabula prima library'},
+    {key:'arshcrusaders',  name:'ArshCrusaders Devlog',       kind:'CK3 Mod',                  kw:'ck3 crusader kings mod devlog states exelia paradox'},
+    {key:'strategium',     name:'Strategium',                 kind:'War-Game',                 kw:'strategium chess wargame battle pieces online ai commander'},
+    {key:'music',          name:'Songs of Arshmunnu',         kind:'Soundtrack',               kw:'music songs soundtrack anthems marches youtube'},
+    {key:'calendar',       name:'The Almanac',                kind:'Calendar',                 kw:'calendar almanac months seasons days year festivals dates era reckoning amenium vesperis wheel'},
+    {key:'concordance',    name:'The Concordance',            kind:'Cross-Reference',          kw:'concordance cross reference index entities people houses gods places events backlinks wiki links registry'},
+    {key:'scriptorium',    name:'Scriptorium',                kind:'Writer\u2019s Desk',       kw:'scriptorium writing documents editor draft manuscript'},
+    {key:'folio',          name:'The Folio',                  kind:'Reading Room',             kw:'folio reader reading room read book page flip turn leaf bound pdf docx word rtf rich text markdown txt html document viewer manuscript scriptorium'}
+  ];
+  var SOURCES=[
+    {key:"codex",file:"arshmunnu_codex.html",label:"Codex"},
+    {key:"pantheon",file:"arshmunnu_pantheon.html",label:"Pantheon"},
+    {key:"timeline",file:"arshmunnu_timeline.html",label:"Chronicle"},
+    {key:"lineage",file:"arshmunnu_lineage.html",label:"Lineage"},
+    {key:"players_guide",file:"arshmunnu_players_guide.html",label:"Players Guide"},
+    {key:"gm_guide",file:"arshmunnu_gm_guide.html",label:"GM Guide"},
+    {key:"races",file:"arshmunnu_races.html",label:"Species"},
+    {key:"archetypes",file:"arshmunnu_archetypes.html",label:"Callings"},
+    {key:"bestiary",file:"arshmunnu_bestiary.html",label:"Bestiary"},
+    {key:"publications",file:"arshmunnu_publications.html",label:"Library"}
+  ];
+  var INDEX={},DEEP="idle",DEBOUNCE=null,SEL=-1; // DEEP: idle|loading|ready|unavailable
+
+  var input=document.getElementById("home-search");
+  var field=document.getElementById("home-search-field");
+  var box=document.getElementById("home-search-results");
+  var clearBtn=document.getElementById("home-search-clear");
+  if(!input||!box)return;
+
+  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+  function stripTags(s){return s.replace(/<[^>]+>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/\s+/g," ").trim();}
+  function extractId(a){var m=/id\s*=\s*["']([^"']+)["']/i.exec(a);return m?m[1]:"";}
+  function parseSections(html){
+    html=html.replace(/<script[\s\S]*?<\/script>/gi,"").replace(/<style[\s\S]*?<\/style>/gi,"");
+    var headers=[],re=/<h([1-3])([^>]*)>([\s\S]*?)<\/h\1>/gi,m;
+    while((m=re.exec(html))!==null)headers.push({title:stripTags(m[3]),id:extractId(m[2]),pos:m.index,end:m.index+m[0].length});
+    if(!headers.length)return[{section:"(content)",id:"",text:stripTags(html).slice(0,1500)}];
+    var parts=[];
+    for(var i=0;i<headers.length;i++){
+      var start=headers[i].end,end=(i+1<headers.length)?headers[i+1].pos:html.length;
+      var t=stripTags(html.slice(start,end));if(t.length<3)continue;
+      parts.push({section:headers[i].title,id:headers[i].id,text:t});
+    }
+    return parts;
+  }
+  function loadDeep(){
+    if(DEEP==="loading"||DEEP==="ready")return Promise.resolve();
+    DEEP="loading";
+    var any=false;
+    return Promise.all(SOURCES.map(function(s){
+      return fetch(s.file).then(function(r){if(!r.ok)throw 0;return r.text();})
+        .then(function(html){INDEX[s.key]=parseSections(html);any=true;})
+        .catch(function(){});
+    })).then(function(){
+      DEEP=any?"ready":"unavailable";
+      if(input.value.trim().length>=2)render();
+    });
+  }
+
+  function open(key,anchor){
+    if(typeof openApp==="function")openApp(key);
+    if(anchor)setTimeout(function(){try{document.getElementById("app-frame").contentWindow.location.hash="#"+anchor;}catch(e){}},520);
+    close();
+  }
+  function close(){box.classList.remove("show");box.innerHTML="";SEL=-1;}
+
+  function catalogMatches(tokens){
+    var out=[];
+    for(var i=0;i<CATALOG.length;i++){
+      var c=CATALOG[i],hay=(c.name+" "+c.kind+" "+c.kw).toLowerCase(),sc=0,ok=true;
+      for(var t=0;t<tokens.length;t++){
+        var idx=hay.indexOf(tokens[t]);
+        if(idx<0){ok=false;break;}
+        sc+=(c.name.toLowerCase().indexOf(tokens[t])===0?40:0)+(c.name.toLowerCase().indexOf(tokens[t])>=0?20:0)+(c.kind.toLowerCase().indexOf(tokens[t])>=0?8:0)+6;
+      }
+      if(ok)out.push({c:c,score:sc});
+    }
+    out.sort(function(a,b){return b.score-a.score;});
+    return out.slice(0,7);
+  }
+  function deepMatches(q){
+    var qLow=q.toLowerCase(),matches=[];
+    for(var i=0;i<SOURCES.length;i++){var src=SOURCES[i],entries=INDEX[src.key];if(!entries)continue;
+      for(var j=0;j<entries.length;j++){var e=entries[j];
+        var hayRaw=e.section+" "+e.text,hay=hayRaw.toLowerCase(),idx=hay.indexOf(qLow);if(idx<0)continue;
+        var from=Math.max(0,idx-55),to=Math.min(hayRaw.length,idx+qLow.length+105);
+        var snip=(from>0?"…":"")+hayRaw.slice(from,to)+(to<hayRaw.length?"…":"");
+        var score=(e.section.toLowerCase().indexOf(qLow)>=0?10:0)+(1/Math.max(1,idx/100));
+        matches.push({src:src,entry:e,snippet:snip,score:score});
+      }
+    }
+    matches.sort(function(a,b){return b.score-a.score;});
+    return matches;
+  }
+
+  function render(){
+    var q=input.value.trim();
+    if(q.length<2){close();return;}
+    var tokens=q.toLowerCase().split(/\s+/).filter(Boolean);
+    var cat=catalogMatches(tokens);
+    var deep=(DEEP==="ready")?deepMatches(q):[];
+    var rxEsc=q.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    var rx=new RegExp("("+rxEsc+")","gi");
+
+    var deepNote=DEEP==="ready"?"Deep search on":(DEEP==="loading"?"Reading volumes…":(DEEP==="unavailable"?"Chambers only":""));
+    var total=cat.length+deep.length;
+    var html='<div class="hs-status"><span>'+total+' result'+(total===1?'':'s')+'</span><span class="hs-deep">'+deepNote+'</span></div>';
+
+    if(!total){
+      html+='<div class="hs-empty">Nothing by <b>'+esc(q)+'</b> yet.'+(DEEP==="unavailable"?'<br>Serve the Archive over http to search inside the volumes.':'')+'</div>';
+      box.innerHTML=html;box.classList.add("show");SEL=-1;return;
+    }
+    if(cat.length){
+      html+='<div class="hs-group">Chambers</div>';
+      cat.forEach(function(r){
+        html+='<div class="hs-chamber" data-sel role="option" data-key="'+r.c.key+'">'
+          +'<span class="hs-dot" style="color:'+chamberColor(r.c.key)+'"></span>'
+          +'<span class="hs-cname">'+esc(r.c.name)+'</span>'
+          +'<span class="hs-ckind">'+esc(r.c.kind)+'</span>'
+          +'<span class="hs-go">Open &rsaquo;</span></div>';
+      });
+    }
+    if(deep.length){
+      html+='<div class="hs-group">In the volumes</div>';
+      deep.slice(0,24).forEach(function(r){
+        var hi=esc(r.snippet).replace(rx,"<mark>$1</mark>");
+        html+='<div class="hs-result" data-sel role="option" data-key="'+r.src.key+'"'+(r.entry.id?' data-anchor="'+esc(r.entry.id)+'"':"")+'>'
+          +'<div class="hs-result-h"><span class="hs-source">'+r.src.label+'</span><span class="hs-section">'+esc(r.entry.section)+'</span></div>'
+          +'<div class="hs-snippet">'+hi+'</div></div>';
+      });
+      if(deep.length>24)html+='<div class="hs-empty" style="padding:9px">Showing 24 of '+deep.length+' passages — refine to narrow.</div>';
+    }
+    box.innerHTML=html;box.classList.add("show");SEL=-1;
+    box.querySelectorAll("[data-sel]").forEach(function(el){
+      el.addEventListener("click",function(){open(el.dataset.key,el.dataset.anchor);});
+    });
+  }
+  function chamberColor(key){try{return (APPS[key]&&APPS[key].color)||"#d4a44a";}catch(e){return "#d4a44a";}}
+
+  function setHasText(){field.classList.toggle("has-text",input.value.length>0);}
+
+  /* keyboard navigation within results */
+  function move(dir){
+    var items=box.querySelectorAll("[data-sel]");if(!items.length)return;
+    SEL=(SEL+dir+items.length)%items.length;
+    items.forEach(function(el,i){el.classList.toggle("sel",i===SEL);});
+    var cur=items[SEL];if(cur)cur.scrollIntoView({block:"nearest"});
+  }
+  input.addEventListener("keydown",function(e){
+    if(e.key==="ArrowDown"){e.preventDefault();move(1);}
+    else if(e.key==="ArrowUp"){e.preventDefault();move(-1);}
+    else if(e.key==="Enter"){
+      var items=box.querySelectorAll("[data-sel]");
+      if(SEL>=0&&items[SEL]){open(items[SEL].dataset.key,items[SEL].dataset.anchor);}
+      else if(items[0]){open(items[0].dataset.key,items[0].dataset.anchor);}
+    }
+    else if(e.key==="Escape"){close();input.blur();}
+  });
+
+  input.addEventListener("focus",function(){loadDeep();if(input.value.trim().length>=2)render();});
+  input.addEventListener("input",function(){setHasText();if(DEBOUNCE)clearTimeout(DEBOUNCE);DEBOUNCE=setTimeout(render,140);});
+  if(clearBtn)clearBtn.addEventListener("click",function(){input.value="";setHasText();close();input.focus();});
+
+  /* "/" focuses search from anywhere on the home screen */
+  document.addEventListener("keydown",function(e){
+    if(e.key==="/"&&document.activeElement!==input){
+      var t=document.activeElement,tag=t?t.tagName:"";
+      if(tag==="INPUT"||tag==="TEXTAREA"||(t&&t.isContentEditable))return;
+      var home=document.getElementById("home");
+      if(home&&!home.classList.contains("hidden")){e.preventDefault();input.focus();}
+    }
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest(".home-search-wrap"))close();});
+})();
+</script>
+<script>
+/* ══════════════════════════════════════════════
+   CUSTODIAN ACCOUNT — local-first profile
+   Stored only in this browser. No server, ever.
+══════════════════════════════════════════════ */
+(function(){
+  var ACCTS_KEY='arsh_accounts', SESS_KEY='arsh_session';
+  var mode='signin';
+
+  /* els */
+  var bg=document.getElementById('acct-bg');
+  var signinBtn=document.getElementById('signin-btn');
+  var userChip=document.getElementById('user-chip');
+  var acctMenu=document.getElementById('acct-menu');
+  var heading=document.getElementById('acct-heading');
+  var subheading=document.getElementById('acct-subheading');
+  var tabSignin=document.getElementById('tab-signin');
+  var tabRegister=document.getElementById('tab-register');
+  var fUser=document.getElementById('acct-username');
+  var fPass=document.getElementById('acct-pass');
+  var fConfirm=document.getElementById('acct-confirm');
+  var confirmFld=document.getElementById('acct-confirm-fld');
+  var submitBtn=document.getElementById('acct-submit');
+  var msg=document.getElementById('acct-msg');
+  var greet=document.getElementById('acct-greet');
+
+  /* storage helpers */
+  function getAccounts(){try{return JSON.parse(localStorage.getItem(ACCTS_KEY))||{};}catch(e){return {};}}
+  function setAccounts(a){try{localStorage.setItem(ACCTS_KEY,JSON.stringify(a));}catch(e){}}
+  function getSession(){try{return localStorage.getItem(SESS_KEY)||'';}catch(e){return '';}}
+  function setSession(k){try{k?localStorage.setItem(SESS_KEY,k):localStorage.removeItem(SESS_KEY);}catch(e){}}
+
+  /* ── ADMIN ──
+     The Keeper of the Archive — Aelarion — is the only profile that may
+     edit the pages. The passcode is never stored in plain text; only a
+     salted hash lives here (both SHA-256 and a fallback for file:// use). */
+  var ADMIN_KEY='aelarion';
+  var ADMIN_SEED={
+    name:'Aelarion', admin:true,
+    salt:'9f3c1ab7e2d04865bb71c0a52e6f3d18',
+    hash:'cb9a3f9b13b209d20881764ed5bb0d288f1922e6f04faba58037ed15027a2c25',
+    hashFb:'fb:bdb3d984f572c388'
+  };
+  function seedAdmin(){
+    var accts=getAccounts();
+    var cur=accts[ADMIN_KEY];
+    // ensure the Keeper exists, is flagged admin, and carries the seed hashes
+    if(!cur||!cur.admin||cur.hash!==ADMIN_SEED.hash){
+      accts[ADMIN_KEY]=Object.assign({},cur,ADMIN_SEED);
+      setAccounts(accts);
+    }
+  }
+  function applyAdminFlag(){
+    var key=getSession();var accts=getAccounts();
+    var isAdmin=!!(key&&accts[key]&&accts[key].admin);
+    try{ isAdmin?localStorage.setItem('arsh_admin','1'):localStorage.removeItem('arsh_admin'); }catch(e){}
+    return isAdmin;
+  }
+
+  /* salt + hash (crypto.subtle when available, simple fallback otherwise) */
+  function randSalt(){
+    try{var a=new Uint8Array(16);crypto.getRandomValues(a);return Array.from(a).map(function(b){return b.toString(16).padStart(2,'0');}).join('');}
+    catch(e){return (Date.now().toString(16)+Math.random().toString(16).slice(2));}
+  }
+  function fallbackHash(str){var h=5381;for(var i=0;i<str.length;i++){h=((h<<5)+h+str.charCodeAt(i))>>>0;}var h2=52711;for(var j=str.length-1;j>=0;j--){h2=((h2<<5)+h2^str.charCodeAt(j))>>>0;}return h.toString(16)+h2.toString(16);}
+  async function hashPass(salt,pass){
+    var data=salt+'|'+pass;
+    try{
+      if(crypto&&crypto.subtle){
+        var buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(data));
+        return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+      }
+    }catch(e){}
+    return 'fb:'+fallbackHash(data);
+  }
+
+  /* UI state */
+  function refreshUI(){
+    var isAdmin=applyAdminFlag();
+    var key=getSession();
+    var accts=getAccounts();
+    if(key&&accts[key]){
+      var name=accts[key].name;
+      signinBtn.style.display='none';
+      userChip.style.display='flex';
+      userChip.classList.toggle('admin',isAdmin);
+      document.getElementById('user-avatar').textContent=(name[0]||'A').toUpperCase();
+      document.getElementById('user-name').textContent=name;
+      document.getElementById('menu-name').textContent=name;
+      document.getElementById('menu-role').textContent=isAdmin?'Keeper of the Archive — editing unlocked':'Reader — viewing only';
+      greet.textContent=isAdmin
+        ? 'Welcome back, '+name+' — the Archive is thine to shape.'
+        : 'Welcome back, '+name+' — the Archive remembers thee.';
+      greet.classList.add('show');
+    }else{
+      signinBtn.style.display='flex';
+      userChip.style.display='none';
+      userChip.classList.remove('admin');
+      acctMenu.classList.remove('open');
+      greet.classList.remove('show');greet.textContent='';
+    }
+  }
+
+  /* modal */
+  function openModal(m){
+    setMode(m||'signin');
+    msg.textContent='';msg.className='acct-msg';
+    fUser.value='';fPass.value='';fConfirm.value='';
+    bg.classList.add('open');
+    setTimeout(function(){fUser.focus();},60);
+  }
+  function closeModal(){bg.classList.remove('open');}
+  function setMode(m){
+    mode=m;
+    var reg=(m==='register');
+    tabSignin.classList.toggle('active',!reg);
+    tabRegister.classList.toggle('active',reg);
+    confirmFld.style.display=reg?'block':'none';
+    submitBtn.textContent=reg?'Create Profile':'Sign In';
+    heading.textContent=reg?'Found a New Profile':'Enter the Archive';
+    subheading.textContent=reg?'Choose a name and passphrase kept only on this device.':'Open a Custodian\u2019s profile to mark this Archive as thine own.';
+    fPass.setAttribute('autocomplete',reg?'new-password':'current-password');
+    msg.textContent='';msg.className='acct-msg';
+  }
+  function showMsg(text,ok){msg.textContent=text;msg.className='acct-msg '+(ok?'ok':'err');}
+
+  /* submit */
+  async function submit(){
+    var name=fUser.value.trim();
+    var pass=fPass.value;
+    if(!name){showMsg('Enter a Custodian name.');return;}
+    if(!pass){showMsg('Enter a passphrase.');return;}
+    var key=name.toLowerCase();
+    var accts=getAccounts();
+    if(mode==='register'){
+      if(pass.length<4){showMsg('Choose a passphrase of at least 4 characters.');return;}
+      if(fConfirm.value!==pass){showMsg('The two passphrases do not match.');return;}
+      if(accts[key]){showMsg('A profile with that name already exists. Sign in instead.');return;}
+      var salt=randSalt();
+      var hash=await hashPass(salt,pass);
+      accts[key]={name:name,salt:salt,hash:hash};
+      setAccounts(accts);setSession(key);
+      showMsg('Profile created. Welcome, '+name+'.',true);
+      refreshUI();setTimeout(closeModal,650);
+    }else{
+      var acc=accts[key];
+      if(!acc){showMsg('No profile by that name. Create one first.');return;}
+      var h=await hashPass(acc.salt,pass);
+      var ref=(h.slice(0,3)==='fb:')?(acc.hashFb||acc.hash):acc.hash;
+      if(h!==ref){showMsg('That passphrase does not match.');return;}
+      setSession(key);applyAdminFlag();
+      showMsg(acc.admin?('Welcome, Keeper '+acc.name+'. Editing unlocked.'):('Welcome back, '+acc.name+'.'),true);
+      refreshUI();setTimeout(closeModal,650);
+    }
+  }
+
+  /* wire events */
+  signinBtn.addEventListener('click',function(){openModal('signin');});
+  document.getElementById('acct-close').addEventListener('click',closeModal);
+  bg.addEventListener('click',function(e){if(e.target===bg)closeModal();});
+  tabSignin.addEventListener('click',function(){setMode('signin');});
+  tabRegister.addEventListener('click',function(){setMode('register');});
+  submitBtn.addEventListener('click',submit);
+  [fUser,fPass,fConfirm].forEach(function(el){el.addEventListener('keydown',function(e){if(e.key==='Enter')submit();});});
+
+  userChip.addEventListener('click',function(e){e.stopPropagation();acctMenu.classList.toggle('open');});
+  document.addEventListener('click',function(e){if(!e.target.closest('#tb-account'))acctMenu.classList.remove('open');});
+  document.getElementById('menu-signout').addEventListener('click',function(){
+    setSession('');refreshUI();acctMenu.classList.remove('open');
+  });
+  document.getElementById('menu-home').addEventListener('click',function(){
+    acctMenu.classList.remove('open');
+    if(typeof goHome==='function')goHome();
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+
+  seedAdmin();
+  refreshUI();
+})();
+</script>
+</body>
+</htm

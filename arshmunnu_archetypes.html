@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Callings of Arshmunnu</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0e;--card:#13131a;--text:#e0dcd0;--muted:#a0a0a0;--gold:#c9a84c;--goldD:#8b7340;--red:#c0392b;--border:rgba(201,168,76,0.15);}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'EB Garamond',serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.topbar{height:52px;background:rgba(19,19,26,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:100;}
+.topbar h1{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);letter-spacing:2px;}
+.topbar a{font-family:'Cinzel',serif;font-size:10px;color:var(--muted);text-decoration:none;}
+.topbar a:hover{color:var(--gold);}
+.grid{display:grid;grid-template-columns:260px 1fr;gap:16px;padding:16px;max-width:1200px;margin:0 auto;}
+.sidebar{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;position:sticky;top:68px;height:calc(100vh - 84px);overflow-y:auto;}
+.sidebar h3{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.arch-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;cursor:pointer;transition:all .15s;border-bottom:1px solid rgba(255,255,255,0.03);}
+.arch-item:hover{background:rgba(201,168,76,0.08);}
+.arch-item.active{background:rgba(201,168,76,0.15);border-left:3px solid var(--gold);}
+.a-ico{font-size:20px;}
+.a-name{font-family:'Cinzel',serif;font-size:11px;color:var(--text);}
+.a-tag{font-size:9px;color:var(--muted);margin-left:auto;font-family:'Cinzel',serif;}
+.arch-detail{display:none;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:24px;}
+.arch-detail.active{display:block;}
+.arch-header{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.arch-emoji{font-size:48px;line-height:1;}
+.arch-title h2{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);margin-bottom:4px;}
+.arch-sub{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:8px;}
+.arch-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);font-family:'Cinzel',serif;}
+.arch-meta span{background:rgba(201,168,76,0.08);padding:3px 8px;border-radius:3px;}
+.arch-section{margin-bottom:18px;}
+.arch-section h4{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.arch-section p{line-height:1.6;font-size:14px;color:var(--text);}
+.arch-section ul{margin:6px 0 0 18px;font-size:14px;line-height:1.7;color:var(--text);}
+.path-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+@media(max-width:768px){.path-grid{grid-template-columns:1fr;}}
+.path-card{border:1px solid var(--border);border-radius:4px;padding:14px;background:rgba(255,255,255,0.02);}
+.path-card h5{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);margin-bottom:6px;}
+.path-card p{font-size:13px;color:var(--text);line-height:1.5;margin-bottom:8px;}
+.path-card ul{font-size:12px;color:var(--muted);margin-left:16px;line-height:1.6;}
+.trainings{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.training-tag{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:3px;background:rgba(201,168,76,0.08);border:1px solid var(--border);color:var(--muted);}
+.ep-fab{position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--card),#1a1a2e);border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;z-index:800;transition:all .22s;color:var(--gold);}
+.ep-fab:hover{transform:scale(1.12);}
+.ep-ov{position:fixed;inset:0;z-index:900;background:rgba(3,1,8,0.97);display:none;flex-direction:column;}
+.ep-ov.open{display:flex;}
+.ep-tb{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:rgba(6,4,12,0.95);flex-shrink:0;}
+.ep-tb-title{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);}
+.ep-close{background:none;border:none;color:var(--gold);font-size:20px;cursor:pointer;}
+.ep-body{display:grid;grid-template-columns:220px 1fr;gap:0;flex:1;overflow:hidden;}
+.ep-lst{border-right:1px solid var(--border);overflow-y:auto;padding:8px;}
+.ep-rgt{overflow-y:auto;padding:16px 20px;}
+.ep-srch{width:100%;padding:6px 10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:inherit;font-size:13px;margin-bottom:8px;}
+.ep-srch:focus{outline:none;border-color:var(--goldD);}
+.ep-li{padding:7px 10px;border-radius:4px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;transition:all .12s;border-bottom:1px solid rgba(255,255,255,0.03);}
+.ep-li:hover{background:rgba(201,168,76,0.08);}
+.ep-li.sel{background:rgba(201,168,76,0.18);border-left:2px solid var(--gold);}
+.ep-li-name{font-family:'Cinzel',serif;font-size:11px;}
+.ep-li-sub{font-size:9px;color:var(--muted);}
+.ep-li-del{background:none;border:none;color:#f87171;cursor:pointer;font-size:12px;padding:0 4px;}
+.ep-ph{text-align:center;padding:60px 20px;color:var(--muted);font-style:italic;}
+.ep-ph span{font-size:40px;display:block;margin-bottom:12px;}
+.ep-ftitle{font-family:'Cinzel',serif;font-size:14px;color:var(--gold);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.ep-field{margin-bottom:10px;}
+.ep-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--goldD);display:block;margin-bottom:3px;}
+.ep-inp,.ep-sel,.ep-txt{width:100%;padding:7px 10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:inherit;font-size:14px;}
+.ep-inp:focus,.ep-sel:focus,.ep-txt:focus{outline:none;border-color:var(--goldD);}
+.ep-txt{min-height:80px;resize:vertical;}
+.ep-row2{display:grid;grid-template-columns:2fr 1fr;gap:8px;}
+.ep-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.ep-btn{background:rgba(201,168,76,0.12);border:1px solid var(--border);color:var(--text);padding:6px 14px;font-family:'Cinzel',serif;font-size:10px;cursor:pointer;border-radius:3px;transition:.2s;}
+.ep-btn:hover{background:rgba(201,168,76,0.25);}
+.ep-btn.danger{background:rgba(248,113,113,0.08);border-color:rgba(248,113,113,0.2);color:#f87171;}
+.ep-btn.danger:hover{background:rgba(248,113,113,0.2);}
+.ep-ftr{display:none;gap:8px;padding:10px 20px;border-top:1px solid var(--border);background:rgba(6,4,12,0.95);flex-shrink:0;align-items:center;justify-content:flex-end;}
+.ep-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:8px 16px;border-radius:3px;border:1px solid rgba(134,239,172,0.4);background:rgba(58,102,56,0.25);color:#86efac;font-family:'Cinzel',serif;font-size:10px;z-index:1000;}
+@media(max-width:768px){
+.grid{grid-template-columns:1fr}
+.sidebar{display:none}
+.ep-body{grid-template-columns:1fr}
+.ep-lst{display:none}
+.topbar{padding:8px 14px}
+.brand{font-size:11px}
+.nav a{font-size:7px;padding:3px 6px}
+.main{padding:14px}
+.hero{font-size:16px}
+.sub{font-size:11px}
+.card{padding:14px}
+.fab{width:48px;height:48px;font-size:22px}
+.owrap{padding:10px}
+.ep-panel{width:100%;max-width:none;border-radius:0}
+}
+</style>
+<style id="arsh-gate-base"></style>
+<script>
+/* ════ ARSH ADMIN GATE ════
+   Editing the Archive is reserved for the Keeper (Aelarion).
+   Readers see the pages in view-only form. This is an editing lock,
+   shared across pages via localStorage('arsh_admin'). */
+(function(){
+  var SEL='.fab,.ep-fab,.ep-sadd';
+  function admin(){try{return localStorage.getItem('arsh_admin')==='1';}catch(e){return false;}}
+  function mark(){
+    if(!document.body||document.getElementById('arsh-viewlock'))return;
+    var d=document.createElement('div');d.id='arsh-viewlock';d.textContent='\uD83D\uDD12 View only';
+    d.style.cssText='position:fixed;bottom:16px;right:16px;z-index:2147483000;font-family:Cinzel,Georgia,serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,164,74,.55);background:rgba(10,6,16,.72);border:1px solid rgba(212,164,74,.22);border-radius:20px;padding:6px 12px;pointer-events:none;';
+    document.body.appendChild(d);
+  }
+  function unmark(){var d=document.getElementById('arsh-viewlock');if(d)d.remove();}
+  function apply(){
+    var st=document.getElementById('arsh-gate-base'),on=admin();
+    document.documentElement.setAttribute('data-arsh-role',on?'keeper':'reader');
+    if(on){if(st)st.textContent='';unmark();return;}
+    if(st)st.textContent=SEL+'{display:none!important;}';
+    if(document.body)mark();else document.addEventListener('DOMContentLoaded',mark);
+  }
+  apply();
+  window.addEventListener('storage',function(e){if(e.key==='arsh_admin'||e.key===null)apply();});
+  document.addEventListener('DOMContentLoaded',apply);
+})();
+</script>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>&#9876; Callings of Arshmunnu</h1>
+  <a href="index.html">&larr; Archive Hub</a>
+</div>
+
+<div class="grid">
+  <div class="sidebar" id="sidebar">
+    <h3>Callings</h3>
+    <div id="archList"></div>
+  </div>
+  <div class="main" id="main"></div>
+</div>
+
+<div class="ep-fab" id="aFab" title="Edit Callings" onclick="aEpOpen()">&#9998;</div>
+<div class="ep-ov" id="aEp">
+  <div class="ep-tb">
+    <span class="ep-tb-title">&#9998; Callings Editor</span>
+    <button class="ep-close" onclick="aEpClose()">&#10005;</button>
+  </div>
+  <div class="ep-body">
+    <div class="ep-lst">
+      <input class="ep-srch" id="aSrch" placeholder="Search callings..." oninput="aRenderList()">
+      <div id="aList"></div>
+      <div style="padding:8px"><button class="ep-btn" style="width:100%" onclick="aNew()">+ New Calling</button></div>
+    </div>
+    <div class="ep-rgt" id="aRgt">
+      <div class="ep-ph"><span>&#9876;</span>Select a calling to edit,<br>or click + New to add one.</div>
+    </div>
+  </div>
+  <div class="ep-ftr" id="aFtr" style="display:none">
+    <button class="ep-btn" onclick="aSave()">&#10003; Save</button>
+    <button class="ep-btn" onclick="aNew()">+ New</button>
+    <button class="ep-btn danger" onclick="aDelete()">Delete</button>
+    <button class="ep-btn" onclick="aExport()">&#8689; Export JSON</button>
+    <button class="ep-btn" onclick="document.getElementById('aImpFile').click()">&#8690; Import</button>
+    <input type="file" id="aImpFile" style="display:none" accept=".json" onchange="aImport(event)">
+    <button class="ep-btn danger" onclick="aReset()">Reset All</button>
+  </div>
+</div>
+
+<script>
+
+// ============== CALLINGS DATA (Arshmunnu canon) ==============
+let ARCHS=[
+  {
+    id:"soldier",name:"Soldier",emoji:"\u2694",tag:"Martial Specialist",
+    desc:"Trained warriors who master weapons and battlefield tactics. Soldiers learn to read the flow of combat, exploit enemy weaknesses, and coordinate with allies. Whether a frontline brawler, a disciplined officer, or a mercenary captain, every Soldier understands that victory belongs to those who control the field. Soldiers excel at sustained combat, using techniques that enhance their strikes, protect allies, and break enemy formations.",
+    primary:"MIG or AGI",keyTrainings:"Athletics, Command, Intimidation",
+    hd:10,ap:7,mana:0,
+    paths:[
+      {name:"Shield-Bearer",desc:"Masters of defence who protect allies and control the battlefield. Shield-Bearers can intercept attacks aimed at nearby allies, create zones of control, and lock down enemy movement.",abilities:["Shield Ally (intercept attack within 2m)","Bulwark (allies within 3m gain +1 DL)","Immovable (cannot be pushed or knocked prone)"]},
+      {name:"Weapon-Master",desc:"Specialists who achieve perfection with a chosen weapon type. Weapon-Masters gain escalating bonuses with their chosen weapon, unlock specialised strikes, and can perform devastating finishing moves.",abilities:["Weapon Focus (+1 damage with chosen weapon)","Special Strike (spend 1 AP for +1d6 damage)","Flawless Form (reroll 1 attack die per combat)"]},
+      {name:"Tactician",desc:"Battlefield commanders who direct allies and predict enemy movements. Tacticians can grant extra AP to allies, reposition forces, and gain advantage by reading enemy formations.",abilities:["Direct Action (ally within 12m gains +1 AP)","Read the Field (advantage on Initiative)","Coordinated Strike (allies gain +1 to hit your target)"]}
+    ],
+    coreTrainings:["Athletics","Command","Intimidation"],
+    techniques:["Power Strike","Shield Bash","Battle Cry","Tactical Assessment","Weapon Specialisation","Formation Breaker"]
+  },
+  {
+    id:"arcanist",name:"Arcanist",emoji:"\u26A1",tag:"Mana Wielder",
+    desc:"Scholars of the mana field who reshape reality through arcane formulae. Arcanists spend years studying at academies or under private tutelage, learning to channel mana into spells and rituals. They are the foremost magic-users of Arshmunnu, capable of devastating elemental attacks, protective wards, and reality-warping enchantments. Their power comes at a cost - mana is a finite resource that must be managed carefully.",
+    primary:"MAN",keyTrainings:"Arcana, Ritual, Lore",
+    hd:6,ap:5,mana:15,
+    paths:[
+      {name:"Elementalist",desc:"Masters of raw elemental power who wield fire, ice, lightning, and earth with devastating force. Elementalists deal the highest damage of any calling but lack subtlety.",abilities:["Elemental Affinity (choose fire/cold/lightning/earth, +2 damage)","Spell Surge (spend 2 extra MP for +1 die of damage)","Elemental Shield (resistance to chosen element)"]},
+      {name:"Enchanter",desc:"Specialists in mental manipulation, illusion, and subtle magic. Enchanters can charm, confuse, and control enemies, making them invaluable in social situations and covert operations.",abilities:["Subtle Cast (cast without somatic components)","Mental Intrusion (advantage on all mental effect saves)","Illusion Mastery (illusions last twice as long)"]},
+      {name:"Warden-Mage",desc:"Defensive casters who create protective barriers and wards. Warden-Mages excel at keeping allies alive through magical shields, healing, and crowd control.",abilities:["Arcane Shield (ally within 12m gains +2 DL for 1 round, 2 MP)","Ward Area (allies in 6m radius gain +1 DL, 3 MP)","Counterspell (interrupt enemy casting, 3 MP)"]}
+    ],
+    coreTrainings:["Arcana","Ritual","Lore"],
+    techniques:["Mana Bolt","Arcane Shield","Detect Magic","Elemental Burst","Mind Whisper","Teleport Step"]
+  },
+  {
+    id:"divine",name:"Divine Conduit",emoji:"\u2726",tag:"Channeler of the Gods",
+    desc:"Mortals chosen to channel divine power directly from the deities of Arshmunnu. Where Arcanists manipulate mana through study, Divine Conduits serve as vessels for their god's will. Their magic is not learned but granted, tied to their faith and devotion. Each Conduit's abilities reflect their patron deity - a conduit of Yer-shalem heals and protects, while one of Noxus spreads decay and fear.",
+    primary:"WIL or BRG",keyTrainings:"Ritual, Persuasion, Command",
+    hd:8,ap:6,mana:10,
+    paths:[
+      {name:"Crusader",desc:"Holy warriors who combine martial prowess with divine magic. Crusaders can smite enemies with radiant damage, bless weapons, and call upon their deity for miraculous interventions.",abilities:["Divine Smite (+1d8 radiant damage on melee hit, 2 MP)","Bless Weapon (weapon becomes magical +1 for 1 hour, 3 MP)","Miracle (reroll any one die per day)"]},
+      {name:"Oracle",desc:"Seers who receive visions and prophecies from their deity. Oracles can detect lies, see invisible creatures, and gain flashes of insight about future events.",abilities:["Divine Sight (see invisible, detect lies within 6m)","Prophetic Vision (GM provides cryptic hint about future, 1/day)","True Sight (see through illusions, 2 MP)"]},
+      {name:"Shepherd",desc:"Healers and community leaders who tend to the faithful. Shepherds can restore EP, cure conditions, and even resurrect the recently dead through divine intervention.",abilities:["Restore (heal 2d6+WIL EP, touch, 2 MP)","Cure Condition (remove poison/disease/curse, 3 MP)","Resurrect (restore dead within 1 hour, 10 MP, 1/week)"]}
+    ],
+    coreTrainings:["Ritual","Persuasion","Command"],
+    techniques:["Divine Light","Smite","Bless","Prophecy","Heal","Turn Undead"]
+  },
+  {
+    id:"shadow",name:"Shadow-Worker",emoji:"\u263D",tag:"Covert Operative",
+    desc:"Masters of stealth, deception, and precision violence. Shadow-Workers operate in the grey spaces between law and crime - thieves, assassins, spies, and saboteurs. They excel at infiltrating secure locations, eliminating targets without trace, and extracting information through subtlety or force. The Phoenix Agency employs many Shadow-Workers, but they also serve noble houses, criminal syndicates, and revolutionary movements.",
+    primary:"AGI",keyTrainings:"Stealth, Deception, Athletics",
+    hd:8,ap:7,mana:0,
+    paths:[
+      {name:"Assassin",desc:"Killers who specialise in eliminating targets quickly and silently. Assassins study anatomy to strike vital points, use poisons, and can kill without ever being seen.",abilities:["Vital Strike (+1d6 damage if target is unaware)","Poison Mastery (apply poison as bonus action)","Death Mark (study target for 1 round, next attack auto-crits)"]},
+      {name:"Saboteur",desc:"Specialists in destruction, infiltration, and disruption. Saboteurs can disable traps, destroy structures, and create chaos behind enemy lines.",abilities:["Trap Expert (disarm traps with advantage)","Demolition (double damage to objects and structures)","False Trail (cover tracks perfectly, create false evidence)"]},
+      {name:"Infiltrator",desc:"Masters of disguise and social engineering. Infiltrators can assume false identities, forge documents, and walk through any door.",abilities:["Perfect Disguise (assume a disguise in 10 minutes)","Forgery (create convincing documents, seals, credentials)","Social Chameleon (advantage on all checks to blend into a group)"]}
+    ],
+    coreTrainings:["Stealth","Deception","Athletics"],
+    techniques:["Shadow Step","Poison Blade","Silent Takedown","Disguise","Trap Sense","Evasion"]
+  },
+  {
+    id:"warden",name:"Warden",emoji:"\u265E",tag:"Guardian of the Wild",
+    desc:"Protectors of the natural world who blend martial skill with primal magic. Wardens patrol the wilderness, defending it from corruption, overharvesting, and supernatural threats. They form deep bonds with animal companions and can call upon natural forces to aid them. Every Warden swears an oath to a specific territory or cause, gaining power from that connection.",
+    primary:"AGI or WIL",keyTrainings:"Survival, Perception, Athletics",
+    hd:10,ap:6,mana:6,
+    paths:[
+      {name:"Beast-Master",desc:"Wardens who form telepathic bonds with animal companions. Beast-Masters fight alongside their bonded creatures, sharing senses and coordinating attacks.",abilities:["Animal Bond (telepathic link with companion within 60m)","Shared Senses (see/hear through companion)","Coordinated Attack (both attack same target with +1 each)"]},
+      {name:"Storm-Warden",desc:"Wardens who channel weather and natural forces. Storm-Wardens can call lightning, summon rain, and manipulate wind to hinder enemies or aid allies.",abilities:["Call Lightning (1d8 lightning damage, 12m range, 2 MP)","Wind Wall (deflect projectiles in 3m line, 2 MP)","Storm Sight (see through weather effects perfectly)"]},
+      {name:"Green-Knight",desc:"Warriors enhanced by plant magic. Green-Knights can harden their skin with bark, regrow limbs over time, and entangle enemies with vines.",abilities:["Bark Skin (+2 natural armour, 1 MP)","Regrowth (regenerate 1 EP per round while in sunlight)","Entangle (restrain enemies in 6m radius, 2 MP)"]}
+    ],
+    coreTrainings:["Survival","Perception","Athletics"],
+    techniques:["Primal Strike","Animal Companion","Entangle","Speak with Beasts","Track","Nature's Ward"]
+  },
+  {
+    id:"alchemist",name:"Alchemist",emoji:"\u2697",tag:"Zhar'tel Anu Practitioner",
+    desc:"Practitioners of Zhar'tel Anu, the art and science of binding essences. Alchemists brew potions, transmute materials, create explosive compounds, and push the boundaries of natural law through reagent-based magic. Every Alchemist carries a portable laboratory and a collection of volatile reagents. Their power is unpredictable but versatile - the right potion can save a life, and the wrong mixture can level a building.",
+    primary:"WIT",keyTrainings:"Craft, Arcana, Lore",
+    hd:8,ap:6,mana:8,
+    paths:[
+      {name:"Chirurgeon",desc:"Healers who use alchemical compounds to treat wounds, cure diseases, and enhance physical capabilities. Chirurgeons are battlefield medics and plague-doctors.",abilities:["Battlefield Medicine (stabilise as bonus action, heal 1d6+WIT)","Antidote (cure poison/disease instantly)","Combat Stim (ally gains +2 MIG and AGI for 1 minute, then -1 for 10 minutes)"]},
+      {name:"Bomber",desc:"Explosives specialists who turn combat into chaos. Bombers craft grenades, mines, and devastating area attacks.",abilities:["Grenade Craft (create grenades from reagents, 1d8 fire in 3m radius)","Mine Layer (place explosive traps, triggered by proximity)","Devastation Bomb (spend all remaining grenades for massive explosion)"]},
+      {name:"Mutagenist",desc:"Self-experimenters who consume mutagens to transform their bodies. Mutagenists can temporarily gain animal features, enhanced strength, or sensory abilities.",abilities:["Mutagen (consume to gain +2 to chosen ability for 10 minutes, -1 to another)","Bestial Form (gain claws, teeth, and +1 natural armour)","Adaptive Physiology (gain resistance to a damage type for 1 hour)"]}
+    ],
+    coreTrainings:["Craft","Arcana","Lore"],
+    techniques:["Brew Potion","Transmute","Grenade Throw","Healing Draught","Mutagen","Poison Gas"]
+  },
+  {
+    id:"scholar",name:"Scholar",emoji:"\u270D",tag:"Keeper of Knowledge",
+    desc:"Masters of lore, language, and investigation. Scholars are the historians, linguists, archaeologists, and detectives of Arshmunnu. They know the true names of things, the secret histories of nations, and the forgotten tongues of dead empires. In a world where knowledge is power, Scholars wield some of the most dangerous weapons of all - the truth, and the ability to find it.",
+    primary:"WIT or BRG",keyTrainings:"Lore, Investigation, Persuasion",
+    hd:6,ap:5,mana:4,
+    paths:[
+      {name:"Loremaster",desc:"Walking encyclopedias who can identify anything and recall ancient knowledge. Loremasters can decipher any language, identify magical items, and know the weaknesses of monsters.",abilities:["Identify (know properties of any item after 1 minute study)","Lore Recall (automatically succeed any Lore check up to DL 15, 1/day)","Weakness Analysis (learn monster vulnerabilities by observing for 1 round)"]},
+      {name:"Diplomat",desc:"Masters of negotiation who can talk their way through any situation. Diplomats can read intentions, forge alliances, and turn enemies into allies through words alone.",abilities:["Read Intentions (sense if someone is lying, their emotional state)","Compelling Argument (advantage on Persuasion, can change attitudes)","Peace Talk (enemies within 12m must save or cease hostility for 1 round)"]},
+      {name:"Inquisitor",desc:"Investigators who uncover secrets and solve mysteries. Inquisitors can find clues others miss, interrogate suspects, and piece together complex plots.",abilities:["Investigative Sight (find hidden clues automatically within 3m)","Interrogate (target must save or answer one question truthfully)","Deductive Reasoning (GM must give you a true hint about any mystery)"]}
+    ],
+    coreTrainings:["Lore","Investigation","Persuasion"],
+    techniques:["Identify","Decipher","Persuasive Speech","Detect Lies","Research","Linguistic Mastery"]
+  },
+  {
+    id:"duelist",name:"Duelist",emoji:"\u2694",tag:"Precision Fighter",
+    desc:"Warriors who treat combat as an art form. Duelists favour speed, precision, and style over brute force. They are fencers, swashbucklers, and blade-dancers who can defeat armoured knights with a thin blade and perfect timing. Every Duelist develops a personal fighting style that reflects their personality - some are flamboyant showmen, others are cold, calculating killers.",
+    primary:"AGI",keyTrainings:"Acrobatics, Athletics, Performance",
+    hd:8,ap:8,mana:0,
+    paths:[
+      {name:"Swashbuckler",desc:"Charismatic fighters who use wit, charm, and agility. Swashbucklers thrive in social combat as much as physical, using banter to distract enemies and style to win crowds.",abilities:["Panache (bonus action: taunt enemy, they must target you or take -2 to hit others)","Riposte (when missed in melee, immediate counterattack)","Flourish (gain +1 BRG in any social situation after performing a combat flourish)"]},
+      {name:"Blade-Singer",desc:"Warriors who weave magic into their swordplay. Blade-Singers can enhance their blades with elemental energy, create afterimages, and strike with supernatural speed.",abilities:["Singing Blade (weapon gains +1d4 elemental damage, 1 MP)","Afterimage (create mirror image of yourself, 2 MP)","Arcane Strike (weapon attacks count as magical, +1 to hit)"]},
+      {name:"Samurai",desc:"Disciplined warriors of intense focus. Samurai can enter a state of perfect concentration that makes them devastatingly effective but vulnerable if broken.",abilities:["Focused State (enter focus: +2 to all attack rolls, -2 to all saves, 1 minute)","Iaijutsu (first attack each combat auto-crits if you win initiative)","Iron Will (while focused, immune to fear and charm)"]}
+    ],
+    coreTrainings:["Acrobatics","Athletics","Performance"],
+    techniques:["Parry","Riposte","Blade Flourish","Feint","Precision Strike","Whirling Blade"]
+  },
+  {
+    id:"green",name:"Green-Warden",emoji:"\u2741",tag:"Druidic Protector",
+    desc:"Primal spellcasters who draw power directly from the natural world. Green-Wardens are not scholars of magic like Arcanists - they are vessels for the raw will of nature itself. They can shapeshift into animals, command plants, and call upon the four seasons for power. Every Green-Warden serves the cycle of life and death, maintaining the balance between civilisation and wilderness.",
+    primary:"WIL or MAN",keyTrainings:"Survival, Attunement, Perception",
+    hd:8,ap:6,mana:10,
+    paths:[
+      {name:"Spring-Caller",desc:"Healers and life-givers who can restore vitality, purify corruption, and make barren land bloom. Spring-Callers are welcomed in every village for their healing gifts.",abilities:["Restore Life (heal 2d8+WIL EP, touch, 3 MP)","Purify (remove corruption, disease, or poison from an area)","Bloom (cause plants to grow rapidly, create cover or food)"]},
+      {name:"Autumn-Tongue",desc:"Wardens of endings and decay. Autumn-Tongues can wither enemies, spread blight, and speak with the dead. They are the reapers of the natural world.",abilities:["Wither Touch (1d10+WIL necrotic damage, 2 MP)","Blight (damage plants/crops in 12m radius, wither enemies for -2 FOR)","Speak with Dead (communicate with dead for 1 minute, 3 MP)"]},
+      {name:"Wild-Shaper",desc:"Masters of animal transformation. Wild-Shapers can take the form of beasts, gaining their senses, movement, and abilities. The most powerful can become dire beasts or even mythic creatures.",abilities:["Wild Shape (transform into beast up to CR 1 for 1 hour, 2 MP)","Beast Senses (while in beast form, gain its senses and movement)","Dire Form (transform into a larger, more powerful version of a beast, 4 MP)"]}
+    ],
+    coreTrainings:["Survival","Attunement","Perception"],
+    techniques:["Wild Shape","Entangle","Heal","Speak with Animals","Nature's Wrath","Thorn Ward"]
+  },
+  {
+    id:"phoenix",name:"Phoenix Agent",emoji:"\u1F426",tag:"Intelligence Operative",
+    desc:"Elite operatives of the Phoenix Agency, the most powerful intelligence organisation in Arshmunnu. Phoenix Agents are trained in espionage, assassination, counter-intelligence, and political manipulation. They operate in cells, each agent carrying a false identity and a true purpose. A Phoenix Agent might appear as a merchant, a soldier, or a noble - but beneath the mask lies a weapon pointed at the enemies of their employers.",
+    primary:"BRG or WIT",keyTrainings:"Deception, Stealth, Investigation",
+    hd:8,ap:6,mana:2,
+    paths:[
+      {name:"Spymaster",desc:"Intelligence coordinators who manage networks of informants and agents. Spymasters always know more than they should and can call in favours from across the world.",abilities:["Information Network (can obtain information about any person/place given 24 hours)","Cover Identity (your false identity is flawless, advantage on all deception checks)","Call in Favour (contact a network member for aid, 1/day)"]},
+      {name:"Operative",desc:"Field agents who handle the most dangerous missions. Operatives are masters of disguise, infiltration, and extraction.",abilities:["Deep Cover (maintain a cover identity indefinitely, even under magical scrutiny)","Extraction Expert (you and up to 3 allies can escape any situation with a 10-minute plan)","Dead Drop (leave/receive messages and items through network caches worldwide)"]},
+      {name:"Interrogator",desc:"Specialists in extracting information through any means necessary. Interrogators can break the strongest wills and uncover the deepest secrets.",abilities:["Break Will (target must save or answer questions truthfully for 1 minute)","Read Mind (surface thoughts, 2 MP, lasts 1 minute)","Psychological Profile (after 1 minute of observation, know target's fears and motivations)"]}
+    ],
+    coreTrainings:["Deception","Stealth","Investigation"],
+    techniques:["Deep Cover","Interrogate","Disguise","Dead Drop","Surveillance","Extraction"]
+  }
+];
+
+// ============== RENDER ==============
+let activeArch=0;
+
+function render(){
+  var list=document.getElementById('archList');
+  var main=document.getElementById('main');
+  var listHtml='';
+  for(var i=0;i<ARCHS.length;i++){
+    var a=ARCHS[i];
+    var cls='arch-item'+(i===activeArch?' active':'');
+    listHtml+='<div class="'+cls+'" onclick="showArch('+i+')">'+
+      '<span class="a-ico">'+a.emoji+'</span>'+
+      '<span class="a-name">'+a.name+'</span>'+
+      '<span class="a-tag">'+a.tag+'</span></div>';
+  }
+  list.innerHTML=listHtml;
+
+  var a=ARCHS[activeArch];
+  var pathsHtml='<div class="path-grid">';
+  for(var p=0;p<a.paths.length;p++){
+    var path=a.paths[p];
+    var abilList='';
+    for(var ab=0;ab<path.abilities.length;ab++){
+      abilList+='<li>'+path.abilities[ab]+'</li>';
+    }
+    pathsHtml+='<div class="path-card">'+
+      '<h5>'+path.name+'</h5>'+
+      '<p>'+path.desc+'</p>'+
+      '<ul>'+abilList+'</ul></div>';
+  }
+  pathsHtml+='</div>';
+
+  var trainHtml='';
+  for(var t=0;t<a.coreTrainings.length;t++){
+    trainHtml+='<span class="training-tag">'+a.coreTrainings[t]+'</span>';
+  }
+  var techHtml='';
+  for(var t=0;t<a.techniques.length;t++){
+    techHtml+='<span class="training-tag">'+a.techniques[t]+'</span>';
+  }
+
+  main.innerHTML='<div class="arch-detail active">'+
+    '<div class="arch-header">'+
+      '<span class="arch-emoji">'+a.emoji+'</span>'+
+      '<div class="arch-title">'+
+        '<h2>'+a.name+'</h2>'+
+        '<div class="arch-sub">'+a.tag+'</div>'+
+        '<div class="arch-meta">'+
+          '<span>HD: d'+a.hd+'</span>'+
+          '<span>AP: '+a.ap+'</span>'+
+          '<span>MP: '+a.mana+'</span>'+
+          '<span>Primary: '+a.primary+'</span></div></div></div>'+
+    '<div class="arch-section"><h4>Description</h4><p>'+a.desc+'</p></div>'+
+    '<div class="arch-section"><h4>Key Trainings</h4><p style="margin-bottom:8px">'+a.keyTrainings+'</p><div class="trainings">'+trainHtml+'</div></div>'+
+    '<div class="arch-section"><h4>Core Techniques</h4><div class="trainings">'+techHtml+'</div></div>'+
+    '<div class="arch-section"><h4>Technique Paths</h4>'+pathsHtml+'</div>'+
+    '</div>';
+}
+
+function showArch(i){activeArch=i;render();}
+
+// ============== CRUD EDITOR ==============
+let selA=null;
+
+function aEpOpen(){document.getElementById('aEp').classList.add('open');aRenderList();document.getElementById('aFtr').style.display='flex';}
+function aEpClose(){document.getElementById('aEp').classList.remove('open');}
+
+function aRenderList(){
+  var s=document.getElementById('aSrch').value.toLowerCase();
+  var el=document.getElementById('aList');var h='';
+  for(var i=0;i<ARCHS.length;i++){
+    var a=ARCHS[i];
+    if(s && a.name.toLowerCase().indexOf(s)===-1 && a.tag.toLowerCase().indexOf(s)===-1) continue;
+    var cls='ep-li'+(selA===i?' sel':'');
+    h+='<div class="'+cls+'" onclick="aSelect('+i+')">'+
+      '<div><div class="ep-li-name">'+a.emoji+' '+a.name+'</div>'+
+      '<div class="ep-li-sub">'+a.tag+'</div></div>'+
+      '<button class="ep-li-del" onclick="event.stopPropagation();aQuickDel('+i+')">&times;</button></div>';
+  }
+  el.innerHTML=h||'<div style="padding:12px;color:var(--muted);font-size:12px;text-align:center">No matches</div>';
+}
+
+function aSelect(i){selA=i;aRenderList();aLoadForm();}
+
+function aLoadForm(){
+  var el=document.getElementById('aRgt');
+  if(selA===null){el.innerHTML='<div class="ep-ph"><span>&#9876;</span>Select a calling to edit,<br>or click + New to add one.</div>';return;}
+  var a=ARCHS[selA];
+  var pathsHtml='';
+  for(var p=0;p<3;p++){
+    var path=a.paths&&a.paths[p]?a.paths[p]:{name:'',desc:'',abilities:['','','']};
+    pathsHtml+='<h4 style="font-family:Cinzel,serif;font-size:11px;color:var(--gold);margin:10px 0 6px">Path '+(p+1)+'</h4>'+
+      '<div class="ep-field"><label class="ep-lbl">Path Name</label><input class="ep-inp" id="apn-'+p+'" value="'+path.name+'"></div>'+
+      '<div class="ep-field"><label class="ep-lbl">Description</label><textarea class="ep-txt" id="apd-'+p+'">'+path.desc+'</textarea></div>'+
+      '<div class="ep-row3">'+
+      '<div class="ep-field"><label class="ep-lbl">Ability 1</label><input class="ep-inp" id="apa-'+p+'-0" value="'+(path.abilities[0]||'')+'"></div>'+
+      '<div class="ep-field"><label class="ep-lbl">Ability 2</label><input class="ep-inp" id="apa-'+p+'-1" value="'+(path.abilities[1]||'')+'"></div>'+
+      '<div class="ep-field"><label class="ep-lbl">Ability 3</label><input class="ep-inp" id="apa-'+p+'-2" value="'+(path.abilities[2]||'')+'"></div></div>';
+  }
+
+  el.innerHTML='<div class="ep-ftitle">&#9998; Editing: '+a.emoji+' '+a.name+'</div>'+
+    '<div class="ep-row2"><div class="ep-field"><label class="ep-lbl">Name</label><input class="ep-inp" id="an-name" value="'+a.name+'"></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Emoji</label><input class="ep-inp" id="an-emoji" value="'+a.emoji+'"></div></div>'+
+    '<div class="ep-row2"><div class="ep-field"><label class="ep-lbl">Tagline</label><input class="ep-inp" id="an-tag" value="'+a.tag+'"></div>'+
+    '<div class="ep-field"><label class="ep-lbl">ID (no spaces)</label><input class="ep-inp" id="an-id" value="'+a.id+'"></div></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Description</label><textarea class="ep-txt" id="an-desc">'+a.desc+'</textarea></div>'+
+    '<div class="ep-row3"><div class="ep-field"><label class="ep-lbl">Hit Die</label><input class="ep-inp" type="number" id="an-hd" value="'+a.hd+'"></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Action Points</label><input class="ep-inp" type="number" id="an-ap" value="'+a.ap+'"></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Base Mana</label><input class="ep-inp" type="number" id="an-mana" value="'+a.mana+'"></div></div>'+
+    '<div class="ep-row2"><div class="ep-field"><label class="ep-lbl">Primary Abilities</label><input class="ep-inp" id="an-primary" value="'+a.primary+'"></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Key Trainings</label><input class="ep-inp" id="an-trainings" value="'+a.keyTrainings+'"></div></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Core Trainings (comma-separated)</label><input class="ep-inp" id="an-core" value="'+(a.coreTrainings?a.coreTrainings.join(', '):'')+'"></div>'+
+    '<div class="ep-field"><label class="ep-lbl">Core Techniques (comma-separated)</label><input class="ep-inp" id="an-techs" value="'+(a.techniques?a.techniques.join(', '):'')+'"></div>'+
+    pathsHtml;
+}
+
+function aNew(){
+  var id='calling_'+Date.now();
+  var newA={id:id,name:'New Calling',emoji:'\u2753',tag:'',desc:'',primary:'',keyTrainings:'',hd:8,ap:6,mana:0,coreTrainings:[],techniques:[],paths:[{name:'',desc:'',abilities:['','','']},{name:'',desc:'',abilities:['','','']},{name:'',desc:'',abilities:['','','']}]};
+  ARCHS.push(newA);
+  selA=ARCHS.length-1;
+  aRenderList();aLoadForm();
+  toast('New calling created. Fill in details and click Save.');
+}
+
+function aSave(){
+  if(selA===null)return;
+  var a=ARCHS[selA];
+  a.id=document.getElementById('an-id').value||a.id;
+  a.name=document.getElementById('an-name').value;
+  a.emoji=document.getElementById('an-emoji').value;
+  a.tag=document.getElementById('an-tag').value;
+  a.desc=document.getElementById('an-desc').value;
+  a.hd=parseInt(document.getElementById('an-hd').value)||8;
+  a.ap=parseInt(document.getElementById('an-ap').value)||6;
+  a.mana=parseInt(document.getElementById('an-mana').value)||0;
+  a.primary=document.getElementById('an-primary').value;
+  a.keyTrainings=document.getElementById('an-trainings').value;
+  var coreStr=document.getElementById('an-core').value;
+  a.coreTrainings=coreStr.split(',').map(function(s){return s.trim();}).filter(function(s){return s;});
+  var techStr=document.getElementById('an-techs').value;
+  a.techniques=techStr.split(',').map(function(s){return s.trim();}).filter(function(s){return s;});
+  a.paths=[];
+  for(var p=0;p<3;p++){
+    var pn=document.getElementById('apn-'+p).value;
+    var pd=document.getElementById('apd-'+p).value;
+    var abils=[];
+    for(var ab=0;ab<3;ab++){var v=document.getElementById('apa-'+p+'-'+ab).value;if(v.trim())abils.push(v);}
+    if(pn.trim()) a.paths.push({name:pn,desc:pd,abilities:abils});
+  }
+  localStorage.setItem('arshmunnu_archs_v2',JSON.stringify(ARCHS));
+  render();aRenderList();
+  toast('Calling saved!');
+}
+
+function aDelete(){
+  if(selA===null||!confirm('Delete '+ARCHS[selA].name+' forever?'))return;
+  ARCHS.splice(selA,1);
+  if(activeArch>=ARCHS.length)activeArch=0;
+  selA=null;
+  localStorage.setItem('arshmunnu_archs_v2',JSON.stringify(ARCHS));
+  render();aRenderList();aLoadForm();
+  toast('Calling deleted.');
+}
+
+function aQuickDel(i){
+  if(!confirm('Delete '+ARCHS[i].name+'?'))return;
+  ARCHS.splice(i,1);
+  if(activeArch>=ARCHS.length)activeArch=0;
+  if(selA===i)selA=null;
+  else if(selA>i)selA--;
+  localStorage.setItem('arshmunnu_archs_v2',JSON.stringify(ARCHS));
+  render();aRenderList();if(selA!==null)aLoadForm();
+}
+
+function aExport(){
+  var dataStr='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(ARCHS,null,2));
+  var a=document.createElement('a');a.href=dataStr;a.download='arshmunnu_callings.json';a.click();
+}
+
+function aImport(e){
+  var f=e.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(Array.isArray(d)&&d.length>0){ARCHS=d;selA=null;localStorage.setItem('arshmunnu_archs_v2',JSON.stringify(ARCHS));render();aRenderList();aLoadForm();toast('Callings imported!');}else{toast('Invalid file format.');}}catch(err){toast('Error parsing file.');}};
+  r.readAsText(f);
+  e.target.value='';
+}
+
+function aReset(){
+  if(!confirm('Reset ALL callings to defaults?'))return;
+  localStorage.removeItem('arshmunnu_archs_v2');
+  location.reload();
+}
+
+function toast(msg){
+  var t=document.createElement('div');t.className='ep-toast';t.textContent=msg;document.body.appendChild(t);
+  setTimeout(function(){t.remove();},2000);
+}
+
+// Load saved data
+var saved=localStorage.getItem('arshmunnu_archs_v2');
+if(saved){try{ARCHS=JSON.parse(saved);}catch(e){}}
+render();
+</script>
+</body>
+</html>

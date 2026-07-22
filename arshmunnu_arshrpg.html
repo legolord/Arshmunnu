@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ArshRPG — The Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06040e;--text:#e6dfcf;--muted:#928c9e;--mute2:#5b566a;
+  --gold:#c9a84c;--goldL:#f0cc72;--goldD:#7c5a1f;
+  --border:rgba(201,168,76,.14);--border2:rgba(201,168,76,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;}
+body{font-family:'EB Garamond',serif;color:var(--text);min-height:100vh;position:relative;overflow-x:hidden;
+  background:
+    radial-gradient(1100px 520px at 78% -8%,rgba(58,138,138,.10),transparent 55%),
+    radial-gradient(900px 520px at 10% 6%,rgba(147,112,176,.10),transparent 55%),
+    radial-gradient(1000px 600px at 50% 120%,rgba(201,168,74,.06),transparent 55%),
+    var(--bg);}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.wrap{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:0 20px 120px;}
+
+/* HERO */
+.hero{padding:64px 0 30px;text-align:center;position:relative;}
+.hero .eyebrow{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--goldD);margin-bottom:18px;}
+.hero h1{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(38px,8vw,82px);line-height:.95;
+  background:linear-gradient(180deg,#f6dd9a,#d4a44a 55%,#7c5a1f);-webkit-background-clip:text;background-clip:text;color:transparent;
+  letter-spacing:.02em;filter:drop-shadow(0 2px 18px rgba(212,164,74,.2));}
+.hero .tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(16px,2.4vw,21px);color:var(--muted);margin-top:16px;}
+.hero .rule{width:120px;height:1px;margin:26px auto 0;background:linear-gradient(90deg,transparent,var(--border2),transparent);position:relative;}
+.hero .rule::after{content:"\2756";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:var(--goldD);font-size:13px;background:var(--bg);padding:0 10px;}
+
+/* HOME LINK */
+.home-link{position:absolute;top:22px;left:0;display:inline-flex;align-items:center;gap:8px;
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);cursor:pointer;
+  padding:8px 14px;border:1px solid var(--border);border-radius:3px;background:rgba(201,168,74,.04);transition:all .16s;}
+.home-link:hover{color:var(--goldL);border-color:var(--border2);}
+
+/* GROUPS */
+.group{margin-top:46px;}
+.group-h{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.group-h .gnum{font-family:'Cinzel',serif;font-size:11px;color:var(--goldD);letter-spacing:.2em;border:1px solid var(--border);border-radius:50%;
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.group-h .gtitle{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--goldL);}
+.group-h .gline{flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent);}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:15px;}
+.card{position:relative;display:flex;gap:15px;align-items:flex-start;padding:19px 19px;cursor:pointer;overflow:hidden;
+  background:linear-gradient(155deg,rgba(20,18,28,.92),rgba(12,10,18,.82));
+  border:1px solid var(--border);border-radius:9px;transition:transform .18s,border-color .18s,box-shadow .18s;
+  --c:var(--gold);}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c);opacity:.65;transition:opacity .18s,width .18s;}
+.card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--c) 55%,transparent);
+  box-shadow:0 14px 38px rgba(0,0,0,.55),0 0 0 1px color-mix(in srgb,var(--c) 22%,transparent);}
+.card:hover::before{opacity:1;width:4px;}
+.card-ic{width:46px;height:46px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:23px;
+  background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--c) 30%,transparent),color-mix(in srgb,var(--c) 10%,transparent));
+  border:1px solid color-mix(in srgb,var(--c) 40%,transparent);color:var(--c);}
+.card-body{flex:1;min-width:0;}
+.card-name{font-family:'Cinzel',serif;font-size:15px;color:var(--text);letter-spacing:.03em;display:flex;align-items:center;gap:8px;}
+.card-badge{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;padding:2px 7px;border-radius:9px;
+  border:1px solid color-mix(in srgb,var(--c) 40%,transparent);color:var(--c);background:color-mix(in srgb,var(--c) 12%,transparent);}
+.card-desc{font-family:'Cormorant Garamond',serif;font-size:14.5px;color:var(--muted);line-height:1.45;margin-top:7px;}
+.card-cta{margin-top:11px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--c);
+  display:flex;align-items:center;gap:6px;opacity:.85;transition:gap .18s;}
+.card:hover .card-cta{gap:11px;}
+
+@media(max-width:560px){.hero{padding:48px 0 20px;}.home-link{position:static;display:inline-flex;margin-bottom:24px;}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="wrap">
+  <div class="hero">
+    <div class="home-link" onclick="goHome()">&larrhk; The Grand Archive</div>
+    <div class="eyebrow">The Tabletop of Arshmunnu</div>
+    <h1>ArshRPG</h1>
+    <div class="tagline">Everything you need to play in the Talean world &mdash; build heroes, run the table, and take the field.</div>
+    <div class="rule"></div>
+  </div>
+
+  <div id="groups"></div>
+</div>
+
+<script>
+/* ===== ArshRPG launcher hub ===== */
+var GROUPS=[
+  { title:"Play & Run", apps:[
+    {id:"campaigns", file:"arshmunnu_campaigns.html", name:"Campaigns", c:"#9370b0", ic:"\u2756", badge:"New",
+      desc:"Found or join a saga, gather a party from your roster, log every session, and march the whole table to the battle map."},
+    {id:"vtt", file:"arshmunnu_vtt.html", name:"Virtual Tabletop", c:"#3a8a8a", ic:"\u2694", badge:"Battle Map",
+      desc:"A hex battle map with fog of war and initiative. Drop monsters from the Bestiary and your own heroes as tokens."},
+  ]},
+  { title:"Create & Manage", apps:[
+    {id:"creator", file:"arshmunnu_creator.html", name:"Character Creator", c:"#2bb39c", ic:"\uD83C\uDFAD", badge:"Build",
+      desc:"Forge a hero step by step \u2014 species, calling, path, abilities, trainings, equipment, and identity. Saved straight to your roster."},
+    {id:"characters", file:"arshmunnu_characters.html", name:"Characters", c:"#14b8a6", ic:"\u2630", badge:"Workshop",
+      desc:"Your roster plus the spell library, item vault, combat tracker, NPC vault, and downtime \u2014 one unified workshop."},
+  ]},
+  { title:"Rules & Reference", apps:[
+    {id:"players_guide", file:"arshmunnu_players_guide.html", name:"Guide for Players", c:"#2E8B57", ic:"\u2694",
+      desc:"The core rules: how to act, roll, fight, and survive in Arshmunnu."},
+    {id:"gm_guide", file:"arshmunnu_gm_guide.html", name:"Explanadium (GM)", c:"#a9692e", ic:"\u2620",
+      desc:"The Game Master's companion \u2014 running the world, building encounters, and wielding the Void."},
+    {id:"archetypes", file:"arshmunnu_archetypes.html", name:"Callings", c:"#c9a84c", ic:"\u2692",
+      desc:"Every calling and path \u2014 the archetypes your heroes can follow."},
+    {id:"races", file:"arshmunnu_races.html", name:"Species", c:"#6B8E6B", ic:"\uD83C\uDF0D",
+      desc:"The peoples of Arshmunnu, their traits, and their place in the world."},
+    {id:"bestiary", file:"arshmunnu_bestiary.html", name:"Bestiary", c:"#b03a3a", ic:"\uD83D\uDC09",
+      desc:"Searchable ArshRPG stat blocks \u2014 the play-side companion to the Monsterium."},
+    {id:"monsterium", file:"arshmunnu_monsterium.html", name:"Monsterium", c:"#7a2630", ic:"\uD83D\uDC7B",
+      desc:"The GM-side compendium of creatures, their lore, and the horrors of the Void."},
+  ]},
+];
+
+function openRpg(id,file){
+  try{
+    if(window.parent && window.parent!==window && typeof window.parent.openApp==="function"){ window.parent.openApp(id); return; }
+  }catch(e){}
+  window.location.href=file;
+}
+function goHome(){
+  try{
+    if(window.parent && window.parent!==window && typeof window.parent.openApp==="function"){ window.parent.openApp("home"); return; }
+  }catch(e){}
+  window.location.href="index.html";
+}
+
+(function render(){
+  var out="";
+  GROUPS.forEach(function(g,gi){
+    out+='<div class="group"><div class="group-h">'
+      +'<span class="gnum">'+(gi+1)+'</span>'
+      +'<span class="gtitle">'+g.title+'</span>'
+      +'<span class="gline"></span></div><div class="cards">';
+    g.apps.forEach(function(a){
+      out+='<div class="card" style="--c:'+a.c+'" onclick="openRpg(\''+a.id+'\',\''+a.file+'\')" tabindex="0" role="button">'
+        +'<div class="card-ic">'+a.ic+'</div>'
+        +'<div class="card-body">'
+          +'<div class="card-name">'+a.name+(a.badge?' <span class="card-badge">'+a.badge+'</span>':'')+'</div>'
+          +'<div class="card-desc">'+a.desc+'</div>'
+          +'<div class="card-cta">Open &rsaquo;</div>'
+        +'</div></div>';
+    });
+    out+='</div></div>';
+  });
+  document.getElementById("groups").innerHTML=out;
+  document.querySelectorAll(".card").forEach(function(c){
+    c.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();c.click();}});
+  });
+})();
+
+/* ambient starfield */
+(function(){
+  var c=document.getElementById("stars"),ctx=c.getContext("2d"),stars=[];
+  function size(){c.width=innerWidth;c.height=innerHeight;stars=[];var n=Math.min(120,Math.floor(innerWidth*innerHeight/14000));
+    for(var i=0;i<n;i++)stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.3+.2,a:Math.random()*6.28,s:Math.random()*.015+.004});}
+  function draw(){ctx.clearRect(0,0,c.width,c.height);stars.forEach(function(st){st.a+=st.s;ctx.globalAlpha=Math.abs(Math.sin(st.a))*.6+.1;ctx.fillStyle="#e8dfc8";ctx.beginPath();ctx.arc(st.x,st.y,st.r,0,6.28);ctx.fill();});ctx.globalAlpha=1;requestAnimationFrame(draw);}
+  addEventListener("resize",size);size();draw();
+})();
+</script>
+</body>
+</html>

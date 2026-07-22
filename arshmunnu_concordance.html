@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Concordance — Cross-Reference of the Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06040e;--text:#e6dfcf;--muted:#928c9e;--mute2:#5b566a;
+  --gold:#c9a84c;--goldL:#f0cc72;--goldD:#7c5a1f;
+  --border:rgba(201,168,76,.14);--border2:rgba(201,168,76,.3);
+  --xref:#cf7d63;
+  --person:#c9a84c;--house:#9370b0;--deity:#a855f7;--place:#5A8B5A;--event:#06b6d4;--concept:#cf7d63;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;}
+body{font-family:'EB Garamond',serif;color:var(--text);min-height:100vh;position:relative;overflow-x:hidden;
+  background:
+    radial-gradient(1100px 520px at 80% -8%,rgba(6,182,212,.08),transparent 55%),
+    radial-gradient(900px 520px at 8% 4%,rgba(147,112,176,.09),transparent 55%),
+    radial-gradient(1000px 600px at 50% 120%,rgba(201,168,74,.06),transparent 55%),
+    var(--bg);}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.wrap{position:relative;z-index:2;max-width:1080px;margin:0 auto;padding:0 20px 120px;}
+
+.hero{padding:48px 0 16px;text-align:center;position:relative;}
+.hero .eyebrow{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--goldD);margin-bottom:14px;}
+.hero h1{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(34px,7vw,72px);line-height:.95;
+  background:linear-gradient(180deg,#f6dd9a,#d4a44a 55%,#7c5a1f);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.02em;}
+.hero .tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(15px,2.3vw,20px);color:var(--muted);margin-top:12px;}
+.hero .rule{width:120px;height:1px;margin:20px auto 0;background:linear-gradient(90deg,transparent,var(--border2),transparent);position:relative;}
+.hero .rule::after{content:"\2756";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:var(--goldD);font-size:13px;background:var(--bg);padding:0 10px;}
+.home-link{position:absolute;top:18px;left:0;display:inline-flex;align-items:center;gap:8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);cursor:pointer;padding:8px 14px;border:1px solid var(--border);border-radius:3px;background:rgba(201,168,74,.04);transition:all .16s;}
+.home-link:hover{color:var(--goldL);border-color:var(--border2);}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:26px 0 14px;}
+.searchbox{position:relative;flex:1;min-width:220px;}
+.searchbox input{width:100%;background:linear-gradient(180deg,rgba(201,168,74,.06),rgba(0,0,0,.4));border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:12px 14px 12px 40px;font-size:15px;font-family:'EB Garamond',serif;}
+.searchbox input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,74,.1);}
+.searchbox .si{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--goldD);}
+.btn{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;padding:11px 16px;border-radius:6px;border:1px solid var(--border2);background:rgba(201,168,74,.05);color:var(--goldL);transition:all .15s;white-space:nowrap;}
+.btn:hover{background:rgba(201,168,74,.12);border-color:var(--gold);}
+.btn.primary{border-color:color-mix(in srgb,var(--xref) 55%,transparent);background:linear-gradient(180deg,rgba(207,125,99,.2),rgba(207,125,99,.05));}
+.btn.primary:hover{background:linear-gradient(180deg,rgba(207,125,99,.32),rgba(207,125,99,.1));}
+.btn.small{padding:6px 11px;font-size:9px;}
+.btn.danger{border-color:rgba(192,57,43,.4);background:rgba(192,57,43,.08);color:#d98a7a;}
+.btn.ghost{color:var(--muted);}
+
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;}
+.chip{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:14px;border:1px solid var(--border);background:rgba(201,168,74,.03);color:var(--muted);cursor:pointer;transition:all .14s;display:flex;align-items:center;gap:6px;}
+.chip .cdot{width:8px;height:8px;border-radius:50%;}
+.chip:hover{border-color:var(--border2);color:var(--text);}
+.chip.on{color:var(--text);border-color:currentColor;background:rgba(201,168,74,.08);}
+
+/* LAYOUT: list + detail */
+.cols{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;}
+@media(max-width:760px){.cols{grid-template-columns:1fr;}.detail{order:-1;}}
+
+.elist{display:flex;flex-direction:column;gap:6px;max-height:70vh;overflow-y:auto;padding-right:4px;}
+.erow{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:rgba(18,15,26,.7);transition:all .14s;}
+.erow:hover{border-color:var(--border2);transform:translateX(2px);}
+.erow.active{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,rgba(18,15,26,.7));}
+.erow .eic{width:28px;height:28px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;background:color-mix(in srgb,var(--c) 18%,transparent);border:1px solid color-mix(in srgb,var(--c) 40%,transparent);color:var(--c);}
+.erow .en{flex:1;min-width:0;}
+.erow .enm{font-family:'Cinzel',serif;font-size:13px;color:var(--text);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.erow .ety{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:var(--muted);}
+.erow .ect{font-family:'Cinzel',serif;font-size:10px;color:var(--goldD);flex-shrink:0;}
+.list-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--goldD);}
+
+/* DETAIL */
+.detail{border:1px solid var(--border2);border-radius:12px;background:linear-gradient(165deg,rgba(20,16,30,.9),rgba(10,8,18,.82));padding:24px;min-height:320px;}
+.d-type{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:8px;}
+.d-type .ddot{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);}
+.d-name{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:clamp(24px,3.6vw,36px);color:var(--goldL);margin:6px 0 2px;letter-spacing:.02em;}
+.d-alias{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--muted);margin-bottom:14px;}
+.d-summary{font-size:16px;line-height:1.66;color:#dcd4c2;}
+.d-summary .xref{color:var(--xref);text-decoration:none;border-bottom:1px dotted rgba(207,125,99,.5);cursor:pointer;}
+.d-summary .xref:hover{color:var(--goldL);border-bottom-color:var(--goldL);}
+.d-summary .xref-missing{color:var(--muted);border-bottom:1px dotted rgba(146,140,158,.45);cursor:pointer;}
+.d-sec{margin-top:20px;}
+.d-sec h4{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--goldD);margin-bottom:9px;display:flex;align-items:center;gap:10px;}
+.d-sec h4::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent);}
+.tags{display:flex;flex-wrap:wrap;gap:7px;}
+.tag{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.03em;padding:6px 11px;border-radius:6px;border:1px solid var(--border2);background:rgba(201,168,74,.05);color:var(--text);cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .14s;}
+.tag:hover{border-color:var(--gold);background:rgba(201,168,74,.1);}
+.tag .tdot{width:7px;height:7px;border-radius:50%;}
+.backlink{padding:10px 12px;border:1px solid var(--border);border-radius:7px;background:rgba(18,15,26,.6);margin-bottom:8px;cursor:pointer;transition:all .14s;}
+.backlink:hover{border-color:var(--border2);}
+.backlink .bl-h{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.backlink .bl-src{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--goldL);}
+.backlink .bl-n{font-family:'Cinzel',serif;font-size:10px;color:var(--goldD);}
+.backlink .bl-snip{font-family:'Cormorant Garamond',serif;font-size:13.5px;color:var(--muted);line-height:1.5;margin-top:5px;}
+.backlink .bl-snip mark{background:rgba(207,125,99,.28);color:var(--goldL);padding:0 2px;border-radius:2px;}
+.d-actions{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:16px;}
+.muted-note{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--mute2);font-size:14px;}
+
+/* EDITOR / MODAL */
+.overlay{position:fixed;inset:0;background:rgba(4,2,12,.86);z-index:60;display:none;align-items:center;justify-content:center;padding:20px;}
+.overlay.show{display:flex;}
+.modal{width:min(640px,96vw);max-height:92vh;overflow-y:auto;background:linear-gradient(165deg,rgba(24,19,34,.98),rgba(10,8,18,.98));border:1px solid var(--border2);border-radius:12px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.6);}
+.modal h3{font-family:'Cinzel',serif;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--goldL);margin-bottom:16px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--goldD);margin-bottom:6px;}
+.field input,.field textarea,.field select{width:100%;background:rgba(6,4,14,.7);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'EB Garamond',serif;font-size:15px;padding:10px 12px;}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--xref);box-shadow:0 0 0 3px rgba(207,125,99,.12);}
+.field textarea{min-height:120px;line-height:1.6;resize:vertical;}
+.field .fhint{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12.5px;color:var(--mute2);margin-top:5px;}
+.typegrid{display:flex;gap:7px;flex-wrap:wrap;}
+.typepick{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.06em;padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:rgba(201,168,74,.04);color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:7px;}
+.typepick .tp-dot{width:9px;height:9px;border-radius:50%;}
+.typepick.on{color:var(--text);border-color:currentColor;background:rgba(201,168,74,.1);}
+.modal-actions{display:flex;justify-content:space-between;gap:8px;margin-top:8px;}
+
+.empty{text-align:center;padding:48px 20px;color:var(--muted);}
+.empty .e-ic{font-size:32px;color:var(--goldD);margin-bottom:12px;}
+.empty .e-t{font-family:'Cinzel',serif;font-size:14px;color:var(--goldL);letter-spacing:.05em;}
+.empty .e-s{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;margin-top:7px;}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:80;opacity:0;pointer-events:none;background:rgba(10,7,18,.96);border:1px solid var(--border2);border-radius:7px;padding:11px 20px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.06em;color:var(--goldL);transition:all .25s;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.gather-state{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--mute2);margin-left:auto;}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="wrap">
+  <div class="hero">
+    <div class="home-link" onclick="goHome()">&larrhk; The Grand Archive</div>
+    <div class="eyebrow">Cross-Reference of the Archive</div>
+    <h1>The Concordance</h1>
+    <div class="tagline">One canonical roll of every person, house, god, place, and event — and every passage across the Archive that names them.</div>
+    <div class="rule"></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="searchbox"><span class="si">&#128269;</span><input id="q" placeholder="Search the Concordance by name or alias…" autocomplete="off"></div>
+    <button class="btn primary" id="addBtn">&#43; New entry</button>
+    <button class="btn" id="gatherBtn" title="Scan every chamber for mentions and headings">&#10227; Gather references</button>
+    <span class="gather-state" id="gatherState"></span>
+  </div>
+  <div class="filters" id="filters"></div>
+
+  <div class="cols">
+    <div>
+      <div class="list-head"><span id="listCount">—</span><span id="sortNote">A–Z</span></div>
+      <div class="elist" id="elist"></div>
+    </div>
+    <div class="detail" id="detail"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   THE CONCORDANCE — the Archive's shared entity registry.
+   Records live in localStorage ('arsh_registry_v1') as flat JSON
+   with stable ids + an 'updated' stamp, so the same store can later
+   be mirrored to a server (e.g. a PocketBase collection) with a thin
+   adapter rather than a rewrite. No server required today.
+   ════════════════════════════════════════════════════════════ */
+(function(){
+  var STORE='arsh_registry_v1';
+  var TYPES=[
+    {id:'person', label:'People',    one:'Person',  c:'#c9a84c', ic:'\u263A'},
+    {id:'house',  label:'Houses',    one:'House',   c:'#9370b0', ic:'\u269C'},
+    {id:'deity',  label:'Gods',      one:'Deity',   c:'#a855f7', ic:'\u2726'},
+    {id:'place',  label:'Places',    one:'Place',   c:'#5A8B5A', ic:'\u25C8'},
+    {id:'event',  label:'Events',    one:'Event',   c:'#06b6d4', ic:'\u29D6'},
+    {id:'concept',label:'Concepts',  one:'Concept', c:'#cf7d63', ic:'\u2756'}
+  ];
+  var TMAP={}; TYPES.forEach(function(t){TMAP[t.id]=t;});
+  function tcolor(id){return (TMAP[id]||TMAP.concept).c;}
+  function tic(id){return (TMAP[id]||TMAP.concept).ic;}
+
+  // Lore volumes scanned by "Gather" (registry-accurate filenames).
+  var SOURCES=[
+    {key:'codex',file:'arshmunnu_codex.html',label:'Codex'},
+    {key:'pantheon',file:'arshmunnu_pantheon.html',label:'Pantheon'},
+    {key:'timeline',file:'arshmunnu_timeline.html',label:'Chronicle'},
+    {key:'lineage',file:'arshmunnu_lineage.html',label:'Lineage'},
+    {key:'players_guide',file:'arshmunnu_players_guide.html',label:'Players Guide'},
+    {key:'gm_guide',file:'arshmunnu_gm_guide.html',label:'GM Guide'},
+    {key:'races',file:'arshmunnu_races.html',label:'Species'},
+    {key:'archetypes',file:'arshmunnu_archetypes.html',label:'Callings'},
+    {key:'bestiary',file:'arshmunnu_bestiary.html',label:'Bestiary'},
+    {key:'publications',file:'arshmunnu_publications.html',label:'Library'}
+  ];
+
+  function load(){try{return JSON.parse(localStorage.getItem(STORE))||{entities:{},v:1};}catch(e){return {entities:{},v:1};}}
+  function save(){try{localStorage.setItem(STORE,JSON.stringify(DB));}catch(e){toast('Storage blocked — could not save.');}}
+  var DB=load();
+  function uid(){return 'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function escRx(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+
+  /* ---- seed a faithful starter set (all attested in the canon) ---- */
+  function seed(){
+    if(DB.seeded) return;
+    var S=[
+      {name:'Achilleus',type:'person',aliases:['Achilleus the Emperor'],source:'timeline',
+        summary:"The Emperor whose unification of the realms began the [[After Unification|AU]] reckoning (Year 0). His ascension is the anchor of the imperial calendar kept in [[Exelia]]."},
+      {name:'Aelarion',type:'person',aliases:['Keeper Aelarion','the Keeper'],source:'codex',
+        summary:"Keeper of the Archive and a vital-field theorist of the late imperial age; the Aelarion Concordat on Scientific Exchange (210 AU) formalised cooperation between the As'hikan and [[Soviet Socialist Commonwealth|SSC]] traditions."},
+      {name:'Exelia',type:'place',aliases:[],source:'codex',
+        summary:"The primary continent of [[Arshmunnu]] — the stage on which the houses, faiths, and empires of the Talean world contend."},
+      {name:'Imvien',type:'place',aliases:['Imviens','the Imviens'],source:'lineage',
+        summary:"A kindred and realm wrought of water — supple of mind, enduring of voyage — made to bind coasts and islands by oar, sail, and far-seeing trade."},
+      {name:'Gothia',type:'place',aliases:[],source:'timeline',
+        summary:"The land whose earliest settlements anchor the [[Foundation of Gothia|FG]] calendar, the oldest of the reckonings of the Archive."},
+      {name:'Armorica',type:'place',aliases:[],source:'lineage',
+        summary:"A western realm founded in legend by the first Octavia and Helen; its [[Marian reckoning|MC]] calendar counts from the Coronation of Marian the Firm."},
+      {name:'Arshmunnu',type:'concept',aliases:['Universe A2'],source:'codex',
+        summary:"The world — universe A2 of the [[Talean Multiverse]]; the Great and Eternal World whose chronicle the Archive keeps."},
+      {name:'Talean Multiverse',type:'concept',aliases:['Talean'],source:'codex',
+        summary:"The multiverse of which [[Arshmunnu]] is one universe among many."},
+      {name:'The Fall of Sin',type:'event',aliases:['the First Fall','the Fall'],source:'pantheon',
+        summary:"The Fall that anchors the Calendar of the Fall (BF/AF): Sin falls into the crack of the world and the Void drinks his light. The Eight who remain march westward."},
+      {name:'Pax As\u2019hikana',type:'event',aliases:['the Pax'],source:'timeline',
+        summary:"The imperial peace that began in 203 AU, under which much of the joint scientific work of the age was carried out."}
+    ];
+    var idByName={};
+    S.forEach(function(s){
+      var id=uid();
+      DB.entities[id]={id:id,name:s.name,type:s.type,aliases:s.aliases||[],summary:s.summary,source:s.source||'',refs:[],updated:Date.now()};
+      idByName[s.name.toLowerCase()]=id;
+    });
+    DB.seeded=1; save();
+  }
+
+  /* ---- name resolution / wiki-links ---- */
+  function nameIndex(){
+    var idx={};
+    for(var id in DB.entities){var e=DB.entities[id];idx[e.name.toLowerCase()]=id;(e.aliases||[]).forEach(function(a){if(a)idx[a.toLowerCase()]=id;});}
+    return idx;
+  }
+  function renderSummary(text){
+    var idx=nameIndex();
+    return esc(text).replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,function(_,name,label){
+      var key=name.trim().toLowerCase(),id=idx[key],shown=esc((label||name).trim());
+      if(id) return '<a class="xref" data-go="'+id+'">'+shown+'</a>';
+      return '<span class="xref-missing" data-new="'+esc(name.trim())+'">'+shown+'</span>';
+    });
+  }
+  // entities whose summary [[links]] to target id
+  function mentionedBy(targetId){
+    var idx=nameIndex(),out=[];
+    for(var id in DB.entities){ if(id===targetId)continue;
+      var e=DB.entities[id],re=/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g,m,hit=false;
+      while((m=re.exec(e.summary||''))){ if(idx[m[1].trim().toLowerCase()]===targetId){hit=true;break;} }
+      if(hit)out.push(e);
+    }
+    return out;
+  }
+  // entities this entity's summary links to
+  function linksOut(e){
+    var idx=nameIndex(),re=/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g,m,seen={},out=[];
+    while((m=re.exec(e.summary||''))){var id=idx[m[1].trim().toLowerCase()];if(id&&id!==e.id&&!seen[id]){seen[id]=1;out.push(DB.entities[id]);}}
+    return out;
+  }
+
+  /* ---- state ---- */
+  var q='', filter='all', activeId=null;
+  var elist=document.getElementById('elist'),detail=document.getElementById('detail');
+
+  function allEntities(){var a=[];for(var id in DB.entities)a.push(DB.entities[id]);return a;}
+  function filtered(){
+    var ql=q.trim().toLowerCase();
+    return allEntities().filter(function(e){
+      if(filter!=='all'&&e.type!==filter)return false;
+      if(!ql)return true;
+      if(e.name.toLowerCase().indexOf(ql)>=0)return true;
+      return (e.aliases||[]).some(function(a){return a.toLowerCase().indexOf(ql)>=0;});
+    }).sort(function(a,b){return a.name.localeCompare(b.name);});
+  }
+
+  function renderFilters(){
+    var counts={all:allEntities().length};
+    TYPES.forEach(function(t){counts[t.id]=allEntities().filter(function(e){return e.type===t.id;}).length;});
+    var h='<div class="chip'+(filter==='all'?' on':'')+'" data-f="all">All <span style="color:var(--goldD)">'+counts.all+'</span></div>';
+    TYPES.forEach(function(t){
+      h+='<div class="chip'+(filter===t.id?' on':'')+'" data-f="'+t.id+'" style="'+(filter===t.id?'color:'+t.c:'')+'"><span class="cdot" style="background:'+t.c+'"></span>'+t.label+' <span style="color:var(--goldD)">'+counts[t.id]+'</span></div>';
+    });
+    document.getElementById('filters').innerHTML=h;
+    document.querySelectorAll('.chip').forEach(function(c){c.addEventListener('click',function(){filter=c.dataset.f;renderFilters();renderList();});});
+  }
+
+  function renderList(){
+    var list=filtered();
+    document.getElementById('listCount').textContent=list.length+' entr'+(list.length===1?'y':'ies');
+    if(!list.length){elist.innerHTML='<div class="muted-note" style="padding:14px">No entries match.</div>';return;}
+    elist.innerHTML=list.map(function(e){
+      var c=tcolor(e.type),refs=(e.refs||[]).reduce(function(s,r){return s+(r.count||0);},0);
+      return '<div class="erow'+(e.id===activeId?' active':'')+'" data-id="'+e.id+'" style="--c:'+c+'">'
+        +'<div class="eic">'+tic(e.type)+'</div>'
+        +'<div class="en"><div class="enm">'+esc(e.name)+'</div><div class="ety">'+(TMAP[e.type]?TMAP[e.type].one:'')+(e.aliases&&e.aliases.length?' &middot; '+esc(e.aliases[0]):'')+'</div></div>'
+        +(refs?'<div class="ect">'+refs+'\u00d7</div>':'')+'</div>';
+    }).join('');
+    elist.querySelectorAll('.erow').forEach(function(r){r.addEventListener('click',function(){openEntity(r.dataset.id);});});
+  }
+
+  function openEntity(id){
+    var e=DB.entities[id]; if(!e){renderDetail();return;}
+    activeId=id;
+    try{location.hash='entity='+id;}catch(_){}
+    renderList(); renderDetail();
+  }
+
+  function renderDetail(){
+    var e=DB.entities[activeId];
+    if(!e){
+      detail.innerHTML='<div class="empty"><div class="e-ic">&#9906;</div><div class="e-t">Choose an entry</div>'
+        +'<div class="e-s">Select anyone from the roll, or forge a new entry. Run <b>Gather references</b> to find every passage across the Archive that names them.</div></div>';
+      return;
+    }
+    var c=tcolor(e.type), out=linksOut(e), inb=mentionedBy(e), refs=(e.refs||[]);
+    var src=e.source?chamberLabel(e.source):'';
+    var h='<div class="d-type" style="--c:'+c+'"><span class="ddot"></span>'+(TMAP[e.type]?TMAP[e.type].one:'Entry')+(src?' &middot; recorded in '+esc(src):'')+'</div>';
+    h+='<div class="d-name">'+esc(e.name)+'</div>';
+    if(e.aliases&&e.aliases.length)h+='<div class="d-alias">also: '+e.aliases.map(esc).join(' &middot; ')+'</div>';
+    h+='<div class="d-summary">'+(e.summary?renderSummary(e.summary):'<span class="muted-note">No description yet.</span>')+'</div>';
+
+    if(out.length){
+      h+='<div class="d-sec"><h4>Links to</h4><div class="tags">'+out.map(function(t){
+        return '<span class="tag" data-go="'+t.id+'"><span class="tdot" style="background:'+tcolor(t.type)+'"></span>'+esc(t.name)+'</span>';}).join('')+'</div></div>';
+    }
+    if(inb.length){
+      h+='<div class="d-sec"><h4>Named by other entries</h4><div class="tags">'+inb.map(function(t){
+        return '<span class="tag" data-go="'+t.id+'"><span class="tdot" style="background:'+tcolor(t.type)+'"></span>'+esc(t.name)+'</span>';}).join('')+'</div></div>';
+    }
+
+    h+='<div class="d-sec"><h4>Mentioned across the Archive</h4>';
+    if(refs.length){
+      h+=refs.map(function(r){
+        var snip=esc(r.snippet||'');
+        var rx=new RegExp('('+escRx(e.name)+')','gi'); snip=snip.replace(rx,'<mark>$1</mark>');
+        return '<div class="backlink" data-open="'+r.key+'"'+(r.anchor?' data-anchor="'+esc(r.anchor)+'"':'')+'>'
+          +'<div class="bl-h"><span class="bl-src">'+esc(r.label)+'</span><span class="bl-n">'+r.count+' mention'+(r.count===1?'':'s')+'</span></div>'
+          +(snip?'<div class="bl-snip">'+snip+'</div>':'')+'</div>';
+      }).join('');
+    }else if(DB.gathered){
+      h+='<div class="muted-note">No mentions found in the scanned volumes.</div>';
+    }else{
+      h+='<div class="muted-note">Run <b>Gather references</b> to scan the chambers for every mention of this entry.</div>';
+    }
+    h+='</div>';
+
+    h+='<div class="d-actions"><button class="btn small" id="editE">Edit</button><button class="btn small danger" id="delE">Delete</button>'
+      +(e.source?'<button class="btn small ghost" id="openSrc">Open in '+esc(chamberLabel(e.source))+' &rsaquo;</button>':'')+'</div>';
+    detail.innerHTML=h;
+
+    detail.querySelectorAll('[data-go]').forEach(function(el){el.addEventListener('click',function(){openEntity(el.dataset.go);});});
+    detail.querySelectorAll('[data-new]').forEach(function(el){el.addEventListener('click',function(){openEditor(null,el.dataset.new);});});
+    detail.querySelectorAll('[data-open]').forEach(function(el){el.addEventListener('click',function(){openChamber(el.dataset.open,el.dataset.anchor);});});
+    document.getElementById('editE').addEventListener('click',function(){openEditor(e.id);});
+    document.getElementById('delE').addEventListener('click',function(){delEntity(e.id);});
+    var os=document.getElementById('openSrc'); if(os)os.addEventListener('click',function(){openChamber(e.source);});
+  }
+
+  function chamberLabel(key){var s=SOURCES.filter(function(x){return x.key===key;})[0];if(s)return s.label;
+    var M={creator:'Creator',characters:'Characters',campaigns:'Campaigns',vtt:'Battle Map',strategium:'Strategium',quiz:'Quiz',music:'Music',scriptorium:'Scriptorium',sacred_pantheon:'Sacred Pantheon',arshcrusaders:'Devlog',forum:'Commons',calendar:'Almanac'};return M[key]||key;}
+  function openChamber(key,anchor){
+    try{ if(window.parent&&window.parent!==window&&typeof window.parent.openApp==='function'){
+      window.parent.openApp(key);
+      if(anchor)setTimeout(function(){try{window.parent.document.getElementById('app-frame').contentWindow.location.hash='#'+anchor;}catch(e){}},560);
+      return;
+    } }catch(e){}
+    toast('Open the Archive hub to jump between chambers.');
+  }
+
+  /* ---- editor ---- */
+  var overlay=document.getElementById('overlay'),modal=document.getElementById('modal');
+  function openEditor(id,prefillName){
+    var e=id?DB.entities[id]:{name:prefillName||'',type:'concept',aliases:[],summary:'',source:''};
+    var h='<h3>'+(id?'Edit entry':'New entry')+'</h3>';
+    h+='<div class="field"><label>Name</label><input id="f-name" value="'+esc(e.name)+'" placeholder="Canonical name"></div>';
+    h+='<div class="field"><label>Type</label><div class="typegrid" id="f-type">'+TYPES.map(function(t){
+      return '<div class="typepick'+(e.type===t.id?' on':'')+'" data-t="'+t.id+'"><span class="tp-dot" style="background:'+t.c+'"></span>'+t.one+'</div>';}).join('')+'</div></div>';
+    h+='<div class="field"><label>Aliases</label><input id="f-alias" value="'+esc((e.aliases||[]).join(', '))+'" placeholder="Other names, comma-separated"><div class="fhint">Backlinks and [[links]] resolve these too.</div></div>';
+    h+='<div class="field"><label>Description</label><textarea id="f-sum" placeholder="Write the entry. Link to other canon with [[Name]] or [[Name|shown text]].">'+esc(e.summary||'')+'</textarea><div class="fhint">Use <b>[[double brackets]]</b> to link any other person, house, god, place, or event.</div></div>';
+    h+='<div class="field"><label>Primary chamber (optional)</label><select id="f-src"><option value="">— none —</option>'
+      +SOURCES.map(function(s){return '<option value="'+s.key+'"'+(e.source===s.key?' selected':'')+'>'+s.label+'</option>';}).join('')
+      +['scriptorium','characters','campaigns','strategium','sacred_pantheon','music'].map(function(k){return '<option value="'+k+'"'+(e.source===k?' selected':'')+'>'+chamberLabel(k)+'</option>';}).join('')
+      +'</select></div>';
+    h+='<div class="modal-actions"><button class="btn ghost" id="f-cancel">Cancel</button><button class="btn primary" id="f-save">'+(id?'Save changes':'Create entry')+'</button></div>';
+    modal.innerHTML=h; overlay.classList.add('show');
+    var pick=e.type;
+    modal.querySelectorAll('.typepick').forEach(function(p){p.addEventListener('click',function(){pick=p.dataset.t;modal.querySelectorAll('.typepick').forEach(function(x){x.classList.toggle('on',x===p);});});});
+    document.getElementById('f-cancel').addEventListener('click',closeEditor);
+    document.getElementById('f-save').addEventListener('click',function(){
+      var name=document.getElementById('f-name').value.trim();
+      if(!name){toast('Give the entry a name.');return;}
+      var aliases=document.getElementById('f-alias').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+      var summary=document.getElementById('f-sum').value;
+      var source=document.getElementById('f-src').value;
+      if(id){ var t=DB.entities[id]; t.name=name;t.type=pick;t.aliases=aliases;t.summary=summary;t.source=source;t.updated=Date.now(); }
+      else { var nid=uid(); DB.entities[nid]={id:nid,name:name,type:pick,aliases:aliases,summary:summary,source:source,refs:[],updated:Date.now()}; activeId=nid; }
+      save(); closeEditor(); renderFilters(); renderList(); renderDetail(); toast(id?'Entry saved.':'Entry created.');
+    });
+  }
+  function closeEditor(){overlay.classList.remove('show');modal.innerHTML='';}
+  overlay.addEventListener('click',function(e){if(e.target===overlay)closeEditor();});
+
+  function delEntity(id){
+    var e=DB.entities[id];if(!e)return;
+    if(!confirm('Remove "'+e.name+'" from the Concordance?'))return;
+    delete DB.entities[id]; if(activeId===id)activeId=null;
+    save(); renderFilters(); renderList(); renderDetail(); toast('Entry removed.');
+  }
+
+  /* ---- Gather: scan chambers for mentions + suggest entities from headings ---- */
+  function stripTags(s){return s.replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim();}
+  function headings(html){var out=[],re=/<h([1-3])[^>]*>([\s\S]*?)<\/h\1>/gi,m;while((m=re.exec(html))){var t=stripTags(m[2]);if(t&&t.length<60)out.push(t);}return out;}
+
+  function gather(){
+    var gs=document.getElementById('gatherState'); gs.textContent='Reading the volumes…';
+    var texts={}, heads={}, got=0;
+    Promise.all(SOURCES.map(function(s){
+      return fetch(s.file).then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(html){
+        texts[s.key]=stripTags(html); heads[s.key]=headings(html); got++;
+      }).catch(function(){});
+    })).then(function(){
+      if(!got){gs.textContent='Volumes unreachable — serve the Archive over http to gather.';toast('Gather needs the Archive served over http (file:// blocks reading the other files).');return;}
+      // backlinks per entity
+      var total=0;
+      for(var id in DB.entities){
+        var e=DB.entities[id], names=[e.name].concat(e.aliases||[]).filter(Boolean);
+        var rx=new RegExp('\\b('+names.map(escRx).join('|')+')\\b','gi');
+        var refs=[];
+        SOURCES.forEach(function(s){
+          var txt=texts[s.key]; if(!txt)return;
+          var m,count=0,first=-1;
+          rx.lastIndex=0;
+          while((m=rx.exec(txt))){count++; if(first<0)first=m.index; if(count>500)break;}
+          if(count){
+            var from=Math.max(0,first-50),to=Math.min(txt.length,first+60);
+            refs.push({key:s.key,label:s.label,count:count,snippet:(from>0?'…':'')+txt.slice(from,to)+(to<txt.length?'…':'')});
+            total+=count;
+          }
+        });
+        refs.sort(function(a,b){return b.count-a.count;});
+        e.refs=refs;
+      }
+      DB.gathered=Date.now(); save();
+      // suggestions: headings not matching any entity
+      var idx=nameIndex(), seen={}, sugg=[];
+      SOURCES.forEach(function(s){(heads[s.key]||[]).forEach(function(t){
+        var k=t.toLowerCase(); if(idx[k]||seen[k])return; seen[k]=1;
+        if(t.split(' ').length<=5) sugg.push({name:t,key:s.key});
+      });});
+      gs.textContent='Gathered '+total+' mentions across '+got+' volumes.';
+      renderList(); renderDetail();
+      if(sugg.length) offerSuggestions(sugg.slice(0,40));
+      else toast('Cross-references updated.');
+    });
+  }
+
+  function offerSuggestions(sugg){
+    var h='<h3>New entries found in the volumes</h3><div class="field"><div class="fhint">These headings aren\u2019t in the Concordance yet. Add the ones that name real canon; ignore the rest.</div></div>';
+    h+='<div class="tags" style="max-height:46vh;overflow:auto;">'+sugg.map(function(s,i){
+      return '<span class="tag" data-add="'+i+'">&#43; '+esc(s.name)+' <span style="color:var(--goldD);font-size:9px">'+esc(chamberLabel(s.key))+'</span></span>';
+    }).join('')+'</div>';
+    h+='<div class="modal-actions" style="margin-top:18px"><button class="btn ghost" id="s-close">Done</button></div>';
+    modal.innerHTML=h; overlay.classList.add('show');
+    modal.querySelectorAll('[data-add]').forEach(function(el){
+      el.addEventListener('click',function(){
+        var s=sugg[+el.dataset.add], nid=uid();
+        DB.entities[nid]={id:nid,name:s.name,type:'concept',aliases:[],summary:'',source:s.key,refs:[],updated:Date.now()};
+        save(); el.style.opacity='.4'; el.style.pointerEvents='none'; el.innerHTML='\u2713 added';
+        renderFilters();
+      });
+    });
+    document.getElementById('s-close').addEventListener('click',function(){closeEditor();renderList();renderDetail();toast('Concordance updated.');});
+  }
+
+  /* ---- misc ---- */
+  var toastEl=document.getElementById('toast'),tt=null;
+  function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){toastEl.classList.remove('show');},2400);}
+
+  window.goHome=function(){try{if(window.parent&&window.parent!==window&&typeof window.parent.openApp==='function'){window.parent.openApp('home');return;}}catch(e){}window.location.href='index.html';};
+
+  document.getElementById('q').addEventListener('input',function(e){q=e.target.value;renderList();});
+  document.getElementById('addBtn').addEventListener('click',function(){openEditor(null);});
+  document.getElementById('gatherBtn').addEventListener('click',gather);
+  if(DB.gathered)document.getElementById('gatherState').textContent='Last gathered '+new Date(DB.gathered).toLocaleDateString();
+
+  function fromHash(){var m=/entity=([^&]+)/.exec(location.hash||'');if(m){var id=decodeURIComponent(m[1]);if(DB.entities[id]){activeId=id;}}}
+  window.addEventListener('hashchange',function(){fromHash();renderList();renderDetail();});
+
+  seed(); fromHash(); renderFilters(); renderList(); renderDetail();
+})();
+
+/* ambient starfield */
+(function(){var c=document.getElementById('stars'),ctx=c.getContext('2d'),stars=[];
+  function size(){c.width=innerWidth;c.height=innerHeight;stars=[];var n=Math.min(120,Math.floor(innerWidth*innerHeight/14000));for(var i=0;i<n;i++)stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.3+.2,a:Math.random()*6.28,s:Math.random()*.015+.004});}
+  function draw(){ctx.clearRect(0,0,c.width,c.height);stars.forEach(function(st){st.a+=st.s;ctx.globalAlpha=Math.abs(Math.sin(st.a))*.6+.1;ctx.fillStyle='#e8dfc8';ctx.beginPath();ctx.arc(st.x,st.y,st.r,0,6.28);ctx.fill();});ctx.globalAlpha=1;requestAnimationFrame(draw);}
+  addEventListener('resize',size);size();draw();})();
+</script>
+</body>
+</html>

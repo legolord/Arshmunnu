@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Arshmunnu — Songs of Arshmunnu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0610; --bg2:#160e1c;
+  --gold:#d4a44a; --goldL:#f0cc72; --goldD:#7c5a1f;
+  /* song accent — a warm rose-mauve, the colour of the lyre legend */
+  --accent:#cf86b0; --accentL:#e6a8cb; --accentD:#8a557a;
+  --border:rgba(207,134,176,.24); --border2:rgba(207,134,176,.5);
+  --ink:#efe6dc; --ink2:rgba(239,230,220,.82); --muted:rgba(239,230,220,.55); --mute2:rgba(239,230,220,.32);
+  --bad:#f87171; --good:#86efac;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'EB Garamond',serif;background:radial-gradient(ellipse at top,#241433 0%,var(--bg) 58%,var(--bg2) 100%);color:var(--ink);min-height:100vh;padding:24px 18px 110px;line-height:1.55;}
+
+/* ── HEAD ───────────────────────── */
+.head{max-width:1040px;margin:0 auto 22px;text-align:center;padding-bottom:22px;border-bottom:1px solid var(--border);position:relative;}
+.head::before{content:'';position:absolute;bottom:-1px;left:50%;width:240px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);transform:translateX(-50%);}
+.head h1{font-family:'Cinzel Decorative',serif;color:var(--accentL);font-size:clamp(28px,5.5vw,44px);letter-spacing:.04em;text-shadow:0 2px 16px rgba(207,134,176,.22);}
+.head .sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:15px;margin-top:10px;max-width:600px;margin-left:auto;margin-right:auto;}
+
+/* live equaliser signature in the title */
+.eq{display:inline-flex;align-items:flex-end;gap:3px;height:18px;margin-left:12px;vertical-align:middle;}
+.eq span{width:3px;background:linear-gradient(180deg,var(--accentL),var(--accentD));border-radius:2px;animation:eq 1.1s ease-in-out infinite;}
+.eq span:nth-child(1){animation-delay:0s;height:7px;}
+.eq span:nth-child(2){animation-delay:.18s;height:14px;}
+.eq span:nth-child(3){animation-delay:.36s;height:9px;}
+.eq span:nth-child(4){animation-delay:.52s;height:16px;}
+.eq span:nth-child(5){animation-delay:.7s;height:6px;}
+@keyframes eq{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+@media(prefers-reduced-motion:reduce){.eq span{animation:none}}
+
+/* ── CHANNEL HERO ───────────────── */
+.channel{max-width:1040px;margin:0 auto 26px;}
+.channel a{display:flex;align-items:center;gap:18px;padding:16px 22px;text-decoration:none;color:var(--ink);
+  background:linear-gradient(100deg,rgba(255,0,51,.12),rgba(207,134,176,.06) 60%,rgba(0,0,0,.25));
+  border:1px solid var(--border);border-left:4px solid #ff0033;border-radius:6px;transition:all .18s;}
+.channel a:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(255,0,51,.18);border-color:var(--border2);}
+.channel .yt{width:46px;height:46px;flex-shrink:0;border-radius:10px;background:#ff0033;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(255,0,51,.4);}
+.channel .yt svg{width:26px;height:26px;}
+.channel .ct-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);}
+.channel .ct-name{font-family:'Cinzel',serif;font-size:clamp(16px,2.4vw,21px);color:var(--accentL);letter-spacing:.04em;margin-top:2px;}
+.channel .ct-desc{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:13px;margin-top:3px;}
+.channel .ct-go{margin-left:auto;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accentL);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.channel .ct-go span{font-size:16px;}
+
+/* ── TOOLBAR (edit) ─────────────── */
+.bar{max-width:1040px;margin:0 auto 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.count{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:14px;}
+.toolbar{display:none;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto;}
+body.editing .toolbar{display:flex;}
+.toolbar button{padding:7px 14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:rgba(207,134,176,.1);color:var(--accentL);border:1px solid var(--border2);border-radius:3px;cursor:pointer;}
+.toolbar button.primary{background:rgba(207,134,176,.26);}
+.toolbar button.bad{background:rgba(248,113,113,.1);color:var(--bad);border-color:rgba(248,113,113,.3);}
+.toolbar button:hover{filter:brightness(1.18);}
+
+/* ── FILTER CHIPS ───────────────── */
+.chips{max-width:1040px;margin:0 auto 22px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+.chip{padding:6px 15px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:all .15s;}
+.chip.active{background:rgba(207,134,176,.18);color:var(--accentL);border-color:var(--accent);}
+.chip:hover{color:var(--ink);}
+
+/* ── SONG GRID ──────────────────── */
+.songs{max-width:1040px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;}
+.song{background:linear-gradient(180deg,rgba(207,134,176,.05),rgba(0,0,0,.24));border:1px solid var(--border);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;transition:all .18s;position:relative;}
+.song:hover{border-color:var(--border2);box-shadow:0 10px 30px rgba(0,0,0,.4);}
+.song-top{padding:16px 18px 0;}
+.song-tagrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px;}
+.song-tag{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:3px 9px;border-radius:2px;border:1px solid var(--border2);color:var(--accent);background:rgba(207,134,176,.08);}
+.song-n{font-family:'Cinzel Decorative',serif;color:var(--accentD);font-size:15px;}
+.song-title{font-family:'Cinzel',serif;color:var(--accentL);font-size:16px;letter-spacing:.03em;line-height:1.25;margin-bottom:4px;}
+.song-orig{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:13px;margin-bottom:10px;}
+.song-desc{color:var(--ink2);font-size:13.5px;line-height:1.6;padding:0 18px;flex:1;}
+.song-foot{padding:13px 18px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.play-btn{display:inline-flex;align-items:center;gap:9px;padding:8px 16px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accentL);background:rgba(207,134,176,.1);border:1px solid var(--border2);border-radius:4px;cursor:pointer;transition:all .15s;}
+.play-btn:hover{background:rgba(207,134,176,.22);}
+.play-btn .tri{font-size:11px;}
+.play-btn.nolink{opacity:.45;cursor:default;}
+.play-btn.nolink:hover{background:rgba(207,134,176,.1);}
+.embed{padding:0 14px 14px;display:none;}
+.embed.open{display:block;}
+.embed .frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:6px;overflow:hidden;border:1px solid var(--border2);background:#000;}
+.embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+
+/* edit affordances */
+.song-actions{display:none;gap:5px;margin-left:auto;}
+body.editing .song-actions{display:flex;}
+.song-actions button{padding:5px 10px;font-size:11px;font-family:'Cinzel',serif;letter-spacing:.08em;background:rgba(207,134,176,.08);color:var(--accentL);border:1px solid var(--border);border-radius:2px;cursor:pointer;}
+.song-actions button.bad{color:var(--bad);border-color:rgba(248,113,113,.3);}
+.song-actions button:hover{filter:brightness(1.2);}
+
+.empty{max-width:680px;margin:40px auto;text-align:center;color:var(--muted);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;line-height:1.7;padding:30px;border:1px dashed var(--border);border-radius:8px;}
+.empty b{color:var(--accentL);font-style:normal;font-family:'Cinzel',serif;font-size:13px;letter-spacing:.1em;display:block;margin-bottom:8px;}
+
+/* ── FAB + TOAST ────────────────── */
+.fab{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accentD));color:#1a0e18;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(207,134,176,.4),inset 0 1px 0 rgba(255,255,255,.3);font-size:24px;display:flex;align-items:center;justify-content:center;z-index:50;transition:all .2s;}
+.fab:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(207,134,176,.55);}
+.fab:active{transform:scale(.95);}
+body.editing .fab{background:linear-gradient(135deg,var(--good),#3b9d68);}
+.fab .check{display:none;}
+body.editing .fab .pencil{display:none;}
+body.editing .fab .check{display:inline;}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:rgba(22,14,28,.96);border:1px solid var(--accent);color:var(--ink);padding:10px 20px;border-radius:4px;font-size:13px;z-index:100;display:none;}
+.toast.show{display:block;animation:fadeOut 2.2s ease-in forwards;}
+@keyframes fadeOut{0%,60%{opacity:1;}100%{opacity:0;}}
+
+/* ── MODAL ──────────────────────── */
+.modal-bg{position:fixed;inset:0;background:rgba(5,3,10,.78);backdrop-filter:blur(3px);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
+.modal-bg.open{display:flex;}
+.modal{background:linear-gradient(180deg,#1c1226,#140c1c);border:1px solid var(--border2);border-radius:8px;max-width:540px;width:100%;padding:26px 26px 22px;box-shadow:0 24px 60px rgba(0,0,0,.6);}
+.modal h3{font-family:'Cinzel',serif;color:var(--accentL);font-size:18px;letter-spacing:.05em;margin-bottom:4px;}
+.modal .mh-sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:13px;margin-bottom:18px;}
+.fld{margin-bottom:14px;}
+.fld label{display:block;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--accentL);margin-bottom:5px;}
+.fld input,.fld textarea{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--ink);padding:9px 11px;border-radius:3px;font-family:'EB Garamond',serif;font-size:14px;}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--accent);background:rgba(207,134,176,.06);}
+.fld textarea{min-height:84px;resize:vertical;line-height:1.55;}
+.fld .hint{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--mute2);font-size:12px;margin-top:4px;}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;}
+.modal-foot button{padding:9px 18px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border-radius:3px;cursor:pointer;border:1px solid var(--border2);}
+.modal-foot .ghost{background:transparent;color:var(--muted);}
+.modal-foot .save{background:linear-gradient(135deg,var(--accent),var(--accentD));color:#1a0e18;border:none;}
+.modal-foot button:hover{filter:brightness(1.12);}
+</style>
+<style id="arsh-gate-base"></style>
+<script>
+/* ════ ARSH ADMIN GATE ════
+   Editing the Archive is reserved for the Keeper (Aelarion).
+   Readers see the pages in view-only form. This is an editing lock,
+   shared across pages via localStorage('arsh_admin'). */
+(function(){
+  var SEL='.fab,.ep-fab,.ep-sadd';
+  function admin(){try{return localStorage.getItem('arsh_admin')==='1';}catch(e){return false;}}
+  function mark(){
+    if(!document.body||document.getElementById('arsh-viewlock'))return;
+    var d=document.createElement('div');d.id='arsh-viewlock';d.textContent='\uD83D\uDD12 View only';
+    d.style.cssText='position:fixed;bottom:16px;right:16px;z-index:2147483000;font-family:Cinzel,Georgia,serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,164,74,.55);background:rgba(10,6,16,.72);border:1px solid rgba(212,164,74,.22);border-radius:20px;padding:6px 12px;pointer-events:none;';
+    document.body.appendChild(d);
+  }
+  function unmark(){var d=document.getElementById('arsh-viewlock');if(d)d.remove();}
+  function apply(){
+    var st=document.getElementById('arsh-gate-base'),on=admin();
+    document.documentElement.setAttribute('data-arsh-role',on?'keeper':'reader');
+    if(on){if(st)st.textContent='';unmark();return;}
+    if(st)st.textContent=SEL+'{display:none!important;}';
+    if(document.body)mark();else document.addEventListener('DOMContentLoaded',mark);
+  }
+  apply();
+  window.addEventListener('storage',function(e){if(e.key==='arsh_admin'||e.key===null)apply();});
+  document.addEventListener('DOMContentLoaded',apply);
+})();
+</script>
+</head>
+<body>
+
+<div class="head">
+  <h1>Songs of Arshmunnu<span class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span></h1>
+  <div class="sub">The music of the Great and Eternal World — anthems, laments, marches, and lyre-songs. Each piece is set down here with the tale of how it sounds and what it carries.</div>
+</div>
+
+<!-- CHANNEL -->
+<div class="channel">
+  <a href="https://www.youtube.com/@ArshmunnuTunes" target="_blank" rel="noopener">
+    <span class="yt"><svg viewBox="0 0 24 24" fill="#fff"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6z"/></svg></span>
+    <div>
+      <div class="ct-lbl">Listen on YouTube</div>
+      <div class="ct-name">@ArshmunnuTunes</div>
+      <div class="ct-desc">The full soundtrack of Arshmunnu — every song below, brought to sound.</div>
+    </div>
+    <div class="ct-go">Visit channel <span>↗</span></div>
+  </a>
+</div>
+
+<!-- BAR -->
+<div class="bar">
+  <div class="count" id="count"></div>
+  <div class="toolbar">
+    <button class="primary" onclick="openModal()">+ Add Song</button>
+    <button onclick="exportData()">Export</button>
+    <button onclick="document.getElementById('imp').click()">Import</button>
+    <button class="bad" onclick="resetAll()">Reset</button>
+    <input type="file" id="imp" style="display:none" accept=".json" onchange="importData(event)">
+  </div>
+</div>
+
+<!-- CHIPS -->
+<div class="chips" id="chips"></div>
+
+<!-- GRID -->
+<div class="songs" id="songs"></div>
+
+<!-- FAB -->
+<button class="fab" id="fab" title="Edit the songbook"><span class="pencil">&#9998;</span><span class="check">&#10003;</span></button>
+<div class="toast" id="toast"></div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="modalTitle">Add a Song</h3>
+    <div class="mh-sub">Set down the piece, its place in the world, and how it sounds.</div>
+    <div class="fld"><label>Title</label><input id="f-title" placeholder="e.g. The March of the Free Coalition"></div>
+    <div class="fld"><label>Subtitle / original name <span style="opacity:.5">(optional)</span></label><input id="f-orig" placeholder="e.g. Octavia's Lament · Canticum Liberorum"></div>
+    <div class="fld"><label>Category</label><input id="f-tag" placeholder="e.g. Anthem · March · Lament · Lyre-song · Faction Theme"></div>
+    <div class="fld"><label>Description — explain the music</label><textarea id="f-desc" placeholder="What does it sound like? Instruments, mood, tempo. What it is about, where it is sung, what it carries in the world."></textarea></div>
+    <div class="fld"><label>YouTube link <span style="opacity:.5">(optional)</span></label><input id="f-url" placeholder="https://www.youtube.com/watch?v=…">
+      <div class="hint">Paste a full YouTube watch, youtu.be, or embed link — it will play inline beneath the song.</div></div>
+    <div class="modal-foot">
+      <button class="ghost" onclick="closeModal()">Cancel</button>
+      <button class="save" onclick="saveSong()">Save Song</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   SONGS OF ARSHMUNNU — local-first songbook
+   Stored only in this browser (localStorage).
+════════════════════════════════════════ */
+const LS_KEY='arsh_songs_v1';
+let songs=[];
+let editingId=null;        // id being edited in modal, or null for new
+let activeFilter='__all__';
+
+/* Seed entries — illustrative starters drawn from the world's own
+   music lore. Edit or replace these with your real tracks. */
+const SEED=[
+  {id:id(), title:"Octavia's Lyre", orig:"The first song of the Seventeens", tag:"Lyre-song",
+   desc:"The founding lament — a solo lyre, slow and rising, said to be the tune Octavia played for the wandering Seventeens. Begins bare and intimate, gathers warmth as voices join, then thins to a single whispered string at the close. The melody every later Arshmunnu song answers back to.", url:""},
+  {id:id(), title:"Canticum Liberorum", orig:"Anthem of the Free Coalition", tag:"Anthem",
+   desc:"A broad, defiant march in a minor key that resolves bright — drums, brass, and a massed chorus. Sung before the battle-line and at the raising of banners. The verses name the fallen; the refrain belongs to everyone still standing.", url:""},
+  {id:id(), title:"The Forge-Crown", orig:"Coronation of Marian the Firm", tag:"Ceremonial",
+   desc:"Low, ceremonial, hammered — a piece built on the rhythm of the smithy, iron struck on iron under a single sustained horn. No words for most of its length; only at the crowning does a lone voice enter. Cold, weighty, and unhurried.", url:""},
+  {id:id(), title:"Dust of Helen", orig:"Lament of the Grand Immigration", tag:"Lament",
+   desc:"A funeral procession for a vanished people — strings and a wordless choir over a slow drone, the sound of thousands marching into the Endless Desert. No drums of triumph, no curses. It simply fades, as the Szewians faded into the sand.", url:""},
+];
+
+/* ── utils ── */
+function id(){return 'sg_'+Math.random().toString(36).slice(2,9);}
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(songs));}catch(e){toast('Could not save — storage may be full.');}}
+function load(){
+  try{const raw=localStorage.getItem(LS_KEY);if(raw){songs=JSON.parse(raw);return;}}catch(e){}
+  songs=SEED.map(s=>({...s}));save();
+}
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.remove('show');void t.offsetWidth;t.classList.add('show');}
+
+/* turn any YouTube url into an embed url; '' if not parseable */
+function ytEmbed(url){
+  if(!url)return '';
+  url=url.trim();
+  let vid='';
+  let m;
+  if((m=url.match(/[?&]v=([A-Za-z0-9_-]{6,})/)))vid=m[1];
+  else if((m=url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/)))vid=m[1];
+  else if((m=url.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{6,})/)))vid=m[1];
+  else if((m=url.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/)))vid=m[1];
+  else if((m=url.match(/^([A-Za-z0-9_-]{11})$/)))vid=m[1];
+  if(!vid)return '';
+  return 'https://www.youtube.com/embed/'+vid;
+}
+
+/* ── render ── */
+function tags(){const set=new Set();songs.forEach(s=>{if(s.tag)set.add(s.tag.trim());});return [...set].sort();}
+function renderChips(){
+  const c=document.getElementById('chips');
+  const all=tags();
+  let html='<button class="chip'+(activeFilter==='__all__'?' active':'')+'" data-f="__all__">All Songs</button>';
+  all.forEach(t=>{html+='<button class="chip'+(activeFilter===t?' active':'')+'" data-f="'+esc(t)+'">'+esc(t)+'</button>';});
+  c.innerHTML=html;
+  c.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{activeFilter=ch.dataset.f;render();});
+}
+function render(){
+  renderChips();
+  const wrap=document.getElementById('songs');
+  const list=songs.filter(s=>activeFilter==='__all__'||s.tag===activeFilter);
+  document.getElementById('count').textContent=
+    songs.length+' song'+(songs.length===1?'':'s')+' in the songbook'+
+    (activeFilter!=='__all__'?' · '+list.length+' shown':'');
+  if(!list.length){
+    wrap.innerHTML='<div class="empty"><b>The songbook is quiet</b>Tap the pencil, then “Add Song”, to set down a piece — its title, what it sounds like, and a YouTube link to play it here.</div>';
+    return;
+  }
+  wrap.innerHTML=list.map((s,i)=>{
+    const embed=ytEmbed(s.url);
+    const playable=!!embed;
+    return `<div class="song" data-id="${s.id}">
+      <div class="song-top">
+        <div class="song-tagrow">
+          <span class="song-tag">${esc(s.tag||'Song')}</span>
+          <span class="song-n">${String(i+1).padStart(2,'0')}</span>
+        </div>
+        <div class="song-title">${esc(s.title||'Untitled')}</div>
+        ${s.orig?`<div class="song-orig">${esc(s.orig)}</div>`:''}
+      </div>
+      <div class="song-desc">${esc(s.desc||'')||'<em style="color:var(--mute2)">No description yet.</em>'}</div>
+      <div class="song-foot">
+        ${playable
+          ? `<button class="play-btn" onclick="togglePlay('${s.id}')"><span class="tri">&#9654;</span> Play</button>`
+          : `<button class="play-btn nolink" title="Add a YouTube link to play">&#9654; No link yet</button>`}
+        <div class="song-actions">
+          <button onclick="editSong('${s.id}')">Edit</button>
+          <button class="bad" onclick="delSong('${s.id}')">Delete</button>
+        </div>
+      </div>
+      <div class="embed" id="embed-${s.id}" data-embed="${esc(embed)}"></div>
+    </div>`;
+  }).join('');
+}
+
+/* lazy-load the iframe only when Play is tapped */
+function togglePlay(sid){
+  const box=document.getElementById('embed-'+sid);
+  if(!box)return;
+  if(box.classList.contains('open')){
+    box.classList.remove('open');box.innerHTML='';
+    return;
+  }
+  // close any other open embed
+  document.querySelectorAll('.embed.open').forEach(e=>{e.classList.remove('open');e.innerHTML='';});
+  const src=box.dataset.embed;
+  if(!src)return;
+  box.innerHTML='<div class="frame"><iframe src="'+src+'?rel=0" title="Song" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
+  box.classList.add('open');
+}
+
+/* ── modal / CRUD ── */
+function openModal(){editingId=null;fill({title:'',orig:'',tag:'',desc:'',url:''});document.getElementById('modalTitle').textContent='Add a Song';document.getElementById('modalBg').classList.add('open');setTimeout(()=>document.getElementById('f-title').focus(),50);}
+function editSong(sid){const s=songs.find(x=>x.id===sid);if(!s)return;editingId=sid;fill(s);document.getElementById('modalTitle').textContent='Edit Song';document.getElementById('modalBg').classList.add('open');}
+function closeModal(){document.getElementById('modalBg').classList.remove('open');}
+function fill(s){document.getElementById('f-title').value=s.title||'';document.getElementById('f-orig').value=s.orig||'';document.getElementById('f-tag').value=s.tag||'';document.getElementById('f-desc').value=s.desc||'';document.getElementById('f-url').value=s.url||'';}
+function saveSong(){
+  const data={
+    title:document.getElementById('f-title').value.trim(),
+    orig:document.getElementById('f-orig').value.trim(),
+    tag:document.getElementById('f-tag').value.trim()||'Song',
+    desc:document.getElementById('f-desc').value.trim(),
+    url:document.getElementById('f-url').value.trim()
+  };
+  if(!data.title){toast('Give the song a title first.');return;}
+  if(editingId){const s=songs.find(x=>x.id===editingId);Object.assign(s,data);toast('Song updated.');}
+  else{songs.push({id:id(),...data});toast('Song added to the songbook.');}
+  save();render();closeModal();
+}
+function delSong(sid){const s=songs.find(x=>x.id===sid);if(!s)return;if(!confirm('Remove “'+(s.title||'this song')+'” from the songbook?'))return;songs=songs.filter(x=>x.id!==sid);save();render();toast('Song removed.');}
+
+/* ── export / import / reset ── */
+function exportData(){
+  const blob=new Blob([JSON.stringify(songs,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='songs_of_arshmunnu.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Songbook exported.');
+}
+function importData(ev){
+  const f=ev.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;songs=d.map(s=>({id:s.id||id(),title:s.title||'',orig:s.orig||'',tag:s.tag||'Song',desc:s.desc||'',url:s.url||''}));save();render();toast('Songbook imported.');}catch(e){toast('That file could not be read as a songbook.');}};
+  r.readAsText(f);ev.target.value='';
+}
+function resetAll(){if(!confirm('Reset the songbook to its starter entries? Your current songs will be lost unless exported.'))return;songs=SEED.map(s=>({...s}));save();activeFilter='__all__';render();toast('Songbook reset to starters.');}
+
+/* ── edit toggle ── */
+document.getElementById('fab').onclick=()=>{document.body.classList.toggle('editing');toast(document.body.classList.contains('editing')?'Editing — add, edit, or remove songs.':'Editing closed.');};
+document.getElementById('modalBg').addEventListener('click',e=>{if(e.target.id==='modalBg')closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* ── go ── */
+load();render();
+</script>
+</body>
+</html>

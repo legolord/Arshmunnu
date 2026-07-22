@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Bestiary of Arshmunnu — ArshRPG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0608; --bg2:#12090c; --panel:#160c10; --panel2:#1d1014;
+  --gold:#d4a44a; --goldD:#7c5a1f; --goldL:#f0cc72;
+  --blood:#7a1a1a; --bloodL:#a83232;
+  --text:#e8dfc8; --tdim:rgba(232,223,200,.55); --tdimmer:rgba(232,223,200,.3);
+  --border:rgba(212,164,74,.18); --border2:rgba(212,164,74,.32);
+  /* type colours */
+  --t-beast:#7c9e6b; --t-void:#9370b0; --t-humanoid:#4a82b0; --t-dragon:#d4a44a;
+  --t-undead:#5a8b8b; --t-construct:#8a8a9a; --t-aberration:#c0843a;
+  --tr:cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;min-height:100%;}
+body{
+  font-family:'EB Garamond',serif;color:var(--text);
+  background:
+    radial-gradient(ellipse at 20% 0%,rgba(122,26,26,.14),transparent 55%),
+    radial-gradient(ellipse at 85% 100%,rgba(147,112,176,.1),transparent 55%),
+    var(--bg);
+  min-height:100vh;
+}
+/* grain overlay */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.035;
+  background-image:repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 2px);
+  mix-blend-mode:overlay;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 22px 80px;position:relative;z-index:2;}
+
+/* ── HEADER ── */
+.hero{text-align:center;padding:18px 0 28px;position:relative;}
+.hero-seal{
+  width:60px;height:60px;border-radius:50%;margin:0 auto 14px;
+  background:radial-gradient(circle at 35% 30%,#a83232,#7a1a1a 55%,#3a0c0c);
+  box-shadow:0 0 0 1px var(--blood),0 0 26px rgba(168,50,50,.35);
+  display:flex;align-items:center;justify-content:center;font-size:30px;position:relative;
+}
+.hero-seal::after{content:'';position:absolute;inset:6px;border-radius:50%;border:1px dashed rgba(232,223,200,.25);}
+.hero h1{
+  font-family:'Cinzel Decorative',serif;font-weight:900;
+  font-size:clamp(30px,5vw,52px);letter-spacing:.04em;color:var(--goldL);
+  text-shadow:0 2px 30px rgba(212,164,74,.25);line-height:1.05;
+}
+.hero .sub{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(15px,2vw,20px);color:var(--tdim);margin-top:8px;letter-spacing:.02em;
+}
+.hero .rule{width:120px;height:1px;margin:18px auto 0;
+  background:linear-gradient(90deg,transparent,var(--goldD),transparent);}
+
+/* ── CONTROLS ── */
+.controls{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;
+  margin:26px 0 8px;
+}
+.search{
+  flex:1;min-width:220px;max-width:420px;position:relative;
+}
+.search input{
+  width:100%;background:var(--panel);border:1px solid var(--border2);border-radius:4px;
+  color:var(--text);font-family:'EB Garamond',serif;font-size:16px;padding:11px 14px 11px 38px;
+  outline:none;transition:border-color .2s;
+}
+.search input:focus{border-color:var(--gold);}
+.search::before{content:'⚲';position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--goldD);font-size:16px;}
+.seg{display:flex;flex-wrap:wrap;gap:5px;}
+.seg button{
+  background:var(--panel);border:1px solid var(--border);color:var(--tdim);
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  padding:8px 13px;border-radius:3px;cursor:pointer;transition:all .15s;
+}
+.seg button:hover{border-color:var(--border2);color:var(--text);}
+.seg button.on{background:var(--gold);border-color:var(--gold);color:#1a0800;font-weight:600;}
+.count{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--tdimmer);font-size:14px;text-align:center;margin:4px 0 22px;}
+
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;}
+.card{
+  position:relative;background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--border);border-left:3px solid var(--tc,var(--gold));
+  border-radius:6px;padding:0;overflow:hidden;cursor:pointer;
+  transition:transform .18s var(--tr),box-shadow .18s var(--tr),border-color .18s;
+  animation:rise .5s var(--tr) both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.card:hover{transform:translateY(-4px);border-color:var(--tc,var(--gold));
+  box-shadow:0 16px 40px rgba(0,0,0,.55),0 0 0 1px var(--tc,var(--gold)),0 0 30px color-mix(in srgb,var(--tc) 22%,transparent);}
+.card-top{padding:16px 18px 12px;}
+.card-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.card-name{font-family:'Cinzel',serif;font-weight:700;font-size:19px;letter-spacing:.02em;color:var(--text);line-height:1.15;}
+.card-tier{flex-shrink:0;font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:.05em;
+  color:var(--tc,var(--gold));border:1px solid var(--tc,var(--gold));border-radius:3px;padding:3px 8px;white-space:nowrap;}
+.card-meta{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--tc,var(--gold));margin-top:4px;text-transform:capitalize;}
+.card-stats{display:flex;gap:0;border-top:1px solid var(--border);margin-top:12px;}
+.cs{flex:1;text-align:center;padding:9px 4px;border-right:1px solid var(--border);}
+.cs:last-child{border-right:none;}
+.cs .v{font-family:'Cinzel',serif;font-size:17px;color:var(--goldL);line-height:1;}
+.cs .k{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--tdimmer);margin-top:3px;}
+.card-lore{padding:0 18px 16px;font-size:14px;line-height:1.5;color:var(--tdim);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* ── MODAL (full stat block) ── */
+.ov{position:fixed;inset:0;z-index:100;background:rgba(5,3,8,.9);backdrop-filter:blur(5px);
+  display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto;}
+.ov.open{display:flex;}
+.sheet{max-width:680px;width:100%;background:linear-gradient(165deg,var(--panel2),var(--bg2));
+  border:1px solid var(--border2);border-top:4px solid var(--tc,var(--gold));border-radius:8px;
+  padding:28px 30px 32px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.7);
+  animation:pop .25s var(--tr);}
+@keyframes pop{from{opacity:0;transform:scale(.97) translateY(10px);}to{opacity:1;transform:none;}}
+.sheet-close{position:absolute;top:14px;right:16px;background:rgba(168,50,50,.18);color:var(--bloodL);
+  border:1px solid rgba(168,50,50,.4);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:18px;line-height:1;}
+.sheet-close:hover{background:rgba(168,50,50,.32);}
+.sh-name{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:28px;color:var(--goldL);line-height:1.1;padding-right:40px;}
+.sh-class{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--tc,var(--gold));margin-top:4px;text-transform:capitalize;}
+.sh-rule{height:1px;background:linear-gradient(90deg,var(--tc,var(--gold)),transparent);margin:16px 0;}
+.sh-core{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.sh-core .b{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:4px;text-align:center;padding:10px 4px;}
+.sh-core .b .v{font-family:'Cinzel',serif;font-size:20px;color:var(--goldL);}
+.sh-core .b .k{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--tdimmer);margin-top:3px;}
+.sh-line{margin:10px 0;font-size:15px;line-height:1.5;}
+.sh-line b{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--tc,var(--gold));display:block;margin-bottom:2px;}
+.sh-ab{background:rgba(0,0,0,.2);border-left:2px solid var(--tc,var(--gold));border-radius:0 4px 4px 0;padding:8px 12px;margin:7px 0;}
+.sh-ab .n{font-family:'Cinzel',serif;font-size:13px;color:var(--goldL);}
+.sh-ab .t{font-size:14px;line-height:1.45;color:var(--tdim);margin-top:2px;}
+.sh-foot{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:14px;line-height:1.5;color:var(--tdim);font-style:italic;}
+.sh-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+.tag{font-size:10px;letter-spacing:.05em;text-transform:uppercase;font-family:'Cinzel',serif;
+  color:var(--tc,var(--gold));border:1px solid var(--border2);border-radius:3px;padding:3px 7px;}
+.empty{text-align:center;color:var(--tdimmer);font-style:italic;padding:60px 20px;font-size:16px;grid-column:1/-1;}
+.footnote{text-align:center;margin-top:40px;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--tdimmer);font-size:14px;line-height:1.7;}
+@media(max-width:520px){.sh-core{grid-template-columns:repeat(2,1fr);}.card-stats .cs .k{font-size:8px;}}
+/* editor */
+.ed-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px;}
+.ed-f{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.ed-f.wide{grid-column:1/-1;}
+.ed-f label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tc,var(--gold));}
+.ed-f input,.ed-f select,.ed-f textarea{
+  background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:4px;color:var(--text);
+  font-family:'EB Garamond',serif;font-size:15px;padding:8px 10px;outline:none;width:100%;}
+.ed-f input:focus,.ed-f select:focus,.ed-f textarea:focus{border-color:var(--gold);}
+.ed-f textarea{resize:vertical;line-height:1.45;}
+.ed-btn{background:var(--panel);border:1px solid var(--border2);color:var(--text);
+  font-family:'Cinzel',serif;font-size:12px;letter-spacing:.05em;padding:9px 16px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.ed-btn:hover{border-color:var(--gold);color:var(--goldL);}
+.ed-btn.save{background:var(--gold);border-color:var(--gold);color:#1a0800;font-weight:600;}
+.ed-btn.danger{border-color:rgba(168,50,50,.5);color:var(--bloodL);}
+.ed-btn.danger:hover{background:rgba(168,50,50,.2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-seal">🐉</div>
+    <h1>Bestiary of Arshmunnu</h1>
+    <div class="sub">A Glossary of Foes &amp; Fell Things — for ArshRPG, Second Edition</div>
+    <div class="rule"></div>
+  </div>
+
+  <div class="controls">
+    <div class="search"><input id="q" placeholder="Search by name, type, ability…" oninput="render()"></div>
+    <div class="seg">
+      <button onclick="openEditor(null)" style="background:var(--gold);border-color:var(--gold);color:#1a0800;font-weight:600">+ Add Creature</button>
+      <button onclick="exportBestiary()">⬇ Export</button>
+      <button onclick="document.getElementById('importFile').click()">⬆ Import</button>
+    </div>
+    <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importBestiary(event)">
+  </div>
+  <div class="controls" style="margin-top:0">
+    <div class="seg" id="typeSeg"></div>
+  </div>
+  <div class="controls" style="margin-top:0">
+    <div class="seg" id="tierSeg"></div>
+  </div>
+  <div class="count" id="count"></div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="footnote">
+    Stat blocks follow the ArshRPG tier baselines. EP = Endurance Pool · DL = Defence Level · AP = Action Points.<br>
+    RSoC = Reactive Strike on Closing. Saves listed Strong / Average / Weak — the weak save is how the party wins.<br>
+    Tap any creature for its full stat block.<br>
+    <span style="opacity:.7">Your additions are saved automatically and persist across sessions. <a href="#" onclick="resetBestiary();return false;" style="color:var(--gold);text-decoration:underline">Reset to built-ins</a></span>
+  </div>
+</div>
+
+<div class="ov" id="ov" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+const SEED_MONSTERS = [{"name": "Dire Wolf", "tier": 2, "role": "Skirmisher", "type": "beast", "ep": "51", "dl": "19", "speed": "7", "ap": "4", "tohit": "+8 (bite)", "damage": "bite 1d10+4 Piercing; Great Success → target Prone", "saves": "Strong: Might +4, Agility +4 · Avg: Fort +3, Perception +3 · Weak: Wit +1, Will +1, Bearing +1", "skills": "Perception +5, Stealth +4", "abilities": [["Pack Tactics", "Advantage on attacks against a target that has one of the wolf's allies within 1 hex."]], "motive": "Hunger + Bring down isolated prey", "morale": "Flees at 40% EP or if fire is brandished.", "lore": "The great grey wolves of the northern reaches hunt in disciplined packs. Driven closer to roads in years of war and hard winter."}, {"name": "Cave Bear", "tier": 3, "role": "Brute", "type": "beast", "ep": "113", "dl": "21", "speed": "5", "ap": "3", "tohit": "+10 (claw/bite)", "damage": "claw 2d6+4 Slashing; bite 2d8+4 on a grappled target", "saves": "Strong: Might +5, Fort +5 · Avg: Will +4, Perception +4 · Weak: Agility +2, Wit +2, Bearing +2", "skills": "Athletics +6, Perception +4", "abilities": [["Crushing Embrace", "On a claw Great Success, the bear grapples (Restrained). A grappled target takes automatic bite damage each round."], ["Thick Hide", "Reduce Slashing and Piercing damage by 1."]], "motive": "Territory + Drive off or maul intruders", "morale": "Fights to defend its den; otherwise breaks at 30% EP.", "lore": "Mountain bears grown vast on a diet of fish and carrion. A wounded one is the deadliest thing in the highlands."}, {"name": "Steppe Ashclaw", "tier": 2, "role": "Skirmisher", "type": "beast", "ep": "60", "dl": "21", "speed": "7", "ap": "4", "tohit": "+8 (claw)", "damage": "claw 1d10+4 Slashing; Bleeding on Great Success", "saves": "Strong: Agility +4, Perception +4 · Avg: Might +3, Fort +3 · Weak: Wit +1, Will +1, Mana +1", "skills": "Stealth +6 (High-Ground Ambush), Acrobatics +5", "abilities": [["Pounce", "If it moves 3+ hexes and hits, the target saves Agility DC 14 or is knocked Prone; the Ashclaw may make a second claw at −2."]], "motive": "Hunger + Ambush the weakest traveller", "morale": "Solitary; breaks off at 40% EP to high ground.", "lore": "An ash-pale steppe cat, a third again the size of a leopard. It hunts the Szewian grasslands from rocky vantage."}, {"name": "Void-Corrupted Wolf", "tier": 2, "role": "Skirmisher", "type": "void", "ep": "60", "dl": "20", "speed": "7", "ap": "4", "tohit": "+8 (bite)", "damage": "bite 1d10+4 Piercing + 1d6 Void (Fort DC 14 or 1 Corruption Mark; Great Success → Prone)", "saves": "Strong: Agility +4, Fort +4 · Avg: Might +3, Perception +3 · Weak: Wit +1, Will +1, Bearing +1", "skills": "Perception +5, Stealth +5", "abilities": [["Void Aura", "A creature starting its turn within 2 hexes saves Will DC 13 or takes 2d6 Void; failure by 5+ also Shaken."], ["Void Leap (Recharge 5–6)", "Teleport up to 5 hexes; creatures within 1 hex of arrival save Agility DC 13 or take 2d8 Void."]], "motive": "Corruption + Hunt the living in packs", "morale": "Retreats via Void Leap if 2+ packmates fall.", "lore": "Once an ordinary wolf, unmade and remade by the Void near the Old Mouth. Its howl frays the nerve."}, {"name": "Voidspawn", "tier": 1, "role": "Minion", "type": "void", "ep": "12", "dl": "15", "speed": "5", "ap": "2", "tohit": "+4 (claw)", "damage": "claw 1d6+1 + 1d4 Void", "saves": "Strong: Agility +3 · Avg: Fort +2, Wit +1 · Weak: Might +0, Will +0, Mana +0, Bearing +0", "skills": "—", "abilities": [["Abyssal Hunger", "Advantage vs a target already grappled by another Voidspawn. Three+ may attempt a group grapple."]], "motive": "Hunger + Swarm the nearest warm thing", "morale": "Mindless; never breaks. Run in groups of 4–6.", "lore": "Small, eyeless, writhing. They boil up from Void-rent ground and seek warmth and flesh."}, {"name": "Hollow Phantom", "tier": 3, "role": "Controller", "type": "void", "ep": "80", "dl": "23", "speed": "5 (hover)", "ap": "4", "tohit": "+10 (spectral touch, vs Will)", "damage": "spectral touch 2d6+4 Psychic (targets Will Save instead of DL)", "saves": "Strong: Will +5, Wit +5 · Avg: Mana +4, Agility +4 · Weak: Might +2, Fort +2, Bearing +2", "skills": "—", "abilities": [["Aura of Unmaking", "A creature starting its turn within 6 hexes saves Will DC 13 or is Confused for one round."], ["Control Rider (Root)", "On hit, target speed 0 until end of its next turn. Cooldown 2 rounds."]], "motive": "Anguish + Make others feel what it cannot escape", "morale": "Cannot be reasoned with — only laid to rest (Radiant/Divine).", "lore": "Something that died near the Old Mouth long ago and did not finish dying. Vulnerable to Radiant light."}, {"name": "Void Seep Manifestation", "tier": 4, "role": "Solo", "type": "void", "ep": "324", "dl": "28", "speed": "4 (hover)", "ap": "4 (+2 Surge/Lair)", "tohit": "+14 (unmaking tendril)", "damage": "tendril 2d8+4 Void +6 TDB (unhealable; Will DC 18 or 1 Corruption Mark)", "saves": "Strong: Will +6, Mana +6 · Avg: Wit +5, Fort +5 · Weak: Might +3, Agility +3, Bearing +3", "skills": "—", "abilities": [["Intensified Flux", "Arcane Flux triggers on a natural 1–5 on Mana/Will rolls within 10 hexes."], ["Lair Action (init 0)", "A 2-hex zone of un-being: Will DC 18 or 3d8 Void and Rooted until end of next turn."], ["Cannot Be Slain", "At 0 EP it withdraws into the breach. WON by sealing the breach: Mana+Ritual DC 18 ×3, Arcturus must assist."], ["Solo Resistance", "Shrugs off the first Hard Control rider each round."]], "motive": "Unmaking + Widen the breach, erase the seal", "morale": "Cannot be reasoned with; recedes when the breach is sealed.", "lore": "The leading edge of the Void's awareness, pushing through a crack in the world's last seal."}, {"name": "Bandit", "tier": 1, "role": "Skirmisher", "type": "humanoid", "ep": "36", "dl": "17", "speed": "5", "ap": "3", "tohit": "+6 (dagger / sling)", "damage": "dagger 1d6+3 Piercing (Light); sling 1d6+3 Crushing (Near)", "saves": "Strong: Agility +3, Wit +3 · Avg: Might +2, Fort +2 · Weak: Will +0, Mana +0, Bearing +0", "skills": "Stealth +3, Deception +3", "abilities": [["Hit-and-Fade", "Strike, then move half speed for 1 AP."]], "motive": "Fear + Rob the vulnerable", "morale": "Breaks at 50% EP or when half the group is down.", "lore": "Desperate folk turned to the road in hard times. Most would rather take coin than a wound."}, {"name": "Veteran Soldier", "tier": 2, "role": "Line", "type": "humanoid", "ep": "81", "dl": "22", "speed": "4", "ap": "4", "tohit": "+7 (spear & shield)", "damage": "spear 1d8+4 Piercing (Reach, Brace); Guarded Strike +3 DL", "saves": "Strong: Fort +4, Will +4 · Avg: Might +3, Wit +3 · Weak: Agility +1, Mana +1, Bearing +1", "skills": "Command +3, Athletics +3", "abilities": [["Formation Step", "Adjacent to another soldier, both spend 1 AP for +2 DL until next turn (movement 0)."], ["Protect (Reaction)", "Adjacent ally hit; impose −2 on the attack total."]], "motive": "Duty + Hold the line", "morale": "Holds while an officer lives; disciplined withdrawal if outmatched.", "lore": "Professional infantry of the imperial cohorts. Discipline is their armour as much as their mail."}, {"name": "Battle-Mage", "tier": 3, "role": "Artillery", "type": "humanoid", "ep": "63", "dl": "21", "speed": "4", "ap": "4", "tohit": "+11 (spell, ranged) / +6 (staff)", "damage": "Flame Lance (2 AP): 3d8+4 Fire, Far range; Burning on Fort DC 15", "saves": "Strong: Mana +5, Will +5 · Avg: Wit +4, Fort +4 · Weak: Might +2, Agility +2, Bearing +2", "skills": "Arcana +6, Lore +5", "abilities": [["Arcane Pressure (APrV 6)", "2-hex radius; Will/Mana Save DC 16 at start of enemy turn."], ["Suppressing Fire (2 AP)", "2-hex burst at Far; Agility DC 16 or 2d8 Fire and Suppressed."]], "motive": "Conviction + Break the line from range", "morale": "Breaks at 50% EP if Engaged; flees toward his own.", "lore": "A war-trained Arcanist. Deadly at distance, fragile when a blade reaches him."}, {"name": "Lesser Drake", "tier": 3, "role": "Striker", "type": "dragon", "ep": "71", "dl": "22", "speed": "6 (fly 10)", "ap": "4", "tohit": "+11 (bite/claw)", "damage": "bite 2d6+4 Piercing +4 TDB; Lesser Breath (see below)", "saves": "Strong: Might +5, Fort +5 · Avg: Agility +4, Wit +4 · Weak: Will +2, Mana +2, Bearing +2", "skills": "Perception +5, Intimidation +5", "abilities": [["Lesser Breath (2 AP, Recharge 5–6)", "4-hex cone, Agility DC 16, 4d8 elemental (by breed), half on save."]], "motive": "Pride + Guard the approach, test the bold", "morale": "Disengages at 50% EP — won't die for routine duty.", "lore": "A young or minor dragon. Avoidable with the right name dropped, or a show of strength."}, {"name": "Elder Dragon (Metal)", "tier": 4, "role": "Elite", "type": "dragon", "ep": "262", "dl": "29", "speed": "5 (fly 9)", "ap": "4 (+1 Surge)", "tohit": "+13 (claw/bite)", "damage": "claw 2d8+4 Slashing +6 TDB; Lightning Breath (see below)", "saves": "Strong: Might +6, Fort +6 · Avg: Wit +5, Will +5 · Weak: Agility +3, Mana +3, Bearing +3", "skills": "Perception +7, Insight +6, Intimidation +6", "abilities": [["Lightning Breath (2 AP, Recharge 5–6)", "12-hex line, Fort DC 18, 8d10 Lightning (ignores shield DL); failure → Staggered."], ["Protect (Reaction)", "Intercept a hit aimed at a ward behind it."], ["Surge", "+1 AP once per round."]], "motive": "Duty + Judge who may pass", "morale": "Will not initiate; ends combat fast if forced.", "lore": "The ancient metal dragons of the Black Court. They respect competence, honesty, and dragon law — not human politics."}, {"name": "Risen Dead", "tier": 1, "role": "Line", "type": "undead", "ep": "49", "dl": "16", "speed": "3", "ap": "2", "tohit": "+5 (slam / rusted blade)", "damage": "slam 1d8+3 Crushing", "saves": "Strong: Fort +3, Will +3 · Avg: Might +2 · Weak: Agility +0, Wit +0, Mana +0, Bearing +0", "skills": "—", "abilities": [["Undying", "Immune to Poison, Exhaustion, Fear, Charm. Does not stop until destroyed."], ["Vulnerable: Radiant", "Takes +50% from Radiant/Divine sources."]], "motive": "Compulsion + Kill the living", "morale": "Mindless; never breaks.", "lore": "Corpses raised by necromancy or lingering corruption. Slow, relentless, tireless."}, {"name": "Wraith-Knight", "tier": 4, "role": "Elite", "type": "undead", "ep": "194", "dl": "26", "speed": "5 (hover)", "ap": "4 (+1 Surge)", "tohit": "+12 (spectral blade)", "damage": "spectral blade 2d8+4 Necrotic (drains: heal half dealt)", "saves": "Strong: Will +6, Fort +6 · Avg: Might +5, Wit +5 · Weak: Agility +3, Mana +3, Bearing +3", "skills": "Intimidation +6, Perception +5", "abilities": [["Life Drain", "Heals half the Necrotic damage it deals."], ["Aura of Dread", "Creatures within 4 hexes save Will DC 16 each round or be Shaken."], ["Resist mundane / Vulnerable Radiant", "Half from non-magical weapons; +50% from Radiant."]], "motive": "Oathbound hatred + Slay the living it once served", "morale": "Bound to its purpose; fights until destroyed.", "lore": "A knight who died under a broken oath and rose bound to it. Its blade drinks warmth."}, {"name": "Stone Crawler", "tier": 3, "role": "Brute", "type": "construct", "ep": "113", "dl": "25", "speed": "3", "ap": "3", "tohit": "+10 (slam)", "damage": "slam 2d6+4 Crushing +4 TDB (armour does not reduce; shields reduce by 1)", "saves": "Strong: Might +5, Fort +5 · Avg: Will +4, Mana +4 · Weak: Agility +2, Wit +2, Bearing +2", "skills": "—", "abilities": [["Stone Hide", "Immune to Piercing & Slashing — only Crushing, Arcane, or Void harms it."], ["Collapse (at 0 EP)", "Bursts: 1-hex radius, Agility DC 15 or 2d6 Crushing and Prone."]], "motive": "Mindless + Crush the source of heat and noise", "morale": "Never breaks; mindless.", "lore": "A crab-shaped mass of old masonry animated by seeped Void energy. No mind directs it."}, {"name": "Mountain Harpy", "tier": 2, "role": "Controller", "type": "aberration", "ep": "57", "dl": "20", "speed": "4 (fly 8)", "ap": "4", "tohit": "+8 (talon)", "damage": "talon 1d10+4 Slashing", "saves": "Strong: Agility +4, Will +4 · Avg: Wit +3, Perception +3 · Weak: Might +1, Fort +1, Mana +1", "skills": "Perception +5, Stealth +4", "abilities": [["Luring Call (Recharge 5–6)", "6-hex radius: Will DC 13 or Shaken; failure by 5+ also drawn 2 hexes (Forced Move)."], ["Control Rider (Forced Move)", "On a talon hit, push/pull the target 3 hexes — toward a ledge if near."]], "motive": "Hunger + Pull prey from the path into the rocks", "morale": "Flees to the heights at 40% EP.", "lore": "They nest in high passes and are drawn to the crackle of loose magic. They circle, call, then dive."}];
+const TYPES = [
+  {id:"all",name:"All"},
+  {id:"beast",name:"Beast"},{id:"void",name:"Void"},{id:"humanoid",name:"Humanoid"},
+  {id:"dragon",name:"Dragon"},{id:"undead",name:"Undead"},{id:"construct",name:"Construct"},
+  {id:"aberration",name:"Aberration"}
+];
+const TIERS=[{id:"all",name:"All Tiers"},{id:"1",name:"Tier 1"},{id:"2",name:"Tier 2"},{id:"3",name:"Tier 3"},{id:"4",name:"Tier 4"},{id:"5",name:"Tier 5"}];
+let F={type:"all",tier:"all"};
+
+/* ===== PERSISTENCE LAYER =====
+   window.storage (persists across sessions in the hub) with localStorage fallback.
+   We store ONLY user changes: created creatures, edits to seed creatures, and
+   deletions of seed creatures. The live MONSTERS list is rebuilt by merging
+   the seed with those changes, so updates to the seed roster still come through. */
+var STORE_KEY="arshmunnu_bestiary_v1";
+var Store=(function(){
+  var hasWS=(typeof window!=="undefined"&&window.storage&&typeof window.storage.get==="function");
+  function lsGet(k){try{var r=localStorage.getItem(k);return r?JSON.parse(r):null;}catch(e){return null;}}
+  function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+  var cache=null;
+  async function load(){
+    if(hasWS){try{var r=await window.storage.get(STORE_KEY);cache=r?JSON.parse(r.value):null;}catch(e){cache=null;}}
+    else cache=lsGet(STORE_KEY);
+    if(!cache)cache={custom:[],edits:{},deleted:[]};
+    if(!cache.custom)cache.custom=[];if(!cache.edits)cache.edits={};if(!cache.deleted)cache.deleted=[];
+    return cache;
+  }
+  function get(){return cache||{custom:[],edits:{},deleted:[]};}
+  function save(){
+    if(hasWS)window.storage.set(STORE_KEY,JSON.stringify(cache),false).catch(function(){});
+    else lsSet(STORE_KEY,cache);
+  }
+  return {load:load,get:get,save:save,hasWS:hasWS};
+})();
+
+// Give seed creatures stable ids by name; user creatures carry their own _id.
+function seedId(name){return "seed_"+name.toLowerCase().replace(/[^a-z0-9]+/g,"_");}
+var MONSTERS=[]; // live merged list
+
+function rebuildMonsters(){
+  var st=Store.get();
+  var out=[];
+  // seed (minus deleted, with edits applied)
+  for(var i=0;i<SEED_MONSTERS.length;i++){
+    var m=SEED_MONSTERS[i];var id=seedId(m.name);
+    if(st.deleted.indexOf(id)>=0)continue;
+    if(st.edits[id]){var e=JSON.parse(JSON.stringify(st.edits[id]));e._id=id;e._seed=true;out.push(e);}
+    else{var c=JSON.parse(JSON.stringify(m));c._id=id;c._seed=true;out.push(c);}
+  }
+  // custom creatures
+  for(var j=0;j<st.custom.length;j++){var cu=JSON.parse(JSON.stringify(st.custom[j]));cu._seed=false;out.push(cu);}
+  out.sort(function(a,b){return (a.tier-b.tier)||a.name.localeCompare(b.name);});
+  MONSTERS=out;
+}
+function findMon(id){for(var i=0;i<MONSTERS.length;i++)if(MONSTERS[i]._id===id)return MONSTERS[i];return null;}
+
+function tcolor(t){return getComputedStyle(document.documentElement).getPropertyValue('--t-'+t).trim()||'#d4a44a';}
+
+function buildSegs(){
+  document.getElementById("typeSeg").innerHTML=TYPES.map(t=>
+    '<button class="'+(F.type===t.id?'on':'')+'" onclick="F.type=\''+t.id+'\';buildSegs();render()">'+t.name+'</button>').join('');
+  document.getElementById("tierSeg").innerHTML=TIERS.map(t=>
+    '<button class="'+(F.tier===t.id?'on':'')+'" onclick="F.tier=\''+t.id+'\';buildSegs();render()">'+t.name+'</button>').join('');
+}
+
+function filtered(){
+  const q=(document.getElementById("q").value||"").toLowerCase();
+  return MONSTERS.filter(m=>{
+    if(F.type!=="all"&&m.type!==F.type)return false;
+    if(F.tier!=="all"&&String(m.tier)!==F.tier)return false;
+    if(q){
+      const hay=(m.name+" "+m.type+" "+m.role+" "+m.motive+" "+m.lore+" "+(m.abilities||[]).map(a=>a[0]+" "+a[1]).join(" ")).toLowerCase();
+      if(hay.indexOf(q)<0)return false;
+    }
+    return true;
+  });
+}
+
+function render(){
+  const list=filtered();
+  const g=document.getElementById("grid");
+  document.getElementById("count").textContent=list.length+" of "+MONSTERS.length+" creatures";
+  if(!list.length){g.innerHTML='<div class="empty">No creatures match thy search.</div>';return;}
+  g.innerHTML=list.map((m,i)=>{
+    const c=tcolor(m.type);
+    return '<div class="card" style="--tc:'+c+';animation-delay:'+(i*.03)+'s" onclick="openSheet(\''+m._id+'\')">'
+      +'<div class="card-top"><div class="card-row"><div><div class="card-name">'+m.name+(m._seed?'':' <span style="font-size:10px;color:var(--tc);border:1px solid var(--tc);border-radius:3px;padding:1px 5px;vertical-align:middle">yours</span>')+'</div>'
+      +'<div class="card-meta">'+m.type+' · '+m.role+'</div></div>'
+      +'<div class="card-tier">Tier '+m.tier+'</div></div>'
+      +'<div class="card-stats">'
+        +'<div class="cs"><div class="v">'+m.ep+'</div><div class="k">EP</div></div>'
+        +'<div class="cs"><div class="v">'+m.dl+'</div><div class="k">DL</div></div>'
+        +'<div class="cs"><div class="v">'+m.speed+'</div><div class="k">Speed</div></div>'
+        +'<div class="cs"><div class="v">'+m.ap+'</div><div class="k">AP</div></div>'
+      +'</div></div>'
+      +'<div class="card-lore">'+m.lore+'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function openSheet(id){
+  const m=findMon(id);if(!m)return;
+  const c=tcolor(m.type);
+  let h='<button class="sheet-close" onclick="closeSheet()">&times;</button>';
+  h+='<div class="sh-name">'+m.name+'</div>';
+  h+='<div class="sh-class">Tier '+m.tier+' '+m.role+' — '+m.type+'</div>';
+  h+='<div class="sh-rule"></div>';
+  h+='<div class="sh-core">'
+    +'<div class="b"><div class="v">'+m.ep+'</div><div class="k">EP</div></div>'
+    +'<div class="b"><div class="v">'+m.dl+'</div><div class="k">DL</div></div>'
+    +'<div class="b"><div class="v">'+m.speed+'</div><div class="k">Speed</div></div>'
+    +'<div class="b"><div class="v">'+m.ap+'</div><div class="k">AP</div></div>'
+  +'</div>';
+  h+='<div class="sh-line"><b>To-Hit</b>'+m.tohit+'</div>';
+  h+='<div class="sh-line"><b>Damage</b>'+m.damage+'</div>';
+  h+='<div class="sh-line"><b>Saves</b>'+m.saves+'</div>';
+  if(m.skills&&m.skills!=="—")h+='<div class="sh-line"><b>Skills</b>'+m.skills+'</div>';
+  if(m.abilities&&m.abilities.length){
+    h+='<div class="sh-line"><b>Traits &amp; Abilities</b></div>';
+    m.abilities.forEach(a=>{h+='<div class="sh-ab"><div class="n">'+a[0]+'</div><div class="t">'+a[1]+'</div></div>';});
+  }
+  h+='<div class="sh-foot"><b style="font-family:Cinzel,serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:'+c+';font-style:normal">Motive</b> '+m.motive+'<br><b style="font-family:Cinzel,serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:'+c+';font-style:normal">Morale</b> '+m.morale+'</div>';
+  h+='<div class="sh-foot" style="border-top:none;padding-top:6px">'+m.lore+'</div>';
+  h+='<div style="display:flex;gap:8px;margin-top:16px">'
+    +'<button class="ed-btn" onclick="openEditor(\''+m._id+'\')">✎ Edit</button>'
+    +'<button class="ed-btn danger" onclick="deleteMon(\''+m._id+'\')">🗑 '+(m._seed?'Hide':'Delete')+'</button>'
+    +(m._seed?'<span style="font-size:12px;color:var(--tdimmer);align-self:center;font-style:italic">built-in — edits & hiding are reversible via Reset</span>':'')
+    +'</div>';
+  const sh=document.getElementById("sheet");
+  sh.style.setProperty('--tc',c);
+  sh.innerHTML=h;
+  document.getElementById("ov").classList.add("open");
+}
+function closeSheet(){document.getElementById("ov").classList.remove("open");}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet();});
+
+/* ===== EDITOR ===== */
+var EDIT_ID=null;
+var TYPE_OPTS=["beast","void","humanoid","dragon","undead","construct","aberration"];
+function openEditor(id){
+  EDIT_ID=id;
+  var m=id?findMon(id):null;
+  var v=function(x){return m&&m[x]!=null?String(m[x]).replace(/"/g,"&quot;"):"";};
+  var abilities=(m&&m.abilities)?m.abilities:[];
+  var abLines=abilities.map(a=>a[0]+" :: "+a[1]).join("\n");
+  var typeSel=TYPE_OPTS.map(t=>'<option value="'+t+'"'+(m&&m.type===t?' selected':'')+'>'+t.charAt(0).toUpperCase()+t.slice(1)+'</option>').join('');
+  var tierSel=[1,2,3,4,5].map(t=>'<option value="'+t+'"'+(m&&m.tier===t?' selected':'')+'>Tier '+t+'</option>').join('');
+  var h='<button class="sheet-close" onclick="closeSheet()">&times;</button>';
+  h+='<div class="sh-name" style="font-size:24px">'+(m?'Edit Creature':'New Creature')+'</div><div class="sh-rule"></div>';
+  h+='<div class="ed-grid">';
+  h+=edField("Name","ed-name",v("name"),"text");
+  h+='<div class="ed-f"><label>Type</label><select id="ed-type">'+typeSel+'</select></div>';
+  h+='<div class="ed-f"><label>Tier</label><select id="ed-tier">'+tierSel+'</select></div>';
+  h+=edField("Role","ed-role",v("role"),"text","e.g. Skirmisher, Line, Solo");
+  h+=edField("EP","ed-ep",v("ep"),"text");
+  h+=edField("DL","ed-dl",v("dl"),"text");
+  h+=edField("Speed","ed-speed",v("speed"),"text","e.g. 6 (fly 10)");
+  h+=edField("AP","ed-ap",v("ap"),"text");
+  h+='</div>';
+  h+=edFieldWide("To-Hit","ed-tohit",v("tohit"),"e.g. +8 (bite)");
+  h+=edFieldWide("Damage","ed-damage",v("damage"),"");
+  h+=edFieldWide("Saves","ed-saves",v("saves"),"Strong: … · Avg: … · Weak: …");
+  h+=edFieldWide("Skills","ed-skills",v("skills"),"or — for none");
+  h+='<div class="ed-f wide"><label>Traits &amp; Abilities <span style="color:var(--tdimmer);font-style:italic">— one per line, format:  Name :: description</span></label><textarea id="ed-abilities" rows="5">'+abLines.replace(/</g,"&lt;")+'</textarea></div>';
+  h+=edFieldWide("Motive","ed-motive",v("motive"),"e.g. Hunger + Hunt the weak");
+  h+=edFieldWide("Morale","ed-morale",v("morale"),"");
+  h+='<div class="ed-f wide"><label>Lore</label><textarea id="ed-lore" rows="3">'+(m?(m.lore||"").replace(/</g,"&lt;"):"")+'</textarea></div>';
+  h+='<div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">'
+    +'<button class="ed-btn save" onclick="saveCreature()">Save Creature</button>'
+    +'<button class="ed-btn" onclick="closeSheet()">Cancel</button>'
+    +'</div>';
+  var sh=document.getElementById("sheet");
+  sh.style.setProperty('--tc',m?tcolor(m.type):'#d4a44a');
+  sh.innerHTML=h;
+  document.getElementById("ov").classList.add("open");
+}
+function edField(label,id,val,type,ph){return '<div class="ed-f"><label>'+label+'</label><input id="'+id+'" type="'+(type||"text")+'" value="'+val+'"'+(ph?' placeholder="'+ph+'"':'')+'></div>';}
+function edFieldWide(label,id,val,ph){return '<div class="ed-f wide"><label>'+label+'</label><input id="'+id+'" type="text" value="'+val+'"'+(ph?' placeholder="'+ph+'"':'')+'></div>';}
+
+function saveCreature(){
+  var name=(document.getElementById("ed-name").value||"").trim();
+  if(!name){alert("A creature needs a name.");return;}
+  var abRaw=(document.getElementById("ed-abilities").value||"").split("\n");
+  var abilities=[];
+  for(var i=0;i<abRaw.length;i++){var ln=abRaw[i].trim();if(!ln)continue;
+    var parts=ln.split("::");
+    if(parts.length>=2)abilities.push([parts[0].trim(),parts.slice(1).join("::").trim()]);
+    else abilities.push([ln,""]);
+  }
+  var obj={
+    name:name,
+    type:document.getElementById("ed-type").value,
+    tier:parseInt(document.getElementById("ed-tier").value)||1,
+    role:document.getElementById("ed-role").value.trim()||"Standard",
+    ep:document.getElementById("ed-ep").value.trim()||"—",
+    dl:document.getElementById("ed-dl").value.trim()||"—",
+    speed:document.getElementById("ed-speed").value.trim()||"—",
+    ap:document.getElementById("ed-ap").value.trim()||"—",
+    tohit:document.getElementById("ed-tohit").value.trim()||"—",
+    damage:document.getElementById("ed-damage").value.trim()||"—",
+    saves:document.getElementById("ed-saves").value.trim()||"—",
+    skills:document.getElementById("ed-skills").value.trim()||"—",
+    abilities:abilities,
+    motive:document.getElementById("ed-motive").value.trim()||"—",
+    morale:document.getElementById("ed-morale").value.trim()||"—",
+    lore:document.getElementById("ed-lore").value.trim()||""
+  };
+  var st=Store.get();
+  if(EDIT_ID){
+    var existing=findMon(EDIT_ID);
+    if(existing&&existing._seed){ obj._id=EDIT_ID; st.edits[EDIT_ID]=obj; }      // edit to a seed creature
+    else { // edit to a custom creature
+      obj._id=EDIT_ID;
+      for(var j=0;j<st.custom.length;j++)if(st.custom[j]._id===EDIT_ID){st.custom[j]=obj;break;}
+    }
+  } else {
+    obj._id="mon_"+Date.now()+"_"+Math.floor(Math.random()*1000);
+    st.custom.push(obj);
+  }
+  Store.save();rebuildMonsters();render();
+  closeSheet();
+  setTimeout(function(){openSheet(obj._id);},120);
+}
+
+function deleteMon(id){
+  var m=findMon(id);if(!m)return;
+  if(!confirm((m._seed?"Hide":"Delete")+' "'+m.name+'"?'+(m._seed?" (You can restore built-ins with Reset.)":" This cannot be undone.")))return;
+  var st=Store.get();
+  if(m._seed){ if(st.deleted.indexOf(id)<0)st.deleted.push(id); delete st.edits[id]; }
+  else { st.custom=st.custom.filter(function(x){return x._id!==id;}); }
+  Store.save();rebuildMonsters();render();closeSheet();
+}
+
+function exportBestiary(){
+  var st=Store.get();
+  var blob=new Blob([JSON.stringify(st,null,2)],{type:"application/json"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="arshmunnu_bestiary_export.json";a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+}
+function importBestiary(ev){
+  var f=ev.target.files&&ev.target.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(e){
+    try{
+      var data=JSON.parse(e.target.result);
+      var st=Store.get();
+      var merge=confirm("OK = merge with your current bestiary.\nCancel = replace it entirely.");
+      if(merge){
+        if(data.custom)for(var i=0;i<data.custom.length;i++)st.custom.push(data.custom[i]);
+        if(data.edits)for(var k in data.edits)if(data.edits.hasOwnProperty(k))st.edits[k]=data.edits[k];
+        if(data.deleted)for(var d=0;d<data.deleted.length;d++)if(st.deleted.indexOf(data.deleted[d])<0)st.deleted.push(data.deleted[d]);
+      } else {
+        st.custom=data.custom||[];st.edits=data.edits||{};st.deleted=data.deleted||[];
+      }
+      Store.save();rebuildMonsters();render();
+      alert("Imported.");
+    }catch(err){alert("Could not read that file: "+err.message);}
+  };
+  rd.readAsText(f);
+  ev.target.value="";
+}
+function resetBestiary(){
+  if(!confirm("Reset to the original built-in bestiary? This removes all your additions, edits, and hidden creatures."))return;
+  var st=Store.get();st.custom=[];st.edits={};st.deleted=[];Store.save();rebuildMonsters();render();
+}
+
+// === INIT (async — warm storage, then render) ===
+(async function(){
+  await Store.load();
+  rebuildMonsters();
+  buildSegs();render();
+})();
+</script>
+</body>
+</html>

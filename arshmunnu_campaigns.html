@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Arshmunnu — Campaigns</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08060f;--card:#13111c;--card2:#1a1726;--text:#e6dfcf;--muted:#948da0;--mute2:#5d5868;
+  --gold:#c9a84c;--goldL:#f0cc72;--goldD:#8b7340;
+  --purple:#9370b0;--purpleL:#c4a8de;--purpleD:#5b4673;
+  --teal:#3a8a8a;--tealL:#7fd4d4;--red:#b0512f;--green:#7c9e6b;
+  --border:rgba(201,168,76,.14);--border2:rgba(201,168,76,.3);
+  --pborder:rgba(147,112,176,.3);--pglow:rgba(147,112,176,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;}
+body{font-family:'EB Garamond',serif;background:
+  radial-gradient(1200px 600px at 80% -10%,rgba(147,112,176,.08),transparent 60%),
+  radial-gradient(900px 500px at 0% 110%,rgba(201,168,76,.05),transparent 55%),
+  var(--bg);color:var(--text);min-height:100vh;}
+
+.topbar{position:sticky;top:0;z-index:200;min-height:54px;background:rgba(8,6,15,.97);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:7px 18px;backdrop-filter:blur(8px);flex-wrap:wrap;}
+.tb-seal{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f0cc72,#c9a84c 50%,#8b7340);
+  box-shadow:0 0 0 1px #8b7340;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:14px;color:#1a0800;flex-shrink:0;}
+.tb-title{font-family:'Cinzel',serif;font-size:15px;letter-spacing:.12em;color:var(--goldL);text-transform:uppercase;font-weight:600;}
+.top-links{display:flex;gap:4px;margin-left:auto;align-items:center;flex-wrap:wrap;}
+.top-links a,.top-links button{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  text-decoration:none;padding:6px 9px;border:1px solid transparent;border-radius:2px;transition:all .15s;white-space:nowrap;background:none;cursor:pointer;}
+.top-links a:hover,.top-links button:hover{color:var(--goldL);border-color:var(--border2);background:rgba(201,168,76,.06);}
+
+.acct-bar{display:flex;align-items:center;gap:5px;padding:3px 4px 3px 9px;margin-right:4px;border:1px solid rgba(147,112,176,.4);border-radius:14px;background:rgba(147,112,176,.1);}
+.acct-bar .acct-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#c4a8de;white-space:nowrap;}
+.acct-bar .acct-sel{background:rgba(0,0,0,.3);border:1px solid rgba(147,112,176,.35);border-radius:9px;color:#e6dfcf;font-family:'EB Garamond',serif;font-size:12px;padding:2px 6px;outline:none;max-width:120px;cursor:pointer;}
+.acct-bar .acct-add{width:20px;height:20px;border-radius:50%;border:1px solid rgba(147,112,176,.4);background:rgba(147,112,176,.16);color:#c4a8de;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;}
+.acct-bar .acct-add:hover{background:rgba(147,112,176,.32);}
+
+.wrap{max-width:1180px;margin:0 auto;padding:26px 18px 110px;}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.page-title{font-family:'Cinzel Decorative',serif;font-size:clamp(22px,3.4vw,34px);color:var(--goldL);letter-spacing:.04em;line-height:1;}
+.page-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--muted);margin-top:6px;}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:18px 0 24px;}
+
+.btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  padding:9px 16px;border-radius:3px;cursor:pointer;transition:all .16s;white-space:nowrap;border:1px solid var(--border2);
+  background:rgba(201,168,76,.08);color:var(--goldL);}
+.btn:hover{background:rgba(201,168,76,.18);border-color:var(--gold);}
+.btn.primary{background:linear-gradient(135deg,#f0cc72,#c9a84c);color:#1a0800;border:none;box-shadow:0 2px 12px rgba(201,168,76,.25);}
+.btn.primary:hover{filter:brightness(1.08);}
+.btn.purple{background:linear-gradient(135deg,var(--purpleL),var(--purple));color:#150c1f;border:none;box-shadow:0 2px 12px var(--pglow);}
+.btn.purple:hover{filter:brightness(1.08);}
+.btn.teal{color:var(--tealL);border-color:rgba(58,138,138,.4);background:rgba(58,138,138,.1);}
+.btn.teal:hover{background:rgba(58,138,138,.22);border-color:var(--teal);}
+.btn.ghost{background:none;}
+.btn.bad{color:#e08a6e;border-color:rgba(176,81,47,.4);background:rgba(176,81,47,.08);}
+.btn.bad:hover{background:rgba(176,81,47,.2);}
+.btn.sm{padding:6px 11px;font-size:9px;}
+
+.camp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.camp-card{position:relative;background:linear-gradient(155deg,var(--card),var(--card2));
+  border:1px solid var(--pborder);border-radius:8px;padding:20px 20px 18px;cursor:pointer;overflow:hidden;
+  transition:transform .18s,border-color .18s,box-shadow .18s;}
+.camp-card:hover{transform:translateY(-3px);border-color:var(--purple);box-shadow:0 12px 34px rgba(0,0,0,.5),0 0 0 1px var(--pglow);}
+.cc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.cc-crest{width:42px;height:42px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;
+  background:radial-gradient(circle at 35% 30%,rgba(196,168,222,.3),rgba(91,70,115,.2));border:1px solid var(--pborder);color:var(--purpleL);}
+.cc-name{font-family:'Cinzel',serif;font-size:16px;color:var(--text);letter-spacing:.02em;line-height:1.25;}
+.cc-blurb{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--muted);margin:6px 0 12px;line-height:1.4;min-height:21px;}
+.cc-stats{display:flex;gap:14px;flex-wrap:wrap;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute2);}
+.cc-stats b{color:var(--purpleL);font-weight:600;}
+.role-badge{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;text-transform:uppercase;padding:3px 8px;border-radius:10px;white-space:nowrap;}
+.role-gm{background:rgba(201,168,76,.16);border:1px solid var(--border2);color:var(--goldL);}
+.role-player{background:rgba(147,112,176,.16);border:1px solid var(--pborder);color:var(--purpleL);}
+
+.empty{text-align:center;padding:70px 20px;color:var(--muted);}
+.empty .e-icon{font-size:46px;color:var(--purpleD);margin-bottom:14px;}
+.empty .e-title{font-family:'Cinzel',serif;font-size:15px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.empty .e-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;margin-bottom:20px;}
+
+#view-detail{display:none;}
+.back-link{display:inline-flex;align-items:center;gap:7px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);cursor:pointer;margin-bottom:18px;transition:color .15s;}
+.back-link:hover{color:var(--goldL);}
+.detail-head{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:6px;}
+.dh-crest{width:60px;height:60px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:30px;
+  background:radial-gradient(circle at 35% 30%,rgba(196,168,222,.3),rgba(91,70,115,.2));border:1px solid var(--pborder);color:var(--purpleL);}
+.dh-body{flex:1;min-width:200px;}
+.dh-name{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,3vw,30px);color:var(--goldL);line-height:1.1;}
+.dh-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute2);}
+.dh-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;}
+
+.section{background:linear-gradient(160deg,var(--card),rgba(19,17,28,.6));border:1px solid var(--border);border-radius:8px;padding:20px;margin-top:20px;}
+.section-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.section-h h3{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);
+  display:flex;align-items:center;gap:9px;}
+.section-h h3 .sh-ic{color:var(--purpleL);font-size:15px;}
+
+.party-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:11px;}
+.member{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.22);border:1px solid var(--border);border-left:3px solid var(--purple);
+  border-radius:5px;padding:11px 13px;transition:border-color .15s,background .15s;}
+.member:hover{background:rgba(147,112,176,.06);border-left-color:var(--purpleL);}
+.m-crest{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;
+  background:rgba(0,0,0,.3);border:1px solid var(--border2);}
+.m-body{flex:1;min-width:0;}
+.m-name{font-family:'Cinzel',serif;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.m-meta{font-size:12px;color:var(--muted);font-family:'Cormorant Garamond',serif;font-style:italic;}
+.m-owner{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--purpleL);}
+.m-acts{display:flex;gap:5px;flex-shrink:0;}
+.m-btn{width:27px;height:27px;border-radius:4px;border:1px solid var(--border2);background:rgba(201,168,76,.06);color:var(--goldL);
+  cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .14s;}
+.m-btn:hover{background:rgba(201,168,76,.2);}
+.m-btn.vtt{color:var(--tealL);border-color:rgba(58,138,138,.4);background:rgba(58,138,138,.08);}
+.m-btn.vtt:hover{background:rgba(58,138,138,.22);}
+.m-btn.x{color:#e08a6e;border-color:rgba(176,81,47,.35);}
+.m-btn.x:hover{background:rgba(176,81,47,.2);}
+
+.sess{border-left:2px solid var(--pborder);padding:4px 0 14px 16px;position:relative;margin-left:6px;}
+.sess::before{content:"";position:absolute;left:-5px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--purple);box-shadow:0 0 0 3px rgba(147,112,176,.18);}
+.sess:last-child{padding-bottom:0;}
+.sess-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.sess-title{font-family:'Cinzel',serif;font-size:13px;color:var(--text);letter-spacing:.02em;}
+.sess-date{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute2);}
+.sess-notes{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--muted);line-height:1.5;margin-top:5px;white-space:pre-wrap;}
+.sess-del{margin-left:auto;color:#a06a55;cursor:pointer;font-size:13px;background:none;border:none;}
+.sess-del:hover{color:#e08a6e;}
+
+textarea.notes{width:100%;min-height:120px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-family:'EB Garamond',serif;font-size:15px;line-height:1.55;padding:13px 15px;resize:vertical;outline:none;}
+textarea.notes:focus{border-color:var(--border2);}
+.muted-note{color:var(--mute2);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:15px;}
+
+.ov{position:fixed;inset:0;z-index:1100;background:rgba(6,4,12,.86);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px);}
+.ov.open{display:flex;}
+.modal{background:linear-gradient(165deg,#161320,#0e0c16);border:1px solid var(--border2);border-radius:10px;
+  max-width:560px;width:100%;max-height:88vh;overflow:auto;padding:26px;position:relative;box-shadow:0 24px 70px rgba(0,0,0,.7);}
+.modal h3{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.08em;color:var(--goldL);text-transform:uppercase;margin-bottom:18px;}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;}
+.modal-close:hover{color:var(--goldL);}
+.fld{margin-bottom:15px;}
+.fld label{display:block;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.fld input,.fld select,.fld textarea{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:4px;
+  color:var(--text);font-family:'EB Garamond',serif;font-size:15px;padding:10px 12px;outline:none;}
+.fld textarea{resize:vertical;min-height:70px;line-height:1.5;}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--gold);}
+.gm-note{display:flex;align-items:center;gap:9px;background:rgba(201,168,76,.08);border:1px solid var(--border2);border-radius:6px;padding:10px 13px;margin-bottom:15px;
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--goldL);}
+.link-box{display:flex;gap:8px;margin-top:6px;}
+.link-box input{flex:1;background:rgba(0,0,0,.35);border:1px solid var(--border2);border-radius:4px;color:var(--tealL);font-family:monospace;font-size:12px;padding:9px 11px;outline:none;}
+.modal-foot{display:flex;gap:9px;margin-top:8px;flex-wrap:wrap;}
+
+.pick-list{display:grid;grid-template-columns:1fr;gap:7px;max-height:46vh;overflow:auto;margin-top:6px;}
+.pick-row{display:flex;align-items:center;gap:11px;padding:9px 11px;background:rgba(0,0,0,.22);border:1px solid var(--border);border-radius:5px;cursor:pointer;transition:all .14s;}
+.pick-row:hover{border-color:var(--purple);background:rgba(147,112,176,.08);}
+.pick-row.in{opacity:.5;cursor:default;}
+.pick-crest{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;background:rgba(0,0,0,.3);border:1px solid var(--border2);flex-shrink:0;}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#161320;border:1px solid var(--border2);
+  color:var(--text);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.06em;padding:12px 22px;border-radius:6px;
+  box-shadow:0 8px 30px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:all .25s;z-index:1300;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:560px){.wrap{padding:20px 13px 100px;}.tb-title{font-size:12px;}}
+</style>
+</head>
+<body class="">
+
+<div class="topbar">
+  <div class="tb-seal">A</div>
+  <div class="tb-title">Arshmunnu &mdash; Campaigns</div>
+  <div class="top-links">
+    <div class="acct-bar" id="acct-bar"></div>
+    <a href="#" onclick="gotoApp('arshrpg','arshmunnu_arshrpg.html');return false;">&larrhk; ArshRPG</a>
+    <a href="#" onclick="gotoApp('characters','arshmunnu_characters.html');return false;">Characters</a>
+    <a href="#" onclick="gotoApp('vtt','arshmunnu_vtt.html');return false;">Battle Map</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="view-list">
+    <div class="page-head">
+      <div>
+        <div class="page-title">Campaigns</div>
+        <div class="page-sub">Found a saga as its Game Master, or join one by link and bring your character to the table.</div>
+      </div>
+      <div class="head-actions">
+        <button class="btn purple" onclick="openCreate()">&#10010; New Campaign</button>
+        <button class="btn ghost" onclick="openJoin()">&#10070; Join by Link</button>
+        <button class="btn ghost" onclick="document.getElementById('campImport').click()">&#8593; Import</button>
+        <input type="file" id="campImport" accept="application/json,.json" style="display:none" onchange="importCampaign(event)">
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div id="camp-grid" class="camp-grid"></div>
+  </div>
+  <div id="view-detail"></div>
+</div>
+
+<div class="ov" id="ov" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   Arshmunnu Campaigns
+   - Campaigns & characters belong to local Accounts (profiles).
+   - The account that creates a campaign is its Game Master.
+   - Players join by invite link and bring their own characters.
+   - Serverless: same-device accounts share one campaign object;
+     across devices, the link carries a snapshot (no live sync).
+   ============================================================ */
+var CAMPAIGNS_KEY="arshmunnu_campaigns_v1";
+var CHARS_KEY="arshmunnu_chars_v4";
+var VTT_PENDING_KEY="arshmunnu_vtt_pending";
+var ACCOUNTS_KEY="arshmunnu_accounts_v2", ACTIVE_KEY="arshmunnu_active_account_v2";
+
+var SPECIES_TOK={
+  sofkarr:{c:"#7B9EA8",g:"\u25C8"}, drothmir:{c:"#4A3B5C",g:"\u25D1"}, viteine:{c:"#5B8C5A",g:"\u2741"},
+  roodin:{c:"#8B6F47",g:"\u27B3"}, astrylian:{c:"#C9952B",g:"\u2600"}, lunarian:{c:"#6B7B8D",g:"\u263E"},
+  shaiyan:{c:"#8B4557",g:"\u25BC"}, angel:{c:"#D4AF37",g:"\u2726"}, flyborn:{c:"#5A8B9E",g:"\u2744"},
+  myrmid:{c:"#4A7B8B",g:"\u265F"}, centaur:{c:"#8B7355",g:"\u265E"}, chamalian:{c:"#A0522D",g:"\u2605"},
+  prelling:{c:"#D8D0C0",g:"\u2727"}, human:{c:"#8B7355",g:"\u2637"}, bobrie:{c:"#4A6B5D",g:"\u2666"}
+};
+
+var Store=(function(){
+  var hasWS=(typeof window!=="undefined"&&window.storage&&typeof window.storage.get==="function");
+  function lsGet(k){try{var r=localStorage.getItem(k);return r?JSON.parse(r):null;}catch(e){return null;}}
+  function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+  async function get(k){ if(hasWS){try{var r=await window.storage.get(k);return r?JSON.parse(r.value):null;}catch(e){return null;}} return lsGet(k); }
+  async function set(k,v){ if(hasWS){try{await window.storage.set(k,JSON.stringify(v),false);}catch(e){}} else lsSet(k,v); }
+  return {get:get,set:set,hasWS:hasWS};
+})();
+
+var CAMPS=[], CHARS=[], ACCOUNTS=[], ACTIVE=null, CUR=null;
+
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function uid(p){return (p||"cmp")+"_"+Date.now()+"_"+Math.floor(Math.random()*100000);}
+function code(){var s="ARSH-";for(var i=0;i<5;i++)s+="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)];return s;}
+function byId(arr,id){for(var i=0;i<arr.length;i++)if(arr[i]._id===id||arr[i].id===id)return arr[i];return null;}
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");},2600);}
+function b64e(o){try{return btoa(unescape(encodeURIComponent(JSON.stringify(o))));}catch(e){return "";}}
+function b64d(s){try{return JSON.parse(decodeURIComponent(escape(atob(s))));}catch(e){return null;}}
+
+function gotoApp(appId,file){
+  try{ if(window.parent && window.parent!==window && typeof window.parent.openApp==="function"){ window.parent.openApp(appId); return; } }catch(e){}
+  window.location.href=file;
+}
+
+/* ===== ACCOUNTS ===== */
+async function saveAccounts(){ await Store.set(ACCOUNTS_KEY,ACCOUNTS); }
+async function loadAccountsState(){
+  ACCOUNTS=(await Store.get(ACCOUNTS_KEY))||[];
+  if(!ACCOUNTS.length){ ACCOUNTS=[{id:"acc_local",name:"Player One",created:Date.now()}]; await saveAccounts(); }
+  var id=await Store.get(ACTIVE_KEY); ACTIVE=null;
+  for(var i=0;i<ACCOUNTS.length;i++) if(ACCOUNTS[i].id===id) ACTIVE=ACCOUNTS[i];
+  if(!ACTIVE){ ACTIVE=ACCOUNTS[0]; await Store.set(ACTIVE_KEY,ACTIVE.id); }
+}
+async function switchAccount(id){ await Store.set(ACTIVE_KEY,id); location.reload(); }
+async function createAccount(){
+  var n=prompt("Name for the new account / player profile:"); if(n===null)return;
+  n=(n||"").trim(); if(!n){toast("Account needs a name.");return;}
+  var acc={id:uid("acc"),name:n,created:Date.now()}; ACCOUNTS.push(acc);
+  await saveAccounts(); await Store.set(ACTIVE_KEY,acc.id); location.reload();
+}
+function accountName(id){ for(var i=0;i<ACCOUNTS.length;i++) if(ACCOUNTS[i].id===id) return ACCOUNTS[i].name; return ""; }
+function renderAccountBar(){
+  var bar=document.getElementById("acct-bar"); if(!bar)return;
+  var opts=ACCOUNTS.map(function(x){return '<option value="'+x.id+'"'+(ACTIVE&&x.id===ACTIVE.id?' selected':'')+'>'+esc(x.name)+'</option>';}).join("");
+  bar.innerHTML='<span class="acct-lbl">&#9683; Account</span>'
+    +'<select class="acct-sel" title="Switch account" onchange="switchAccount(this.value)">'+opts+'</select>'
+    +'<button class="acct-add" title="New account / player" onclick="createAccount()">&#10010;</button>';
+}
+
+/* ===== role helpers ===== */
+function isGM(cp){ return cp.owner ? (cp.owner===ACTIVE.id) : true; }    // legacy unowned -> treat as GM
+function roleOf(cp){ return isGM(cp)?"Game Master":"Player"; }
+function myCampaigns(){
+  return CAMPS.filter(function(cp){
+    if(!cp.owner) return true;                                  // legacy
+    if(cp.owner===ACTIVE.id) return true;                       // I'm the GM
+    return (cp.players||[]).indexOf(ACTIVE.id)>=0;              // I'm a player
+  });
+}
+function myChars(){ return CHARS.filter(function(c){return !c.owner||c.owner===ACTIVE.id;}); }
+
+async function loadAll(){
+  await loadAccountsState();
+  CAMPS=(await Store.get(CAMPAIGNS_KEY))||[];
+  CHARS=(await Store.get(CHARS_KEY))||[];
+}
+async function saveCamps(){ await Store.set(CAMPAIGNS_KEY,CAMPS); }
+
+/* ===== LIST ===== */
+function renderList(){
+  renderAccountBar();
+  var g=document.getElementById("camp-grid");
+  var mine=myCampaigns();
+  if(!mine.length){
+    g.innerHTML='<div class="empty" style="grid-column:1/-1">'
+      +'<div class="e-icon">&#10070;</div>'
+      +'<div class="e-title">No campaigns for '+esc(ACTIVE.name)+'</div>'
+      +'<div class="e-sub">Found a saga as Game Master, or join one by an invite link.</div>'
+      +'<div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">'
+      +'<button class="btn purple" onclick="openCreate()">&#10010; Create a Campaign</button>'
+      +'<button class="btn ghost" onclick="openJoin()">&#10070; Join by Link</button></div></div>';
+    return;
+  }
+  var html="";
+  mine.forEach(function(cp){
+    var party=(cp.members||[]).length, sess=(cp.sessions||[]).length, gm=isGM(cp);
+    html+='<div class="camp-card" onclick="openDetail(\''+cp.id+'\')">'
+      +'<div class="cc-top"><div style="display:flex;gap:12px;align-items:flex-start">'
+        +'<div class="cc-crest">&#10070;</div>'
+        +'<div><div class="cc-name">'+esc(cp.name)+'</div></div></div>'
+        +'<span class="role-badge '+(gm?"role-gm":"role-player")+'">'+(gm?"Game Master":"Player")+'</span></div>'
+      +'<div class="cc-blurb">'+(cp.blurb?esc(cp.blurb):(gm?'<span class="muted-note">No description yet.</span>':'<span class="muted-note">GM: '+esc(cp.gmName||"\u2014")+'</span>'))+'</div>'
+      +'<div class="cc-stats">'
+        +'<span><b>'+party+'</b> '+(party===1?"hero":"heroes")+'</span>'
+        +'<span><b>'+sess+'</b> '+(sess===1?"session":"sessions")+'</span>'
+        +'<span>'+esc(cp.system||"ArshRPG")+'</span>'
+      +'</div></div>';
+  });
+  g.innerHTML=html;
+}
+function showList(){
+  CUR=null;
+  document.getElementById("view-detail").style.display="none";
+  document.getElementById("view-list").style.display="block";
+  renderList(); window.scrollTo(0,0);
+}
+
+/* ===== DETAIL ===== */
+function openDetail(id){
+  CUR=byId(CAMPS,id); if(!CUR)return;
+  document.getElementById("view-list").style.display="none";
+  document.getElementById("view-detail").style.display="block";
+  renderDetail(); window.scrollTo(0,0);
+}
+function memberCard(c,gm){
+  if(!c) return '';
+  var sp=SPECIES_TOK[c.species]||{};
+  var owner=c.owner&&c.owner!==ACTIVE.id?accountName(c.owner):"";
+  return '<div class="member">'
+    +'<div class="m-crest" style="color:'+(sp.c||"#c9a84c")+'">'+(sp.g||"\u2694")+'</div>'
+    +'<div class="m-body"><div class="m-name">'+esc(c.name||"Unnamed")+'</div>'
+      +'<div class="m-meta">Lvl '+(c.level||1)+' '+esc(c.species||"")+(c.calling?' \u00b7 '+esc(c.calling):"")+'</div>'
+      +(owner?'<div class="m-owner">'+esc(owner)+'</div>':'')+'</div>'
+    +'<div class="m-acts">'
+      +'<button class="m-btn vtt" title="Send to Battle Map" onclick="oneToVTT(\''+c._id+'\')">&#9876;</button>'
+      +((gm||!c.owner||c.owner===ACTIVE.id)?'<button class="m-btn x" title="Remove from campaign" onclick="removeMember(\''+c._id+'\')">&times;</button>':'')
+    +'</div></div>';
+}
+function renderDetail(){
+  var cp=CUR, d=document.getElementById("view-detail"), gm=isGM(cp);
+  var members=(cp.members||[]).map(function(id){return byId(CHARS,id);}).filter(Boolean);
+  var missing=(cp.members||[]).length-members.length;
+
+  var html='<div class="back-link" onclick="showList()">&lsaquo; All Campaigns</div>';
+  html+='<div class="detail-head">'
+    +'<div class="dh-crest">&#10070;</div>'
+    +'<div class="dh-body"><div class="dh-name">'+esc(cp.name)+'</div>'
+      +'<div class="dh-meta">'
+        +'<span class="role-badge '+(gm?"role-gm":"role-player")+'">'+roleOf(cp)+'</span>'
+        +'<span>'+esc(cp.system||"ArshRPG")+'</span>'
+        +(gm?'':'<span>GM&nbsp;&middot;&nbsp;'+esc(cp.gmName||"\u2014")+'</span>')
+      +'</div></div>'
+    +'<div class="dh-actions">'
+      +'<button class="btn teal" onclick="launchVTT()">&#9876; Launch Battle Map</button>'
+      +'<button class="btn sm purple" onclick="openInvite()">&#128279; Invite</button>'
+      +(gm?'<button class="btn sm ghost" onclick="openEdit()">Edit</button>':'')
+      +'<button class="btn sm bad" onclick="deleteCampaign()">'+(gm?"Delete":"Leave")+'</button>'
+    +'</div></div>';
+
+  if(cp.blurb) html+='<div class="page-sub" style="margin-top:12px;max-width:780px">'+esc(cp.blurb)+'</div>';
+
+  html+='<div class="section"><div class="section-h">'
+    +'<h3><span class="sh-ic">&#9876;</span> The Party</h3>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+      +'<button class="btn sm purple" onclick="openAddMember()">&#10010; Add My Character</button>'
+      +'<button class="btn sm ghost" onclick="openAddByLink()">&#128279; Add by Link</button>'
+      +(members.length?'<button class="btn sm teal" onclick="launchVTT()">&#9876; All to Map</button>':'')
+    +'</div></div>';
+  if(members.length){
+    html+='<div class="party-grid">'+members.map(function(c){return memberCard(c,gm);}).join("")+'</div>';
+    if(missing>0) html+='<div class="muted-note" style="margin-top:10px">'+missing+' character'+(missing>1?"s":"")+' in this campaign are not in this device\u2019s roster.</div>';
+  } else {
+    html+='<div class="muted-note">No characters yet. Add one of your heroes, or paste a player\u2019s character link.</div>';
+  }
+  html+='</div>';
+
+  var sessions=(cp.sessions||[]).slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});
+  html+='<div class="section"><div class="section-h">'
+    +'<h3><span class="sh-ic">&#9776;</span> Session Log</h3>'
+    +(gm?'<button class="btn sm" onclick="openAddSession()">&#10010; Log a Session</button>':'')+'</div>';
+  if(sessions.length){
+    html+='<div>';
+    sessions.forEach(function(s){
+      html+='<div class="sess"><div class="sess-top">'
+        +'<span class="sess-title">'+esc(s.title||"Untitled session")+'</span>'
+        +'<span class="sess-date">'+esc(s.date||"")+'</span>'
+        +(gm?'<button class="sess-del" title="Delete" onclick="deleteSession(\''+s.id+'\')">&times;</button>':'')+'</div>'
+        +(s.notes?'<div class="sess-notes">'+esc(s.notes)+'</div>':'')+'</div>';
+    });
+    html+='</div>';
+  } else html+='<div class="muted-note">No sessions logged yet.</div>';
+  html+='</div>';
+
+  html+='<div class="section"><div class="section-h"><h3><span class="sh-ic">&#9998;</span> '+(gm?'Campaign Notes':'My Notes')+'</h3></div>'
+    +'<textarea class="notes" id="camp-notes" placeholder="Lore, hooks, NPCs, secrets\u2026" oninput="saveNotes()">'+esc(gm?(cp.notes||""):((cp.playerNotes&&cp.playerNotes[ACTIVE.id])||""))+'</textarea></div>';
+
+  d.innerHTML=html;
+}
+
+/* ===== CREATE / EDIT (creator is auto-GM) ===== */
+function openModal(h){document.getElementById("modal").innerHTML=h;document.getElementById("ov").classList.add("open");}
+function closeModal(){document.getElementById("ov").classList.remove("open");}
+
+function openCreate(){
+  var h='<button class="modal-close" onclick="closeModal()">&times;</button><h3>New Campaign</h3>'
+    +'<div class="gm-note">&#9819; As its founder, <b>&nbsp;'+esc(ACTIVE.name)+'&nbsp;</b> will be this campaign\u2019s Game Master.</div>'
+    +'<div class="fld"><label>Campaign Name</label><input id="f-name" placeholder="The Exelian Reckoning" autocomplete="off"></div>'
+    +'<div class="fld"><label>System</label><input id="f-system" value="ArshRPG"></div>'
+    +'<div class="fld"><label>Description <span style="color:var(--mute2)">(optional)</span></label>'
+      +'<textarea id="f-blurb" placeholder="A short premise for the saga\u2026"></textarea></div>'
+    +'<div class="modal-foot"><button class="btn primary" onclick="createCampaign()">Found Campaign</button>'
+      +'<button class="btn ghost" onclick="closeModal()">Cancel</button></div>';
+  openModal(h);
+  setTimeout(function(){var e=document.getElementById("f-name");if(e)e.focus();},60);
+}
+async function createCampaign(){
+  var name=(document.getElementById("f-name").value||"").trim();
+  if(!name){toast("Give the campaign a name.");return;}
+  var cp={id:uid(),sharedId:uid("shc"),name:name,
+    owner:ACTIVE.id,gmId:ACTIVE.id,gmName:ACTIVE.name,
+    system:(document.getElementById("f-system").value||"ArshRPG").trim(),
+    blurb:(document.getElementById("f-blurb").value||"").trim(),
+    players:[],members:[],sessions:[],notes:"",playerNotes:{},inviteCode:code(),created:Date.now()};
+  CAMPS.unshift(cp); await saveCamps(); closeModal();
+  toast("\u2713 Campaign founded \u2014 you are the Game Master.");
+  openDetail(cp.id);
+}
+function openEdit(){
+  var cp=CUR; if(!cp||!isGM(cp))return;
+  var h='<button class="modal-close" onclick="closeModal()">&times;</button><h3>Edit Campaign</h3>'
+    +'<div class="fld"><label>Campaign Name</label><input id="f-name" value="'+esc(cp.name)+'"></div>'
+    +'<div class="fld"><label>System</label><input id="f-system" value="'+esc(cp.system||"ArshRPG")+'"></div>'
+    +'<div class="fld"><label>Description</label><textarea id="f-blurb">'+esc(cp.blurb||"")+'</textarea></div>'
+    +'<div class="modal-foot"><button class="btn primary" onclick="saveEdit()">Save Changes</button>'
+      +'<button class="btn ghost" onclick="closeModal()">Cancel</button></div>';
+  openModal(h);
+}
+async function saveEdit(){
+  var cp=CUR; if(!cp)return;
+  cp.name=(document.getElementById("f-name").value||"").trim()||cp.name;
+  cp.system=(document.getElementById("f-system").value||"ArshRPG").trim();
+  cp.blurb=(document.getElementById("f-blurb").value||"").trim();
+  await saveCamps(); closeModal(); renderDetail(); toast("Saved.");
+}
+
+/* ===== INVITE / JOIN BY LINK ===== */
+function inviteLink(cp){
+  var snap={sharedId:cp.sharedId,name:cp.name,system:cp.system,gmName:cp.gmName,gmId:cp.gmId,blurb:cp.blurb};
+  var base=location.origin+location.pathname;
+  return base+"#join="+b64e(snap);
+}
+function openInvite(){
+  var cp=CUR; if(!cp)return;
+  if(!cp.sharedId){ cp.sharedId=uid("shc"); saveCamps(); }
+  var link=inviteLink(cp);
+  var h='<button class="modal-close" onclick="closeModal()">&times;</button><h3>Invite to '+esc(cp.name)+'</h3>'
+    +'<p class="muted-note" style="margin-bottom:12px">Share this link. Whoever opens it joins as a <b>player</b> and can add their own character to the party. (On another device there\u2019s no live sync \u2014 they\u2019ll get their own copy, and can send their character back to you with a character link.)</p>'
+    +'<div class="fld"><label>Invite Link</label><div class="link-box"><input id="inv-link" readonly value="'+esc(link)+'"><button class="btn purple" onclick="copyInvite()">Copy</button></div></div>'
+    +'<div class="fld"><label>Or share the code</label><div class="link-box"><input readonly value="'+esc(cp.inviteCode||"")+'"></div></div>'
+    +'<div class="modal-foot"><button class="btn ghost" onclick="closeModal()">Done</button></div>';
+  openModal(h);
+}
+function copyInvite(){
+  var el=document.getElementById("inv-link"); if(!el)return;
+  el.select();
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(el.value).then(function(){toast("\uD83D\uDD17 Invite link copied.");},function(){toast("Press Ctrl+C to copy.");}); }
+  else { try{document.execCommand("copy");toast("\uD83D\uDD17 Invite link copied.");}catch(e){toast("Press Ctrl+C to copy.");} }
+}
+function openJoin(){
+  var h='<button class="modal-close" onclick="closeModal()">&times;</button><h3>Join a Campaign</h3>'
+    +'<p class="muted-note" style="margin-bottom:14px">Paste an invite link (or its code), or an exported campaign file. You\u2019ll join as a player and can then add one of <b>'+esc(ACTIVE.name)+'</b>\u2019s characters.</p>'
+    +'<div class="fld"><label>Invite Link, Code, or Campaign JSON</label><textarea id="f-join" placeholder="https://\u2026#join=\u2026   \u2014 or \u2014   ARSH-7KQ2P   \u2014 or \u2014   {\u2026}" style="min-height:90px"></textarea></div>'
+    +'<div class="modal-foot"><button class="btn purple" onclick="doJoin()">Join</button>'
+      +'<button class="btn ghost" onclick="closeModal()">Cancel</button></div>';
+  openModal(h);
+}
+async function doJoin(){
+  var raw=(document.getElementById("f-join").value||"").trim();
+  if(!raw){toast("Paste a link, code, or campaign JSON.");return;}
+  var m=/#join=([^&\s]+)/.exec(raw);
+  if(m){ var snap=b64d(decodeURIComponent(m[1])); if(snap){ closeModal(); await joinFromSnapshot(snap); return; } toast("That link could not be read."); return; }
+  if(raw.charAt(0)==="{"||raw.charAt(0)==="["){
+    try{ var obj=JSON.parse(raw); var cp=Array.isArray(obj)?obj[0]:obj;
+      if(cp&&cp.name){ closeModal(); await joinFromSnapshot({sharedId:cp.sharedId||uid("shc"),name:cp.name,system:cp.system,gmName:cp.gmName,blurb:cp.blurb,full:cp}); return; }
+    }catch(e){ toast("That JSON could not be read."); return; }
+  }
+  // treat as a bare code
+  closeModal();
+  await joinFromSnapshot({sharedId:"code_"+raw,name:"Campaign "+raw,system:"ArshRPG",gmName:"",blurb:"Joined by code "+raw+".",inviteCode:raw});
+}
+async function joinFromSnapshot(snap){
+  // already a member?
+  for(var i=0;i<CAMPS.length;i++){
+    if(snap.sharedId && CAMPS[i].sharedId===snap.sharedId){
+      var cp=CAMPS[i];
+      if(cp.owner===ACTIVE.id){ toast("You are the GM of this campaign."); openDetail(cp.id); return; }
+      cp.players=cp.players||[]; if(cp.players.indexOf(ACTIVE.id)<0) cp.players.push(ACTIVE.id);
+      await saveCamps(); toast("Joined "+cp.name+"."); openDetail(cp.id); offerAddCharacter(); return;
+    }
+  }
+  // create a local player-side copy
+  var nc={id:uid(),sharedId:snap.sharedId||uid("shc"),name:snap.name||"Campaign",
+    owner:snap.gmId||("remote_"+(snap.sharedId||"x")),gmId:snap.gmId||null,gmName:snap.gmName||"",
+    system:snap.system||"ArshRPG",blurb:snap.blurb||"",
+    players:[ACTIVE.id],members:[],sessions:[],notes:"",playerNotes:{},inviteCode:snap.inviteCode||code(),created:Date.now()};
+  if(snap.full){ nc.members=snap.full.members||[]; nc.sessions=snap.full.sessions||[]; nc.notes=snap.full.notes||""; }
+  CAMPS.unshift(nc); await saveCamps(); toast("Joined "+nc.name+" as a player."); openDetail(nc.id); offerAddCharacter();
+}
+function handleJoinParam(){
+  var h=location.hash||"";
+  var m=/[#&]join=([^&]+)/.exec(h); if(!m) return false;
+  var snap=b64d(decodeURIComponent(m[1]));
+  try{ history.replaceState(null,"",location.pathname); }catch(e){}
+  if(snap){ joinFromSnapshot(snap); return true; }
+  return false;
+}
+function offerAddCharacter(){
+  setTimeout(function(){
+    if(!myChars().length){
+      if(confirm("You have no characters under "+ACTIVE.name+" yet. Open the Creator to make one?")) gotoApp("creator","arshmunnu_creator.html");
+      return;
+    }
+    openAddMember();
+  },350);
+}
+
+/* ===== MEMBERS ===== */
+function openAddMember(){
+  var cp=CUR; if(!cp)return;
+  var mine=myChars();
+  var h='<button class="modal-close" onclick="closeModal()">&times;</button><h3>Add '+esc(ACTIVE.name)+'\u2019s Character</h3>';
+  if(!mine.length){
+    h+='<p class="muted-note">No characters under this account yet. Create one in the Creator, then return.</p>'
+      +'<div class="modal-foot"><button class="btn primary" onclick="gotoApp(\'creator\',\'arshmunnu_creator.html\')">Open Creator</button>'
+      +'<button class="btn ghost" onclick="closeModal()">Close</button></div>';
+    openModal(h); return;
+  }
+  h+='<input id="pick-search" placeholder="Search heroes\u2026" oninput="renderPick()" style="width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:inherit;font-size:15px;padding:9px 11px;margin-bottom:4px;outline:none">'
+    +'<div class="pick-list" id="pick-list"></div>'
+    +'<div class="modal-foot" style="margin-top:14px"><button class="btn ghost" onclick="closeModal()">Done</button></div>';
+  openModal(h); renderPick();
+}
+function renderPick(){
+  var cp=CUR, q=((document.getElementById("pick-search")||{}).value||"").toLowerCase();
+  var list=document.getElementById("pick-list"); if(!list)return;
+  var html=myChars().filter(function(c){return !q||((c.name||"")+" "+(c.species||"")+" "+(c.calling||"")).toLowerCase().indexOf(q)>=0;})
+    .map(function(c){
+      var sp=SPECIES_TOK[c.species]||{}, inIt=(cp.members||[]).indexOf(c._id)>=0;
+      return '<div class="pick-row'+(inIt?" in":"")+'"'+(inIt?'':' onclick="addMember(\''+c._id+'\')"')+'>'
+        +'<div class="pick-crest" style="color:'+(sp.c||"#c9a84c")+'">'+(sp.g||"\u2694")+'</div>'
+        +'<div class="m-body"><div class="m-name">'+esc(c.name||"Unnamed")+'</div>'
+          +'<div class="m-meta">Lvl '+(c.level||1)+' '+esc(c.species||"")+'</div></div>'
+        +(inIt?'<span class="role-badge role-player">In party</span>':'<span class="m-btn" style="pointer-events:none">&#10010;</span>')
+        +'</div>';
+    }).join("");
+  list.innerHTML=html||'<div class="muted-note" style="padding:14px;text-align:center">No match.</div>';
+}
+async function addMember(id){
+  var cp=CUR; if(!cp)return; cp.members=cp.members||[];
+  if(cp.members.indexOf(id)<0){cp.members.push(id); await saveCamps(); renderPick(); renderDetail(); toast("Added to the party.");}
+}
+async function removeMember(id){
+  var cp=CUR; if(!cp)return;
+  cp.members=(cp.members||[]).filter(function(m){return m!==id;});
+  await saveCamps(); renderDetail(); toast("Removed.");
+}
+/* add a player's character by pasted character link / JSON (imports into roster, then party) */
+function openAddByLink(){
+  var h='<button class="modal-close" onclick="closeModal()">&times;</button><h3>Add a Character by Link</h3>'
+    +'<p class="muted-note" style="margin-bottom:12px">Paste a character link a player sent you (from their Characters roster &rarr; <b>&#128279; Link</b>), or a character\u2019s exported JSON. It will be added to this device\u2019s roster and to the party.</p>'
+    +'<div class="fld"><label>Character Link or JSON</label><textarea id="f-charlink" placeholder="https://\u2026#char=\u2026   \u2014 or \u2014   {\u2026}" style="min-height:90px"></textarea></div>'
+    +'<div class="modal-foot"><button class="btn purple" onclick="doAddByLink()">Add to Party</button>'
+      +'<button class="btn ghost" onclick="closeModal()">Cancel</button></div>';
+  openModal(h);
+}
+async function doAddByLink(){
+  var raw=(document.getElementById("f-charlink").value||"").trim(); if(!raw){toast("Paste a character link or JSON.");return;}
+  var snap=null, m=/#char=([^&\s]+)/.exec(raw);
+  if(m){ snap=b64d(decodeURIComponent(m[1])); }
+  else if(raw.charAt(0)==="{"){ try{snap=JSON.parse(raw);}catch(e){snap=null;} }
+  if(!snap||!snap.name){ toast("That character could not be read."); return; }
+  snap._id="ch_"+Date.now()+"_"+Math.floor(Math.random()*100000);
+  if(!snap.owner) snap.owner=ACTIVE.id;
+  CHARS.push(snap); await Store.set(CHARS_KEY,CHARS);
+  var cp=CUR; cp.members=cp.members||[]; cp.members.push(snap._id); await saveCamps();
+  closeModal(); renderDetail(); toast("\u2713 "+(snap.name)+" joined the party.");
+}
+
+/* ===== SESSIONS / NOTES ===== */
+function openAddSession(){
+  var today=new Date().toISOString().slice(0,10);
+  var h='<button class="modal-close" onclick="closeModal()">&times;</button><h3>Log a Session</h3>'
+    +'<div class="fld"><label>Title</label><input id="s-title" placeholder="The Gates of Elderglen" autocomplete="off"></div>'
+    +'<div class="fld"><label>Date</label><input id="s-date" type="date" value="'+today+'"></div>'
+    +'<div class="fld"><label>Notes</label><textarea id="s-notes" placeholder="What happened, what was decided, what looms\u2026" style="min-height:110px"></textarea></div>'
+    +'<div class="modal-foot"><button class="btn primary" onclick="addSession()">Save Session</button>'
+      +'<button class="btn ghost" onclick="closeModal()">Cancel</button></div>';
+  openModal(h);
+  setTimeout(function(){var e=document.getElementById("s-title");if(e)e.focus();},60);
+}
+async function addSession(){
+  var cp=CUR; if(!cp)return; cp.sessions=cp.sessions||[];
+  var title=(document.getElementById("s-title").value||"").trim();
+  cp.sessions.push({id:uid("s"),title:title||"Untitled session",date:document.getElementById("s-date").value||"",
+    notes:(document.getElementById("s-notes").value||"").trim()});
+  await saveCamps(); closeModal(); renderDetail(); toast("Session logged.");
+}
+async function deleteSession(id){
+  var cp=CUR; if(!cp)return;
+  cp.sessions=(cp.sessions||[]).filter(function(s){return s.id!==id;});
+  await saveCamps(); renderDetail();
+}
+var _noteT=null;
+function saveNotes(){
+  var cp=CUR; if(!cp)return;
+  var v=document.getElementById("camp-notes").value;
+  if(isGM(cp)) cp.notes=v; else { cp.playerNotes=cp.playerNotes||{}; cp.playerNotes[ACTIVE.id]=v; }
+  clearTimeout(_noteT); _noteT=setTimeout(function(){saveCamps();},400);
+}
+
+/* ===== VTT HAND-OFF ===== */
+function charToken(c){
+  var sp=SPECIES_TOK[c.species]||{};
+  var ep=(c.curEP!=null?c.curEP:(c.epMax||0))||0, mp=(c.curMP!=null?c.curMP:(c.mpMax||0))||0;
+  return { name:c.name||"Hero", baseName:c.name||"Hero", side:"ally",
+    glyph:sp.g||"\u2694", color:sp.c||"#4a82b0",
+    ep:ep, epMax:(c.epMax||ep||0), mp:mp, mpMax:(c.mpMax||mp||0),
+    dl:c.dl||0, initMod:0, init:0, size:1, charId:c._id,
+    img:(c.portrait&&/^data:/.test(c.portrait))?c.portrait:null };
+}
+async function launchVTT(){
+  var cp=CUR; if(!cp)return;
+  var toks=(cp.members||[]).map(function(id){var c=byId(CHARS,id);return c?charToken(c):null;}).filter(Boolean);
+  if(!toks.length){ if(!confirm("No characters in this campaign yet. Open the Battle Map anyway?"))return; }
+  await Store.set(VTT_PENDING_KEY,{tokens:toks,campaign:cp.name});
+  toast("\u2694 Sending the party to the Battle Map\u2026");
+  gotoApp("vtt","arshmunnu_vtt.html");
+}
+async function oneToVTT(id){
+  var c=byId(CHARS,id); if(!c)return;
+  var pend=(await Store.get(VTT_PENDING_KEY))||{tokens:[]}; pend.tokens=pend.tokens||[];
+  pend.tokens.push(charToken(c)); pend.campaign=CUR?CUR.name:undefined;
+  await Store.set(VTT_PENDING_KEY,pend);
+  toast("\u2694 Sent "+(c.name||"hero")+" to the Battle Map.");
+  gotoApp("vtt","arshmunnu_vtt.html");
+}
+
+/* ===== EXPORT / IMPORT / DELETE/LEAVE ===== */
+function exportCampaign(){
+  var cp=CUR; if(!cp)return;
+  var blob=new Blob([JSON.stringify(cp,null,2)],{type:"application/json"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download=(cp.name||"campaign").replace(/[^a-z0-9]+/gi,"_")+".json";a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},800);
+}
+function importCampaign(ev){
+  var f=ev.target.files&&ev.target.files[0]; if(!f)return;
+  var rd=new FileReader();
+  rd.onload=async function(e){
+    try{
+      var obj=JSON.parse(e.target.result), arr=Array.isArray(obj)?obj:[obj];
+      arr.forEach(function(cp){
+        if(!cp||!cp.name)return;
+        cp.id=uid(); cp.sharedId=cp.sharedId||uid("shc");
+        cp.owner=cp.owner||ACTIVE.id; cp.gmId=cp.gmId||cp.owner; cp.gmName=cp.gmName||ACTIVE.name;
+        cp.members=cp.members||[]; cp.players=cp.players||[]; cp.sessions=cp.sessions||[];
+        cp.inviteCode=cp.inviteCode||code(); cp.created=cp.created||Date.now();
+        CAMPS.unshift(cp);
+      });
+      await saveCamps(); renderList(); toast("Imported.");
+    }catch(err){ toast("Bad campaign file."); }
+  };
+  rd.readAsText(f); ev.target.value="";
+}
+async function deleteCampaign(){
+  var cp=CUR; if(!cp)return;
+  if(isGM(cp)){
+    if(!confirm('Delete "'+cp.name+'" permanently? (Characters are not affected.)'))return;
+    CAMPS=CAMPS.filter(function(c){return c.id!==cp.id;});
+    await saveCamps(); showList(); toast("Campaign deleted.");
+  } else {
+    if(!confirm('Leave "'+cp.name+'"?'))return;
+    cp.players=(cp.players||[]).filter(function(p){return p!==ACTIVE.id;});
+    // also drop this account's characters from members
+    var mine={}; myChars().forEach(function(c){mine[c._id]=1;});
+    cp.members=(cp.members||[]).filter(function(m){return !mine[m];});
+    // if this was a local player-copy with no GM here, remove it entirely
+    if(cp.owner && String(cp.owner).indexOf("remote_")===0){ CAMPS=CAMPS.filter(function(c){return c.id!==cp.id;}); }
+    await saveCamps(); showList(); toast("You left the campaign.");
+  }
+}
+
+/* ===== BOOT ===== */
+(async function(){
+  await loadAll();
+  var joined=false;
+  try{ joined=handleJoinParam(); }catch(e){}
+  if(!joined) showList(); else renderAccountBar();
+  window.addEventListener("hashchange",function(){
+    var h=(location.hash||"").toLowerCase();
+    if(h.indexOf("#join=")===0){ try{handleJoinParam();}catch(e){} }
+    else if(h==="#new"){ openCreate(); }
+  });
+})();
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});
+</script>
+</body>
+</html>

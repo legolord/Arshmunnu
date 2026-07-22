@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>The Codex Examination — Arshmunnu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a0d06;--parch:#f0e3c4;--parch2:#e6d4ad;
+  --burg:#3d0f0f;--burg2:#240808;--ox:#5b1212;
+  --gold:#b8893b;--goldB:#d4a44a;--goldD:#7c5a1f;
+  --crim:#8a1a1a;--green:#3a6638;--greenL:rgba(58,102,56,.18);
+  --shadow:0 30px 60px -20px rgba(0,0,0,.7),0 18px 36px -18px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:'EB Garamond',serif;color:var(--ink);
+  background:radial-gradient(ellipse at 20% 10%,rgba(184,137,59,.12),transparent 50%),
+    radial-gradient(ellipse at 80% 90%,rgba(138,26,26,.18),transparent 55%),
+    linear-gradient(180deg,#1a0606 0%,#240808 50%,#100303 100%);
+  min-height:100vh;padding:32px 16px;
+  display:flex;align-items:flex-start;justify-content:center;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/></svg>");
+  mix-blend-mode:overlay;opacity:.35;z-index:1;
+}
+.codex{
+  position:relative;z-index:2;width:100%;max-width:800px;
+  background:radial-gradient(circle at 30% 20%,#f6e9ca 0%,var(--parch) 40%,var(--parch2) 100%);
+  border:1px solid #c5a973;border-radius:6px;
+  box-shadow:var(--shadow),inset 0 0 80px rgba(124,90,31,.18),inset 0 0 0 8px var(--parch);
+  padding:48px 44px 56px;overflow:hidden;
+}
+.codex::before{
+  content:"";position:absolute;inset:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' seed='5'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.32  0 0 0 0 0.12  0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:.55;pointer-events:none;mix-blend-mode:multiply;
+}
+.codex>*{position:relative;z-index:1}
+.corner{position:absolute;width:52px;height:52px;pointer-events:none;z-index:2}
+.corner svg{width:100%;height:100%;display:block}
+.corner.tl{top:14px;left:14px}.corner.tr{top:14px;right:14px;transform:scaleX(-1)}
+.corner.bl{bottom:14px;left:14px;transform:scaleY(-1)}.corner.br{bottom:14px;right:14px;transform:scale(-1,-1)}
+
+/* HEADER */
+.crest{text-align:center;margin-bottom:28px}
+.seal{
+  width:70px;height:70px;margin:0 auto 14px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,var(--goldB),var(--gold) 50%,var(--goldD) 100%);
+  box-shadow:0 0 0 3px var(--parch),0 0 0 4px var(--goldD),0 8px 18px rgba(0,0,0,.25);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--burg2);font-family:'Cinzel',serif;font-weight:700;font-size:28px;position:relative;
+}
+.seal::after{content:"";position:absolute;inset:6px;border:1px dashed rgba(36,8,8,.35);border-radius:50%}
+h1.title{font-family:'Cinzel',serif;font-weight:600;font-size:clamp(22px,4.4vw,36px);color:var(--burg2);letter-spacing:.06em;text-transform:uppercase;line-height:1.15}
+.subtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--ox);margin-top:6px}
+.divider{display:flex;align-items:center;justify-content:center;gap:10px;margin:22px auto;color:var(--goldD)}
+.divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--goldD),transparent);max-width:140px}
+.divider .orn{font-size:13px;letter-spacing:.3em;white-space:nowrap}
+.intro p{font-size:17px;line-height:1.7;margin-bottom:14px;text-align:justify;text-indent:1.2em}
+.intro p:first-child::first-letter{font-family:'Cinzel',serif;font-size:52px;float:left;line-height:.85;padding:6px 10px 0 0;color:var(--crim);font-weight:700}
+.ranks{margin:20px 0 24px;display:grid;gap:5px}
+.rank-row{display:flex;align-items:baseline;gap:14px;padding:8px 12px;border-bottom:1px dotted rgba(124,90,31,.4);font-size:15px;flex-wrap:wrap}
+.rank-row .rn{font-family:'Cinzel',serif;font-weight:600;color:var(--burg);min-width:136px;letter-spacing:.04em}
+.rank-row .rr{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--goldD);font-size:14px;min-width:60px}
+.rank-row .rd{flex:1;color:var(--ink);opacity:.85}
+
+/* MODE CARDS */
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0}
+.mcard{
+  border:1px solid var(--goldD);border-radius:4px;padding:18px 12px;text-align:center;
+  background:rgba(255,250,235,.4);cursor:pointer;transition:all .22s ease;
+}
+.mcard:hover,.mcard.sel{background:rgba(90,18,18,.12);border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.mcard .mt{font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--burg);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.mcard .mc{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--crim);font-weight:600}
+.mcard .ms{font-size:13px;color:var(--ink);opacity:.7;margin-top:4px;font-style:italic}
+
+/* BUTTONS */
+.btn{
+  display:inline-block;font-family:'Cinzel',serif;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;font-size:12px;padding:12px 26px;
+  background:linear-gradient(180deg,var(--ox),var(--burg2));color:var(--parch);
+  border:1px solid var(--goldD);border-radius:2px;cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08);
+  transition:all .22s ease;
+}
+.btn:hover{background:linear-gradient(180deg,var(--crim),var(--ox));transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,0,0,.35),0 0 0 1px var(--gold)}
+.btn:disabled{opacity:.42;cursor:not-allowed;transform:none!important;box-shadow:none}
+.btn.ghost{background:transparent;color:var(--burg);border:1px solid var(--goldD);box-shadow:none}
+.btn.ghost:hover{background:rgba(124,90,31,.1)}
+.btn.idk{
+  background:transparent;color:var(--goldD);border:1px dashed var(--goldD);
+  font-size:11px;letter-spacing:.14em;padding:9px 20px;box-shadow:none;
+}
+.btn.idk:hover{background:rgba(124,90,31,.14);color:var(--burg);border-color:var(--gold);transform:none}
+.btn.idk:disabled{opacity:.35;cursor:not-allowed}
+.actions{display:flex;gap:14px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+
+/* PROGRESS */
+.meta-bar{display:flex;justify-content:space-between;align-items:center;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.22em;color:var(--goldD);text-transform:uppercase;margin-bottom:12px}
+.prog-track{height:6px;background:rgba(124,90,31,.2);border-radius:3px;overflow:hidden;border:1px solid rgba(124,90,31,.4);margin-bottom:26px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--goldD),var(--goldB));width:0%;transition:width .5s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px rgba(212,164,74,.6)}
+
+/* QUESTION */
+.qblock{animation:fadeUp .45s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.dtag{display:inline-block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3em;padding:3px 10px;border:1px solid var(--goldD);color:var(--goldD);margin-bottom:14px;text-transform:uppercase}
+.dtag.easy{color:#3a6638;border-color:#3a6638}
+.dtag.medium{color:var(--goldD);border-color:var(--goldD)}
+.dtag.hard{color:var(--crim);border-color:var(--crim)}
+.question{font-family:'Cormorant Garamond',serif;font-size:clamp(21px,3vw,27px);line-height:1.35;color:var(--burg2);font-weight:500;margin-bottom:22px}
+.options{display:grid;gap:9px}
+.option{
+  text-align:left;font-family:'EB Garamond',serif;font-size:16px;
+  padding:12px 14px 12px 46px;background:rgba(255,250,235,.5);
+  border:1px solid rgba(124,90,31,.4);color:var(--ink);cursor:pointer;
+  position:relative;transition:all .18s ease;border-radius:2px;
+}
+.option::before{
+  content:attr(data-letter);position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:22px;height:22px;border-radius:50%;border:1px solid var(--goldD);color:var(--goldD);
+  font-family:'Cinzel',serif;font-size:10px;display:flex;align-items:center;justify-content:center;
+  background:var(--parch);transition:all .18s ease;
+}
+.option:hover{background:rgba(184,137,59,.12);border-color:var(--gold);transform:translateX(3px)}
+.option:hover::before{background:var(--gold);color:var(--parch)}
+.option.correct{background:var(--greenL);border-color:var(--green);color:#1f3a1e}
+.option.correct::before{background:var(--green);color:var(--parch);border-color:var(--green)}
+.option.wrong{background:rgba(138,26,26,.15);border-color:var(--crim);color:var(--burg2)}
+.option.wrong::before{background:var(--crim);color:var(--parch);border-color:var(--crim)}
+.option.revealed{background:var(--greenL);border-color:var(--green);color:#1f3a1e;opacity:.82}
+.option.revealed::before{background:var(--green);color:var(--parch);border-color:var(--green)}
+.option:disabled{cursor:default;transform:none!important}
+.idk-row{text-align:center;margin-top:10px}
+.feedback{margin-top:16px;padding:13px 16px;background:rgba(124,90,31,.08);border-left:3px solid var(--goldD);font-style:italic;font-size:15px;line-height:1.5;color:var(--burg2);display:none;animation:fadeUp .35s ease}
+.feedback.vis{display:block}
+.feedback strong{font-style:normal;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase}
+.idk-note{color:var(--goldD);font-weight:normal;font-style:italic}
+.nav-btn-row{margin-top:20px;text-align:center}
+
+/* RESULT */
+.result{text-align:center;animation:fadeUp .55s ease}
+.res-label{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.4em;color:var(--goldD);text-transform:uppercase;margin-bottom:6px}
+.res-rank{font-family:'Cinzel',serif;font-size:clamp(28px,6vw,48px);color:var(--burg2);font-weight:700;letter-spacing:.04em;line-height:1.1;margin-bottom:12px}
+.res-score{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--ox);margin-bottom:6px}
+.res-score strong{font-size:32px;color:var(--burg2);font-weight:600}
+.res-flavor{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;line-height:1.6;color:var(--ink);margin:16px auto 18px;max-width:520px}
+.res-breakdown{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--ox);margin:8px 0 20px;opacity:.85}
+.res-bars{display:grid;gap:6px;margin:0 auto 24px;max-width:480px;text-align:left}
+.res-bar{display:flex;align-items:center;gap:12px;font-size:12px;font-family:'Cinzel',serif;letter-spacing:.1em;color:var(--burg);opacity:.6}
+.res-bar.active{opacity:1;color:var(--crim);font-weight:600}
+.res-bar .bn{min-width:128px;font-size:11px}
+.res-bar .bt{flex:1;height:4px;background:rgba(124,90,31,.25);border-radius:2px;overflow:hidden}
+.res-bar .bf{height:100%;background:var(--goldD)}
+.res-bar.active .bf{background:linear-gradient(90deg,var(--crim),var(--goldB))}
+
+.hidden{display:none!important}
+@media(max-width:520px){
+  .codex{padding:32px 18px 36px}
+  .corner{width:32px;height:32px}
+  .modes{grid-template-columns:1fr}
+  .option{font-size:14px;padding:11px 10px 11px 40px}
+  .question{font-size:20px}
+}
+</style>
+<style id="arsh-gate-base"></style>
+<script>
+/* ════ ARSH ADMIN GATE ════
+   Editing the Archive is reserved for the Keeper (Aelarion).
+   Readers see the pages in view-only form. This is an editing lock,
+   shared across pages via localStorage('arsh_admin'). */
+(function(){
+  var SEL='.fab,.ep-fab,.ep-sadd';
+  function admin(){try{return localStorage.getItem('arsh_admin')==='1';}catch(e){return false;}}
+  function mark(){
+    if(!document.body||document.getElementById('arsh-viewlock'))return;
+    var d=document.createElement('div');d.id='arsh-viewlock';d.textContent='\uD83D\uDD12 View only';
+    d.style.cssText='position:fixed;bottom:16px;right:16px;z-index:2147483000;font-family:Cinzel,Georgia,serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,164,74,.55);background:rgba(10,6,16,.72);border:1px solid rgba(212,164,74,.22);border-radius:20px;padding:6px 12px;pointer-events:none;';
+    document.body.appendChild(d);
+  }
+  function unmark(){var d=document.getElementById('arsh-viewlock');if(d)d.remove();}
+  function apply(){
+    var st=document.getElementById('arsh-gate-base'),on=admin();
+    document.documentElement.setAttribute('data-arsh-role',on?'keeper':'reader');
+    if(on){if(st)st.textContent='';unmark();return;}
+    if(st)st.textContent=SEL+'{display:none!important;}';
+    if(document.body)mark();else document.addEventListener('DOMContentLoaded',mark);
+  }
+  apply();
+  window.addEventListener('storage',function(e){if(e.key==='arsh_admin'||e.key===null)apply();});
+  document.addEventListener('DOMContentLoaded',apply);
+})();
+</script>
+</head>
+<body>
+<div class="codex">
+
+  <div class="corner tl"><svg viewBox="0 0 54 54" fill="none"><path d="M2 2L2 30M2 2L30 2M2 14Q14 2 26 8M14 2Q2 14 8 26" stroke="#7c5a1f" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="2" fill="#b8893b"/></svg></div>
+  <div class="corner tr"><svg viewBox="0 0 54 54" fill="none"><path d="M2 2L2 30M2 2L30 2M2 14Q14 2 26 8M14 2Q2 14 8 26" stroke="#7c5a1f" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="2" fill="#b8893b"/></svg></div>
+  <div class="corner bl"><svg viewBox="0 0 54 54" fill="none"><path d="M2 2L2 30M2 2L30 2M2 14Q14 2 26 8M14 2Q2 14 8 26" stroke="#7c5a1f" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="2" fill="#b8893b"/></svg></div>
+  <div class="corner br"><svg viewBox="0 0 54 54" fill="none"><path d="M2 2L2 30M2 2L30 2M2 14Q14 2 26 8M14 2Q2 14 8 26" stroke="#7c5a1f" stroke-width="1" stroke-linecap="round"/><circle cx="2" cy="2" r="2" fill="#b8893b"/></svg></div>
+
+  <!-- ══ INTRO ══ -->
+  <section id="s-intro">
+    <div class="crest">
+      <div class="seal">A</div>
+      <h1 class="title">The Codex Examination</h1>
+      <p class="subtitle">A Trial of Knowledge upon the World of Arshmunnu</p>
+    </div>
+    <div class="divider"><span class="line"></span><span class="orn">✦ ✦ ✦</span><span class="line"></span></div>
+    <div class="intro">
+      <p>Traveller, scholar, or idle reader — should thou seek to measure the depth of thine own learning of the Great and Eternal World, then let this codex be thy mirror. Questions await, drawn from the chronicles, the songs, the magicks, and the bloody ledgers of empire. Should a question confound thee entirely, thou may declare <em>"I Know Not"</em> — the answer shall be revealed, but no mark awarded.</p>
+      <p>At the road's end thou shalt earn one of these five titles, judged by the share of questions answered truly:</p>
+    </div>
+    <div class="ranks">
+      <div class="rank-row"><span class="rn">Beginner</span><span class="rr">0–30%</span><span class="rd">A stranger upon the Queen's road.</span></div>
+      <div class="rank-row"><span class="rn">Intermediate</span><span class="rr">31–50%</span><span class="rd">A wanderer who hath glimpsed the empire's edge.</span></div>
+      <div class="rank-row"><span class="rn">Knowledgeable</span><span class="rr">51–65%</span><span class="rd">A scholar with ink upon the fingers.</span></div>
+      <div class="rank-row"><span class="rn">Veteran</span><span class="rr">66–85%</span><span class="rd">An adept of the ancient lore.</span></div>
+      <div class="rank-row"><span class="rn">Chronicler</span><span class="rr">86–100%</span><span class="rd">A keeper of the eternal flame.</span></div>
+    </div>
+    <div class="divider"><span class="line"></span><span class="orn">— Choose Thy Mode —</span><span class="line"></span></div>
+    <div class="modes">
+      <div class="mcard sel" data-mode="20" id="mc-s">
+        <div class="mt">Short</div><div class="mc">20</div><div class="ms">A swift reckoning</div>
+      </div>
+      <div class="mcard" data-mode="50" id="mc-n">
+        <div class="mt">Normal</div><div class="mc">50</div><div class="ms">The standard trial</div>
+      </div>
+      <div class="mcard" data-mode="120" id="mc-e">
+        <div class="mt">Extended</div><div class="mc">120</div><div class="ms">The full chronicle</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btn-begin">Begin the Examination</button>
+    </div>
+  </section>
+
+  <!-- ══ QUIZ ══ -->
+  <section id="s-quiz" class="hidden">
+    <div class="meta-bar">
+      <span id="q-counter">Question 1</span>
+      <span id="q-score">Score 0</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog"></div></div>
+    <div id="qblock" class="qblock"></div>
+  </section>
+
+  <!-- ══ RESULT ══ -->
+  <section id="s-result" class="hidden">
+    <div class="result">
+      <div class="res-label">The Verdict of the Codex</div>
+      <div class="res-rank" id="r-rank">—</div>
+      <div class="res-score">Thou hast answered <strong id="r-score">0</strong> of <span id="r-total">0</span> truly.</div>
+      <p class="res-flavor" id="r-flavor"></p>
+      <div class="res-breakdown" id="r-breakdown"></div>
+      <div class="res-bars" id="r-bars"></div>
+      <div class="actions">
+        <button class="btn" id="btn-restart">Take the Trial Again</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   120 QUESTIONS  (d: easy / medium / hard)
+   c: correct answer index (0-3)
+══════════════════════════════════════════ */
+let ALL_Q=[
+/* ─── EASY (25) ─── */
+{d:'easy',q:"What is the name of the world in which all these chronicles are set?",a:["Arshmunnu","Exelia","Hymnia","Aethernum"],c:0,note:"Arshmunnu — 'the Great and Eternal World.' 'Arsh' echoes the Arabic for throne; 'munnu' was coined to suggest worldliness and permanence."},
+{d:'easy',q:"How many continents does the world of Arshmunnu contain?",a:["3","5","7","9"],c:1,note:"Five continents and four subcontinents, each with at least 14 regions."},
+{d:'easy',q:"Who founded the As'hikan Empire?",a:["Julian II","Marian the Firm","Achilleus I Chliarinos","Philippe James"],c:2,note:"Achilleus rose from common birth through the Revolutionary Wars. House Chliarinos motto: 'From Ashes, Empire.'"},
+{d:'easy',q:"What does 'AU' stand for in Arshmunnu's calendar?",a:["Anno Universalis","After Unification","Age of Union","Ascendancy Unbroken"],c:1,note:"Year 0 AU marks the founding of the As'hikan Empire."},
+{d:'easy',q:"What sacred animal appeared upon the original imperial banners of As'hika?",a:["A wolf","A lion","A dragon","A phoenix"],c:3,note:"The Phoenix — symbol of conquest, rebirth, and the eternal soul of the empire."},
+{d:'easy',q:"What was the name of Achilleus I's first wife, assassinated by Gothians?",a:["Frea of Crestwood","Isabelle IX","Helena the Imperiosa","Seraphina"],c:0,note:"Frea of Crestwood — 'the sainted first wife' — whose death drove Achilleus east and eventually into Isabelle's arms."},
+{d:'easy',q:"Whom did Achilleus I marry after his first wife's death?",a:["Marian the Firm","Isabelle IX of Armorica","Empress Margarethe","Octavia the Melodist"],c:1,note:"Isabelle IX, last of House Charan, brought ancient Armorican royal blood to House Chliarinos."},
+{d:'easy',q:"What is the largest city of Armorica, famed for its magic academy?",a:["Elderglen","As'hika City","Lundenford","Mida"],c:2,note:"Lundenford in West Armorica houses the Imperial Academy of Magicks and the Hall of Free Exchange."},
+{d:'easy',q:"Into how many great Eras is Arshmunnu's history divided?",a:["Three","Four","Five","Seven"],c:2,note:"Five Eras: Era of the Four Gods, First Era, Age of Chaos, Imperial Era, Era of Division — with a Fifth Era still unfolding."},
+{d:'easy',q:"Who was the first queen to unify Armorica under one crown?",a:["Isabelle IX","Marian the Firm","Empress Helena","Queen Alerina"],c:1,note:"Marian the Firm forged the kingdom from warring duchies, crowned on the Spire of Helen with a circlet of eight nails."},
+{d:'easy',q:"What is the official motto of House Chliarinos?",a:["Through Song and Thought, We Reign","From Ashes, Empire","One Crown, One Land","By Salt and By Stone"],c:1,note:"'From Ashes, Empire' — Achilleus rose from common birth and revolutionary fire to found a dynasty."},
+{d:'easy',q:"What was Achilleus I's secret intelligence service called?",a:["The Golden Rose","The Imperial Circle","The Phoenix Agency","The Eternal Legions"],c:2,note:"The Phoenix Agency — founded by Achilleus — outlived the empire itself, persisting in shadow into the 4060s."},
+{d:'easy',q:"From which sacred root tongue do Arshmunnu's languages descend?",a:["Old Imvien","Hymnian","High As'hikan","Chamalian"],c:1,note:"Hymnian (Hymnican) is the sacred root tongue of humanity, branching into Imvien, Armorican, As'hikan, and many dialects."},
+{d:'easy',q:"What is the capital city of the As'hikan Empire?",a:["Lundenford","Elderglen","As'hika City","Helen"],c:2,note:"As'hika City sits on As'hika Island, connected to South Armorica by the White Bridge."},
+{d:'easy',q:"What is the second-largest city of Armorica, a centre of magic and the Armorican Crown's capital?",a:["Mida","Lundenford","Elderglen","Kovesk"],c:2,note:"Elderglen is the Armorican Crown's capital and second-largest city after Lundenford."},
+{d:'easy',q:"What ancient animal does the Armorican white goat symbolise?",a:["Imperial ambition","Resilience and stubbornness","Noble lineage","Sacred divinity"],c:1,note:"Isabelle IX returned to Elderglen on a white goat — the traditional symbol of Armorican resilience and stubbornness."},
+{d:'easy',q:"Which of these is a common hearth-proverb spoken everywhere in Arshmunnu?",a:["'Gold is honest: it betrayeth thee openly'","'Bread first; banners after'","'Steel singeth louder than lineage'","'Sand keepeth no footprints'"],c:1,note:"'Bread first; banners after' — one of the common hearth-proverbs spoken by folk who have survived long enough to be annoying about it."},
+{d:'easy',q:"What is the Holy Tree on Tree Island called?",a:["The World Root","Flosevita","The Imvien Heartwood","The Aethernum Seed"],c:1,note:"The Holy Tree of Flosevita — said to have been planted by the gods in the Era of Four Gods — is believed to remember the first oaths of humankind."},
+{d:'easy',q:"The White Bridge connects which two places?",a:["Lundenford and Elderglen","As'hika Island and the southern mainland","Avilon and Abilia","As'hika and Alodia"],c:1,note:"The White Bridge (Pons Albus) — pale limestone arches through many ages — is the chief tether between As'hika Island and mainland Armorica."},
+{d:'easy',q:"Achilleus I Chliarinos was born of what background?",a:["Ancient noble blood","Divine descent","Common birth","An exiled royal line"],c:2,note:"Achilleus was of common birth — both celebrated as proof that greatness could rise from anywhere, and resented by traditional nobles."},
+{d:'easy',q:"Where was Lucius Varron raised after being abandoned as an infant?",a:["A noble estate in Kovesk","The Temple of Arod-of-the-Candle in Lundenford","The streets of As'hika City","A fishing village in Avilon"],c:1,note:"Found at the 'Little Bell' — the Temple of Arod-of-the-Candle in Lundenford — and raised by Domina Calesta Feanoré."},
+{d:'easy',q:"What is the Void described as in Arshmunnu's cosmology?",a:["An empty realm of peace","An active consuming force","A prison for fallen gods","The source of all magic"],c:1,note:"The Void is an active consuming force — distinct from the inter-universal void but potentially related."},
+{d:'easy',q:"What is the sigil of House Charan, the ancient Armorican noble line?",a:["A phoenix in flames","A golden lyre with silver laurel on royal blue","A white lily on green","A cracked sun above a chalice"],c:1,note:"House Charan bears a golden lyre entwined with silver laurel on royal blue. Motto: 'Through Song and Thought, We Reign.'"},
+{d:'easy',q:"How does the Armorican civic road-greeting customarily end, in words?",a:["'Well met upon the Emperor's road'","'Well met upon the Queen's road'","'Bread first; banners after'","'By salt and by stone'"],c:1,note:"The right palm raised to breast level, a small head-inclination, sealed with: 'Well met upon the Queen's road.'"},
+{d:'easy',q:"What is the title awarded to the supreme leader of the Imperial Order of the Golden Rose?",a:["The Grand Mistress","The High Rosemistress","The Empress's Hand","The Thorn of the Blade"],c:1,note:"The High Rosemistress — always chosen from the most skilled and politically astute — serves as the Empress's most trusted handmaiden, advisor, and general."},
+
+/* ─── MEDIUM (55) ─── */
+{d:'medium',q:"Which Emperor reigned 59 years and died in 705 AU, sparking the War of Two Houses?",a:["Julian I the Pious","Achilleus III the Just","Julian II the Long-Reigning","Cassander I the Steward"],c:2,note:"Julian II (646–705 AU) — 'The Last Light' — whose death without clear heir triggered the succession crisis that ended the Pax."},
+{d:'medium',q:"Which Emperor mistook a chicken for the divine Phoenix and gave it imperial status?",a:["Achilleus II the Flameborn","Philippe James","Alexios I the Red Falcon","Cassander I"],c:1,note:"Philippe James, convinced by a mischievous scholar that the descending chicken was the Phoenix in mortal form — and the bureaucracy spent generations justifying it."},
+{d:'medium',q:"What is Arshmunnu's traditional noble war-game, played on a 10×8 board?",a:["Tabula","Strategium","Ludus Latrunculorum","The Game of Vines"],c:1,note:"Strategium — 16 pieces per side: Commander, Lieutenant, Cavalry, Archers, Spearmen, Scouts, Engineers, and Officer. Taught to every As'hikan officer before battle."},
+{d:'medium',q:"Which of these is NOT one of the four types of magic in Arshmunnu?",a:["Mana","Blood","Elemental","Soul"],c:2,note:"The four traditions: Mana (ambient field), Blood (compressed biological mana), Divine (external forcing by gods), and Soul (topological bound states)."},
+{d:'medium',q:"In Arshmunnu's magic physics, what is blood understood to be?",a:["A divine offering","Compressed mana stored in living biology","Pure aether distilled","A fragment of soul"],c:1,note:"Blood magic violently extracts the compressed mana reservoir of living biology — high power, high cost, biologically damaging."},
+{d:'medium',q:"Who is the reigning monarch of the Armorican Crown in the Fourth Era?",a:["Queen Isabelle IX","Queen Isabelle XII","Queen Marian II","Queen Octavia"],c:1,note:"Queen Isabelle XII rules from Elderglen — constitutional monarchy, fiercely anti-communist and anti-imperial revivalism."},
+{d:'medium',q:"What is the capital of the Republic of Alodia?",a:["Redfort","Imvien Bay","C'aras Irus","Elderglen"],c:1,note:"The Jaenobiet Parliamentary Republic of Alodia commands its naval and trade dominance from Imvien Bay."},
+{d:'medium',q:"How many capitals does the Soviet Socialist Commonwealth have?",a:["One","Two","Three","Four"],c:2,note:"The SSC is a Tri-Republic Federated Communalism with tri-capitals: C'aras Irus, Vranahall, and Redfort."},
+{d:'medium',q:"Who founded the philosophy of Communalism in the Fourth Era?",a:["Anastasia","Achilleus IV","Rael Eramenth","Aelric Charan"],c:2,note:"Rael Eramenth's writings — during the Fourth Era in Alodia — birthed Council Communalism, Flame Syndicalism, and other red-star branches."},
+{d:'medium',q:"What flower is the symbol of the Jaenobiet Republican movement?",a:["The Golden Rose","The White Chamomile","The Lily of Armorica","The Galanthus"],c:1,note:"The White Chamomile — modest, rooted, flourishing on broken ground — first raised by the Alodians after their revolution."},
+{d:'medium',q:"What flower represents Szewia and the Phoenix Queen's resurrection?",a:["The Jasmine","The Gloxinia","The Galanthus (snowdrop)","The White Chamomile"],c:2,note:"The galanthus (snowdrop) blooms before winter ends — Szewia's symbol of resurrection, stubborn bloom against death."},
+{d:'medium',q:"What is the major road running north-south through South Armorica for grain and legions?",a:["The Thropodian Way","The Lundenford Marchroad","The Orlian Spine","The Eastern Goldway"],c:2,note:"The Orlian Spine — one of the great arteries of the Viae Imperiales, expanded under Achilleus III and Margarethe I."},
+{d:'medium',q:"Which Empress oversaw the first imperial census in 213 AU?",a:["Helena I the Imperiosa","Seraphina I the Dawnfire","Margarethe I the Wise","Elionor I the Veiled"],c:2,note:"Margarethe I 'Mother of the Empire' (355–403 AU) — the Great Census of 213 AU counted souls, hearths, beasts, and guild rolls across all provinces."},
+{d:'medium',q:"What is the universal alchemical symbol in Arshmunnu?",a:["The Philosopher's Flame","The Cracked Circle","The Serpent Coil","The Five-Pointed Star"],c:1,note:"The Cracked Circle — a broken ring through which divine light once fell — representing the world's sundering and the alchemist's quest to mend it."},
+{d:'medium',q:"What is the name of the ultimate alchemical awakening — the 'Fifth Element'?",a:["Lapidem","Numina","Aether Prime","Zhar'tel Anû"],c:1,note:"Numina — the Awakening of the Fifth Element — is the destination of the alchemical path: the Philosopher's Stone as a state, not an object."},
+{d:'medium',q:"Which of Achilleus's children inherited the south after his daughter Elisabeth's death?",a:["Victor","Philippe James","Amala","Alaric"],c:1,note:"Elisabeth was meant to rule Armorica and the South; after her untimely death, her brother Philippe James inherited her lands."},
+{d:'medium',q:"What CR is the Void-Corrupted Dragon in the Monster Compendium?",a:["14","16","18","20"],c:3,note:"The Void-Corrupted Dragon sits at CR 20 — Epic tier, found in void-touched mountain lairs."},
+{d:'medium',q:"The War of Two Houses lasted from 705 AU to which year?",a:["731","743","765","793"],c:1,note:"705–743 AU — the first and most consequential of at least six major succession wars in the Late Empire."},
+{d:'medium',q:"Which alchemical school views alchemy as 'divine submission — matter made holy by pain'?",a:["The Imvienic School","The Chamalian School","The Armorican School","The Gothian School"],c:1,note:"The Chamalian School — Sun-Priests, Salt-Walkers, Vellum-Hermits — motto: 'Burn to become.' Their holiest ritual: the Transubstantia Solaris."},
+{d:'medium',q:"What plague swept the Late Empire circa 777–781 AU?",a:["The Graying Fever","The Red Ash Plague","The White Forest Collapse","The Silver Fever"],c:1,note:"The Red Ash Plague (c.777–781 AU) killed millions and exposed the empire's inability to protect or heal its own people."},
+{d:'medium',q:"What is the most politically influential sacred text in Arshmunnu's history?",a:["The Five Songs of the Confederation","The Fabulae per Arshmunnu","The Ethernexa","The Code of Achilleus"],c:2,note:"The Ethernexa — the primary sacred text of Zephyrian religion — shaped politics, philosophy, and faith across all eras."},
+{d:'medium',q:"Which Szewian proverb best captures that nation's iron character?",a:["'The river remembers'","'A brave man dies once; a proud man dies daily'","'Gold is honest: it betrayeth thee openly'","'Words build walls; oaths build doors'"],c:1,note:"'A brave man dies once; a proud man dies daily' — Szewian sayings carry iron and lesson: 'Steel singeth louder than lineage' and 'If thou canst not bend, learn to break clean.'"},
+{d:'medium',q:"Which order uses the white chamomile as its emblem and specialises in healing and mediation?",a:["The Imperial Knights","The Order of the Triumphum / White Mountain","The Knighthood of the Crimson Oath","The Vandrangish Knighthood"],c:1,note:"The Order of the Triumphum — chamomile flower on a white shield — open to men and women of noble or common birth with virtue and skill."},
+{d:'medium',q:"What Black Marble Castle in Àsturia 'drinketh light' and makes treaties feel heavier?",a:["The Spire of As'hika","Karad-Thul","Guarde Fractura","The Castle of Helen"],c:2,note:"The Dark Marble Castle of Guarde Fractura — black marble, smooth as a river-stone and cold as judgement — where even the stone seems to weigh words spoken within."},
+{d:'medium',q:"What does Eleanor accidentally become in the Chronicles of Julian II?",a:["The Royal Archivist","An Imperial Ambassador","The Empress","Head of the Phoenix Agency"],c:2,note:"Julian, half-listening in a council meeting, agreed to 'a marriage' — and the nobles collectively decided the gardener Eleanor was the obvious choice. She became Empress."},
+{d:'medium',q:"What is the highest rank in the alchemical guild hierarchy?",a:["Ring-Bearer","Grand Alchemist","Crucible-Master","Sage of Light"],c:2,note:"Scullion → Seeker → Adept → Ring-Bearer → Crucible-Master. Each step requires Humour-balancing, Elemental duelling, and a sworn miracle before witnesses."},
+{d:'medium',q:"What is the name of the road from As'hika City through Avilon and into central Frontia?",a:["The Thropodian Way","The Eastern Goldway","The Lundenford Marchroad","The Whitebridge Way"],c:0,note:"The Thropodian Way — one of the major arteries of the Viae Imperiales, the great imperial road network."},
+{d:'medium',q:"Which Empress had led the Phoenix Agency before ascending to the throne?",a:["Helena I the Imperiosa","Margarethe I the Wise","Elionor I the Veiled","Seraphina I the Dawnfire"],c:2,note:"Elionor I 'The Veiled' (403–459 AU) — Mistress of Secrets — brought her grip over magic, guilds, and the high courts to the imperial crown."},
+{d:'medium',q:"In which desert did Achilleus I spend his final days and choose to die?",a:["The Granwa Desert","The Aridian Desert","The Karun Desert","The Endless Desert of Szewia"],c:2,note:"The Karun Desert — where he had crushed the last Gothian resistance — was where Achilleus wandered for twenty-one days before not rising from his tent."},
+{d:'medium',q:"What two ancient cities fell during the Armorican-Szewian war against the Imviens?",a:["Lundenford and Mida","Caldère and Helen","Elderglen and Nerves","As'hika City and Avilon"],c:1,note:"Caldère — the beacon of peace — was sacked; Helen was burned by Imvien retaliation as a warning and a curse."},
+{d:'medium',q:"What is the title of the Iron Wardens' supreme leader?",a:["The High Rosemistress","The Grand Warden","The Lord of Embers","The Anvilborn Sovereign"],c:1,note:"Below the Grand Warden: the Five Forge-Lords of Blades, Chains, Embers, Runes, and Stone."},
+{d:'medium',q:"What are the original dwarves of Arshmunnu called?",a:["Drothmir","Sofkarr","Duergar","Cavarian"],c:1,note:"The Sofkarr — crystal-bone, living mycelium, white-blue aether-sap — emerged from the Aethernum Nexus. Their void-quenched survivors became the Drothmir."},
+{d:'medium',q:"What is the name of the first pact between Armorica and the Imviens, involving a thornvine ring?",a:["The Treaty of Verdentia Smoke","The Treaty of the Burning Scroll","The Oath of the Thorn-Vine","The Pact of Iron and Fire"],c:2,note:"Vetra of Tolse presented a thornvine ring; the Imviens answered with a cup of still water — 'If one bleeds, the other binds. If one falls, the other rises.'"},
+{d:'medium',q:"What knightly order was founded by disgraced noble Sir Alaric Veynar in 342 BU?",a:["The Iron Wardens","The Knighthood of the Crimson Oath","The Order of the Silent Watch","The Vandrangish Knighthood"],c:1,note:"The Knighthood of the Crimson Oath — born in the blood-stained days of the Coalition Wars, in Frontia."},
+{d:'medium',q:"What is the Great Lighthouse at the outermost tip of South Armorica called by sailors?",a:["The Spire of Eldria","The Pharus of Nerves","The Last Light","The Flame of Finistère"],c:2,note:"The Lighthouse of Finistère — Pharus Finisterrae — built by Armorican crown engineers and Imvien maritime architects. Maintained by a hereditary lighthouse guild."},
+{d:'medium',q:"Where did the Sofkarr live before being driven to the surface?",a:["The White Mountains of Szewia","Cavaria, the deep underground realm","The volcanic forges of Àsturia","The ice-fields of North Armorica"],c:1,note:"The Sofkarr made Cavaria in the deep places until the Nexus 'rang too loudly' and the Void answered — driving survivors upward as 'dwarves' to a world that called them spirits or monsters."},
+{d:'medium',q:"Which of these flowers belongs to Àsturia and is associated with memory, mourning, and lost kingdoms?",a:["The Jasmine","The Gloxinia","The Galanthus","The Laurel"],c:1,note:"The gloxinia — deep purple, grown near the Gramen Delta — symbol of remembrance. The Àsturian resistance wore gloxinias pinned to their cloaks: 'We remember still.'"},
+{d:'medium',q:"Which Empress reconciled northern Szewian houses through poetic decrees and was raised in Szewia herself?",a:["Helena I the Imperiosa","Margarethe I the Wise","Seraphina I the Dawnfire","Elionor I the Veiled"],c:2,note:"Seraphina I the Dawnfire (259–302 AU) — 'Phoenix of Szewia' — raised in Szewia, devoted to flame and philosophy, she issued poetic decrees with cold resolve."},
+{d:'medium',q:"What is the Armorican civic road-greeting's martial variant, and what does it mean?",a:["A fist on the chest — 'I stand ready'","A palm on the heart — 'I bear thee no malice. Yet I know what malice costs.'","A bow and drawn blade — 'I yield'","A raised open hand — 'No weapon, no harm'"],c:1,note:"The martial road-greeting: same as the civic but with the palm placed on the heart — meaning 'I bear thee no malice. Yet I know what malice costs.'"},
+{d:'medium',q:"What alchemical disease is caused by overuse of silver compounds?",a:["Stone-Dreaming","Silver Fever","Ash-Hunger","Brine-Sleep"],c:1,note:"The four alchemical perils: Silver Fever, Stone-Dreaming, Ash-Hunger, and Brine-Sleep — each a thorn upon the path."},
+{d:'medium',q:"Which three provincial regions make up the Szewian Provinces of the empire?",a:["Riogham, Midlands, East Frontia","Ruden, Polia, Chechy","Mainland, Dair Mountains, Dark Forest","Aridian, Golden Mines, West Coast"],c:1,note:"The Szewian Provinces: Ruden (C'enturia), Polia, and Chechy — all eventually absorbed under Achilleus's imperial order."},
+{d:'medium',q:"What is the common name for Strategium's endgame condition, equivalent to capturing the king in chess?",a:["Seizing the Drum","Capturing the Commander","Holding the Open Ground","Occupying the Command Seat"],c:1,note:"Capturing the Commander — or occupying the Command Seat (square E8 or E1) for two full turns — wins the game of Strategium."},
+{d:'medium',q:"What does the Alodian proverb reveal about the republic's self-awareness?",a:["That trade always wins over ideals","That liberty is a feast — but someone still must wash the plates","That revolutions must be violent to succeed","That republics fear merchants more than tyrants"],c:1,note:"'Liberty is a feast. Someone still must wash the plates.' — Alodian wit mixing trade-sharp irony with republican idealism."},
+{d:'medium',q:"In Julian II's Chronicles, who is Marcus, and what is his relationship to Julian?",a:["Julian's spymaster and secret assassin","The most just man in the empire, serving as Julian's general and perpetual moral burden","An exiled Armorican duke seeking revenge","The head of the Golden Rose who opposes Eleanor"],c:1,note:"Marcus of House Morion — the most just man in the empire — who duels Julian's brother Victor for the honorary title of 'uncle' and makes Julian feel perpetually inadequate."},
+{d:'medium',q:"What is the sacred forge of the Iron Wardens said to be made from?",a:["The heart of a fallen star","The skull of a dragon","A fused Sofkarr crystal","Volcanic rock from Abila's Red Scar"],c:0,note:"The Black Anvil of Karad-Thul — 'forged from the heart of a fallen star' — upon which every Warden weapon is smithed."},
+{d:'medium',q:"What are the Three Oaths sworn by alchemical initiates over camomile smoke?",a:["By blood, by fire, by memory","Not seek gold without wisdom; not brew what I dare not drink; not alter flesh without honouring soul","By the cracked ring, by the hidden fire, by the truth entire","Render back improved; taste but once; mark all vials with the Cracked Circle"],c:1,note:"(1) I shall not seek gold without seeking wisdom. (2) I shall not brew what I dare not drink. (3) I shall not alter flesh without honouring soul."},
+{d:'medium',q:"What historic voting or pact is referred to in Frontian proverbs as 'When dukes agree, check thy purse'?",a:["A commentary on the Frontian Confederation's notorious backroom deals","A warning that the imperial senate was corrupt","A praise of Frontian democratic tradition","A reference to the Coalition Wars"],c:0,note:"Frontian sayings carry a dry political wit — 'When dukes agree, check thy purse' reflects long experience of the Confederation's councils where unity usually means someone is being robbed."},
+{d:'medium',q:"Which knightly order has its sacred relics include the Blade of Frea and the Golden Rose Circlet?",a:["The Imperial Knights of As'hika","The Imperial Order of the Golden Rose","The Order of the Silent Watch","The Knighthood of the Crimson Oath"],c:1,note:"The Golden Rose's artifacts: the Blade of Frea (said unbreakable), the Golden Rose Circlet (grants insight in political turmoil), and the Thorned Gauntlets (worn by the greatest duelists)."},
+{d:'medium',q:"What is the SSC's founding philosophical alignment and governing structure?",a:["Monarchist federalism with a single president","Post-Leniskian Communalism via workers' councils and syndical ownership","Liberal parliamentarianism with strong trade guilds","Theocratic communalism under the Church of Unity"],c:1,note:"Post-Leniskian Neo-Councilism — workers' councils, syndical ownership, memory as law, opposition to monarchy and capitalist parliamentarianism."},
+{d:'medium',q:"Which plague of the Late Empire period led to an arcane disaster in Avilon?",a:["The Red Ash Plague","The Graying Fever","The White Forest Collapse","The Silver Fever"],c:2,note:"The White Forest Collapse in Avilon — one of several arcane disasters of the Late Empire's magical instability period, alongside the Graying Plague and other rogue magister overreach."},
+{d:'medium',q:"How is soul magic different from blood magic in the Arshmunnu physics system?",a:["Soul magic is faster and cheaper","Soul magic uses a topological bound state that, if broken, causes irreversible collapse — unlike blood which is merely a reservoir","Soul magic requires divine permission; blood magic does not","Soul magic can only be used by gods"],c:1,note:"The soul is a solitonic, topologically stable configuration of mana. Unlike blood (which can be injured while the system persists), breaking a soul's topological structure loses the organising principle entirely — preventing resurrection."},
+{d:'medium',q:"What is the symbolic crown Marian forged for her coronation made from?",a:["Pure gold from the vaults of Nerves","Eight nails — one from each conquered province — with no jewels, only the Eightfold Star","A circlet of golden roses from the Imperial Gardens","Dwarven crystal-metal from the White Mountains"],c:1,note:"The Forge-Crown of Helen — eight nails from each conquered province, melted and formed into a circlet with the Eightfold Star. No jewels. Forged in the smithy beneath Helen's citadel."},
+
+/* ─── HARD (40) ─── */
+{d:'hard',q:"What is the name of Achilleus I's adoptive daughter who eloped at eighteen and has been missing for ten years?",a:["Eleanor","Amala","Octavia","Frean"],c:1,note:"Amala — the only adoptive child among Achilleus's four. Her disappearance is an open thread woven throughout the chronicles."},
+{d:'hard',q:"Which of Achilleus's children refused the throne to live a monk-like life, thus cursing the name 'Victor'?",a:["Philippe James","Victor","Elisabeth","Alaric"],c:1,note:"Crown Prince Victor's refusal cursed the name — it is said to make any bearer unsuccessful. Marcus later wins the title of 'uncle' from him in a duel of mutual justness."},
+{d:'hard',q:"What treaty ended the War of the East Coast Confederation, creating the Circle of Lords?",a:["The Treaty of Verdentia Smoke","The Treaty of the Burning Scroll","The Pact of Iron and Fire","The Oath of the Thorn-Vine"],c:1,note:"The Treaty of the Burning Scroll — signed in the Ashhall of Helen — recognised eastern lord autonomy, created the Circle of Lords, and acknowledged Avilon, Abilia, and As'hika as sovereign."},
+{d:'hard',q:"What CR is Achmin, the First Void God?",a:["20","25","30","35"],c:2,note:"Achmin sits at CR 30 — Mythic/Deific tier, encountered only in the Void itself or upon apocalyptic battlefields."},
+{d:'hard',q:"Which Szewian queen, slain by her brother, returned from death and led the Grand Immigration?",a:["Queen Alerina","Queen Seraphin","Queen Marian","Queen Aemiligus"],c:1,note:"Queen Seraphin of Barcazsi — not living, not fully dead, something between — led all Szewians westward into the Endless Desert after her 'impossible' return."},
+{d:'hard',q:"In Arshmunnu's revised cosmology, what did the goddess Astra become?",a:["Patterran, male","Latenan, male","Aethernum, female","Selene, female"],c:1,note:"Astra became Latenan (male); the realm of space is Latentium, protected by Astr'y'lis (the sun) who guards the border between it and the outer void. Stars are columns separating void from Latentium."},
+{d:'hard',q:"Who expelled Lucius Varron from the Lundenford Academy?",a:["Branim Ors","Herran Dusk","Magister Ulcaren Vey","Marlowe Cend"],c:2,note:"Magister Ulcaren Vey — who 'looked at Lucius as one looks at a stain on a robe' — expelled him after Sabina Aureliane's false testimony about the stolen grimoire."},
+{d:'hard',q:"What is the Confederation of the Remaining Flame?",a:["A military alliance against Armorica","A union of five island-realms — Avilon, Aridia, Abilia, As'hika, and Alodia — born of the Imvien collapse","A trading confederation in the Dark Gulf","A religious order of the Holy Tree of Flosevita"],c:1,note:"Five seeds of grief, bound not by crown but by memory — 'This land was not won, it was kept.' Karun's silent crown later joined, making six."},
+{d:'hard',q:"Who are the two co-founders of House Charan?",a:["Octavia the Melodist and Recentibus the Wise","Marian the Firm and Vetra of Tolse","Imvius and Amala","Phlippe and Seraphin"],c:0,note:"Around 2000 BU — Octavia the Melodist (First Musician) and Recentibus the Wise (philosopher of governance). Motto: 'Through Song and Thought, We Reign.'"},
+{d:'hard',q:"How is the Chliarinos family name etymologically derived?",a:["From an ancient Imvien king","From 'Chial' (chivalry in As'hikan) and 'y nos' (I who have)","From the burning chariot of Achilleus","From the Greek for 'shining one'"],c:1,note:"Achilleus coined it himself: 'Chial' (chivalry in As'hikan) + 'y nos' (I who have) = 'I who hold chivalry.'"},
+{d:'hard',q:"At what CR does the Whispering Jester reach its second phase?",a:["12","15","18","20"],c:1,note:"Phase 2: CR 15, with hover-flight, telepathy 120 ft, immunity to necrotic and poison, and Empowered Chaos — rolling a d6 for a random battlefield effect each turn."},
+{d:'hard',q:"What is the Aethernum Nexus?",a:["A god of time and memory","A deep-world seam where reality's lattice is exposed, birthing stable life-forms — and disaster when overstrained","The first academy of magic","The sacred vault beneath Caldère"],c:1,note:"The Aethernum Nexus — the womb of essence unformed. When it 'rang too loudly' the Void answered: many Sofkarr were unstitched to dust; survivors became the Drothmir."},
+{d:'hard',q:"What is the alchemical name for alchemy as first taught by Kohe'Samel to the Serpent-Scribes?",a:["The Binding of Essence — Zhar'tel Anû","The Dawn-Script","The First Formulae","The Law of Equivalent Cost"],c:0,note:"Zhar'tel Anû — 'The Binding of Essence' — first taught to the Serpent-Scribes of Khemetras, a city of black glass in the bone-dry east beyond Karun."},
+{d:'hard',q:"What four alchemical Trials must an initiate pass?",a:["Of Fire, Water, Earth, and Air","Dissolution of the Self; Calcination of the Past; Coagulation of Desire; Sublimation of Fear","Of Blade, Blood, Memory, and Coin","Of Humour, Element, Miracle, and Oath"],c:1,note:"The Four Trials of Transmutation — then three oaths sworn over camomile smoke. To break them is never done."},
+{d:'hard',q:"What is the Szewian alchemical cult that reads bloodlines and poisons foes?",a:["The Argent Crucible","The Circle of Iron Dew","The Veiled Cauldron","The Silent Drop"],c:2,note:"The Veiled Cauldron — Szewian, using alchemy for bloodline-reading, ancestor preservation, and covert poison. Its counterpart among commoners is the Silent Drop."},
+{d:'hard',q:"What is the underground rebel alchemical network, using coded tattoos and ephemeral ink?",a:["The Argent Crucible","The Circle of Iron Dew","The Veiled Cauldron","The Silent Drop"],c:3,note:"The Silent Drop — underground, ephemeral ink, coded tattoos, smuggled knowledge among commoners and rebels."},
+{d:'hard',q:"What ceremony crowned Marian, and upon what structure?",a:["The Grand Coronation, in Helen's throne hall","The Coronation of the Open Sky, upon the Spire of Helen","The Oath-Giving, in the smithy beneath Helen","The Forge-Crown Ceremony, in the Spire of As'hika"],c:1,note:"Upon the Spire of Helen beneath open sky — no priest, no song. Each noble spoke her name, and she placed the Forge-Crown on her own head. 'She did not ask permission. She did not kneel.'"},
+{d:'hard',q:"What is the alchemical disease caused by misusing blue-flame condensation rituals?",a:["Stone-Dreaming","Silver Fever","Ash-Hunger","Brine-Sleep"],c:2,note:"Ash-Hunger — one of the four alchemical perils alongside Silver Fever, Stone-Dreaming, and Brine-Sleep."},
+{d:'hard',q:"What did the last five peacekeepers of Caldère do as the city fell?",a:["They sealed the Gold-Tongue Vault","They set themselves ablaze on the central stair rather than serve either army","They fled to Avilon with the archives","They buried the relics and surrendered"],c:1,note:"'The last five peacekeepers of Caldère set themselves ablaze on the central stair, rather than serve either army.' The beacon of peace became a pyre."},
+{d:'hard',q:"What material forms the Gateway of Mirian's Way between Ruden and Polia?",a:["Black basalt and iron","White stone fused by dragon flame, bearing carvings of hoof and wing","Red volcanic rock and obsidian","Sofkarr crystal-stone"],c:1,note:"A single huge archway — 'melted into shape by dragon flame and set by centaur craft' — still warm in sunlight longer than it should, as if it remembers fire."},
+{d:'hard',q:"What is the volcanic scar monument on Abila used as both oath-site and boundary?",a:["The Wound of Karun","The Red Scar of Angus (Vulnus Rubrum)","The Crack of Àsturia","The Pit of Helen"],c:1,note:"The Red Scar of Angus — formed by catastrophic eruption in the Ancient Age, its walls red-black after rain. Later fortified by Abilan masons and As'hikan engineers as a sworn-oath site."},
+{d:'hard',q:"What does the Chamalian name 'Armorica' literally translate to?",a:["The Land of Rivers and Mountains","The Land of Old in Time's Country","The Kingdom of the Thorn-Vine","The Realm of the Eight Provinces"],c:1,note:"Arm = 'Old'; Or = 'Land'; I = 'in/inside'; Ica = 'country.' Full meaning: 'The Land of Old in Time's Country.'"},
+{d:'hard',q:"In what year did the As'hikan Empire finally fall?",a:["1680 AU","1960 AU","2078 AU","2295 AU"],c:2,note:"The As'hikan Empire fell in 2078 AU — House Chliarinos lost the throne but remained a potent symbol across the Fourth Era."},
+{d:'hard',q:"Who is the deity who gave mortals 'the flame of knowledge' in Arshmunnu's alchemical origin lore?",a:["Achmin","Elara","Kohe'Samel","Astr'y'lis"],c:2,note:"Kohe'Samel — Sage of Light, god of thought and balance — alone beheld the Nexus as a crucible, dipped his hand into its burn, and bled light across the sky to teach the first alchemical bindings."},
+{d:'hard',q:"What ancient city was known as 'the Breath of Hymnia' and was the Imvien capital before conquest?",a:["Mida","Caldère","Elderglen","As'hika City"],c:2,note:"Elderglen — 'a city of pearl towers and silver-roofed colleges, called the Breath of Hymnia' — was the Imvien capital before Armorican conquest made it a seat of conquerors."},
+{d:'hard',q:"What does the Armorican martial road-greeting's open palm on the heart signify?",a:["'I am unarmed and submit'","'I bear thee no malice. Yet I know what malice costs.'","'I stand ready to protect thee'","'May thy blade sing true'"],c:1,note:"The Armorican martial road-greeting — palm on heart — means: 'I bear thee no malice. Yet I know what malice costs.' A statement of controlled readiness, not surrender."},
+{d:'hard',q:"What three Trials of the Rose must Golden Rose aspirants complete?",a:["Defeat three Imperial Guards; negotiate a treaty; walk the Path of Thorns","Swear fealty; learn court etiquette; master sword and spear","Burn three rebel banners; guard the throne three nights; recite the imperial code","Pilgrimage to Avilon; duel the High Rosemistress; keep silence for a year"],c:0,note:"(1) Defeat three knights of the Imperial Guard in combat. (2) Negotiate a successful treaty between feuding noble houses. (3) Walk the Path of Thorns — a pilgrimage to the Graves of Empresses."},
+{d:'hard',q:"What is Achilleus IV's father's name?",a:["Cassander I","Cassander II","Julian II","Francis of Avilon"],c:1,note:"Achilleus IV was born to Cassander II, heir of the Avilonic line — rising after decades of chaos following Francis of Avilon, the Dragonking, winning the civil war in 748 AU."},
+{d:'hard',q:"What does the Oath of the Firm Queen promise about borders?",a:["No border shall be drawn except by imperial decree","No border shall divide my people that cannot be crossed by bread, and guarded by law","All borders shall be protected by the legions of the crown","No border shall change without the consent of eight provinces"],c:1,note:"'No border shall divide my people that cannot be crossed by bread, and guarded by law' — Marian's coronation oath, spoken on the Spire of Helen, still quoted across Exelia."},
+{d:'hard',q:"What legendary weapon was gifted by Victor to Julian II in the Chronicles?",a:["The Golden Rose Blade","The Blade of Frea","The Sword of Achilleus I","The Iron Phoenix"],c:2,note:"Victor presented Julian II with 'the Sword of Achilleus I, The First Emperor's Blade' — lost for centuries, appearing only in ancient murals and myths."},
+{d:'hard',q:"What do Imvien scribes call Caldère, refusing to write its real name?",a:["The Fall of Helen","The Light Unseen","The Treaty of Verdentia Smoke","The Pyre of Peace"],c:1,note:"Imvien scribes will not write 'Caldère' — they call it 'The Light Unseen,' in mourning for the beacon of peace that was sacked and unmade by Armorican-Szewian forces."},
+{d:'hard',q:"What four Essential Reagents of the Four Lands does Arshmunnu alchemy name?",a:["Volcanic ash, starfire crystal, dragonblood, void salt","Karun Prima Materia, Imvien White Chamomile, Armorican Dragonbone Char, Chamalian Azure Salt","Imvien blue clay, Szewian iron ink, Frontian laurel ash, Alodian gold dust","Aethernum sap, sunstone, moonwater, black sand"],c:1,note:"Karun Prima Materia (black sand), Imvien White Chamomile, Armorican Dragonbone Char, Chamalian Azure Salt — and also Szewian Ink of Twin Serpents."},
+{d:'hard',q:"What is the name of Achilleus I's Alodian origin and the civil war he fled?",a:["He fled the Karunian Succession Wars","He was originally Alodian, fleeing the civil war in Alodia to As'hika where he built his empire","He was a Frontian general exiled for treason","He came from an unknown island and claimed Armorican noble status"],c:1,note:"Achilleus I was originally Alodian — he fled the civil war in Alodia, arrived in As'hika, and from there rose to establish the As'hikan Empire."},
+{d:'hard',q:"What 'Period of Pause' did Achilleus IV preside over, and when did it end?",a:["A brief peace between Armorica and Alodia, ending in 820 AU","A fragile window of stability in the Late Empire, ending with his death in 817 AU","The Pax As'hikana's final years, ended by Julian II's death","The Coalition Wars' ceasefire, ended by Marian's invasion of Szewia"],c:1,note:"Achilleus IV (793–817 AU) crushed five rebellions, restored Lundenford, and reconvened the Imperial Council. His death in 817 AU began the true final decline — no worthy heir rose."},
+{d:'hard',q:"What is the full name of the noble who framed Lucius Varron at the Lundenford Academy?",a:["Cassian Tigerauge","Branim Ors","Herran Dusk","Marlowe Cend"],c:0,note:"Cassian Tigerauge — 'all silk and cruelty wrapped in manners,' a cousin of the high Armorican line — seduced Sabina, orchestrated the murder that branded Lucius, and was never held accountable."},
+{d:'hard',q:"What did Achilleus I whisper to the ghosts on the ruined Gothian battlefield before his death?",a:["'I have failed thee all'","'I have undone thee, and yet I am as empty as thee'","'The empire shall outlast us both'","'By salt and by stone, I yield at last'"],c:1,note:"'I have undone thee, and yet I am as empty as thee' — spoken atop the crumbling towers of the last Gothian stronghold in the Karun Desert, three weeks before his death."},
+{d:'hard',q:"Who founded the Order of the Silent Watch, and why?",a:["Sir Alaric Veynar, after losing a tournament","Sir Caelen Vire, after a child he carried to a shrine died anyway — stripped of title for refusing to burn a rebel town","Sir Godric Ferrus, after the fall of Caldère","Sir Marcus of Morion, after the War of Two Houses"],c:1,note:"Sir Caelen Vire of House Ferus — stripped of title and crest for refusing to burn a rebel town — swore an oath before the empty road after a dying child he carried to safety did not survive."},
+{d:'hard',q:"What does Achilleus IV's legacy quote reveal about his self-understanding?",a:["'One law, one land, one life — all shall kneel, not in chains, but in hope'","'An emperor is not flame, but hearth. He does not burn the house — he keeps it warm'","'If I must be iron, let it be for the sake of peace. If I must be hated, let it be by tyrants'","'From ashes, empire — from empire, ash'"],c:2,note:"'If I must be iron, let it be for the sake of peace. If I must be hated, let it be by tyrants.' — Achilleus IV's legacy quote. Julian II's was 'An emperor is not flame, but hearth.' Achilleus I's was 'One law, one land, one life.'"},
+{d:'hard',q:"What is the name of the alchemical city of black glass beyond Karun where the first formulae were inscribed?",a:["Aethernum","Khemetras","Caldère","Kohe'Samel's Forge"],c:1,note:"Khemetras — a city of black glass raised upon veins of dragonbone in the bone-dry east beyond Karun. Its towers reached toward the Eye of the Dark Star, and from that star came the first fire-needles."},
+];
+
+/* ══════════════════════════════════════════
+   RANKS (percentage-based)
+══════════════════════════════════════════ */
+const RANKS=[
+  {name:"Beginner",min:0,max:30,flavor:"A stranger upon the Queen's road. Yet every Chronicler began as a child of the temple-step — return when thou hast read more of the codex, and thy seal shall surely brighten."},
+  {name:"Intermediate",min:31,max:50,flavor:"A wanderer who hath glimpsed the empire's edge. Thou knowest the great names — Achilleus, Marian, Isabelle — but the deeper threads of magic, dynasty, and alchemy still elude. Read on."},
+  {name:"Knowledgeable",min:51,max:65,flavor:"A scholar with ink upon the fingers. The libraries of Avilon and Lundenford would welcome thee. Thou knowest the bones of empire well; only the marrow remaineth."},
+  {name:"Veteran",min:66,max:85,flavor:"An adept of the ancient lore. Few mortals carry such breadth — from the Pax As'hikana to the Confederation of the Remaining Flame, from the Phoenix Agency to the dwarven Sofkarr. The Chronicler's seat is within reach."},
+  {name:"Chronicler",min:86,max:100,flavor:"A keeper of the eternal flame. Thou hast walked the chronicles as a native — there is little of Arshmunnu thou hast not touched. Take up the quill: the world hath need of thee."},
+];
+
+/* ══════════════════════════════════════════
+   STATE & HELPERS
+══════════════════════════════════════════ */
+let mode=20,pool=[],cur=0,score=0,idkN=0,answered=false;
+const $={
+  intro:document.getElementById('s-intro'),
+  quiz:document.getElementById('s-quiz'),
+  result:document.getElementById('s-result'),
+  qblock:document.getElementById('qblock'),
+  counter:document.getElementById('q-counter'),
+  scoreEl:document.getElementById('q-score'),
+  prog:document.getElementById('prog'),
+};
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+/* MODE SELECTION */
+document.querySelectorAll('.mcard').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('.mcard').forEach(x=>x.classList.remove('sel'));
+    c.classList.add('sel');
+    mode=parseInt(c.dataset.mode);
+  });
+});
+
+document.getElementById('btn-begin').addEventListener('click',startQuiz);
+document.getElementById('btn-restart').addEventListener('click',()=>location.reload());
+
+function startQuiz(){
+  pool=shuffle(ALL_Q).slice(0,mode);
+  cur=0;score=0;idkN=0;
+  $.intro.classList.add('hidden');
+  $.quiz.classList.remove('hidden');
+  renderQ();
+}
+
+function renderQ(){
+  answered=false;
+  const q=pool[cur];
+  $.counter.textContent=`Question ${cur+1} of ${pool.length}`;
+  $.scoreEl.textContent=`Score ${score}`;
+  $.prog.style.width=`${(cur/pool.length)*100}%`;
+  const L=['A','B','C','D'];
+  $.qblock.innerHTML=`
+    <span class="dtag ${q.d}">${q.d==='easy'?'Common Lore':q.d==='medium'?"Scholar's Query":"Chronicler's Test"}</span>
+    <div class="question">${q.q}</div>
+    <div class="options">
+      ${q.a.map((o,i)=>`<button class="option" data-idx="${i}" data-letter="${L[i]}">${o}</button>`).join('')}
+    </div>
+    <div class="idk-row">
+      <button class="btn idk" id="btn-idk">✦ &nbsp; I Know Not</button>
+    </div>
+    <div class="feedback hidden" id="fb"></div>
+    <div class="nav-btn-row">
+      <button class="btn ghost hidden" id="btn-next">${cur===pool.length-1?'See My Verdict →':'Next Question →'}</button>
+    </div>
+  `;
+  $.qblock.querySelectorAll('.option').forEach(btn=>{
+    btn.addEventListener('click',()=>resolve(parseInt(btn.dataset.idx),false));
+  });
+  document.getElementById('btn-idk').addEventListener('click',()=>resolve(-1,true));
+  document.getElementById('btn-next').addEventListener('click',advance);
+}
+
+function resolve(idx,idk){
+  if(answered)return;
+  answered=true;
+  const q=pool[cur];
+  $.qblock.querySelectorAll('.option').forEach((btn,i)=>{
+    btn.disabled=true;
+    if(i===q.c) btn.classList.add(idk?'revealed':'correct');
+    else if(i===idx&&!idk) btn.classList.add('wrong');
+  });
+  document.getElementById('btn-idk').disabled=true;
+  if(!idk&&idx===q.c){score++;$.scoreEl.textContent=`Score ${score}`;}
+  if(idk) idkN++;
+  const fb=document.getElementById('fb');
+  let head;
+  if(idk) head=`<span class="idk-note">✦ I Know Not &mdash; the answer was: <em>${q.a[q.c]}</em></span>`;
+  else if(idx===q.c) head='<strong>✦ Truly Spoken</strong>';
+  else head=`<strong>✦ Alas &mdash; the answer was: ${q.a[q.c]}</strong>`;
+  fb.innerHTML=head+'<br><br>'+q.note;
+  fb.classList.remove('hidden');
+  fb.classList.add('vis');
+  document.getElementById('btn-next').classList.remove('hidden');
+}
+
+function advance(){cur++;cur>=pool.length?showResult():renderQ();}
+
+function showResult(){
+  $.quiz.classList.add('hidden');
+  $.result.classList.remove('hidden');
+  const pct=Math.round((score/pool.length)*100);
+  const rank=RANKS.find(r=>pct>=r.min&&pct<=r.max)||RANKS[0];
+  document.getElementById('r-rank').textContent=rank.name;
+  document.getElementById('r-score').textContent=score;
+  document.getElementById('r-total').textContent=pool.length;
+  document.getElementById('r-flavor').textContent=rank.flavor;
+  document.getElementById('r-breakdown').innerHTML=
+    `<em>${pct}% correct &nbsp;·&nbsp; ${idkN} left to fate &nbsp;·&nbsp; ${pool.length-score-idkN} incorrect</em>`;
+  document.getElementById('r-bars').innerHTML=RANKS.map(r=>{
+    const active=r.name===rank.name;
+    const fill=active?Math.min(100,((pct-r.min)/(r.max-r.min+1))*100+10):0;
+    return`<div class="res-bar${active?' active':''}">
+      <span class="bn">${r.name}</span>
+      <span class="bt"><span class="bf" style="width:${fill}%"></span></span>
+      <span style="font-family:'Cormorant Garamond';font-style:italic;font-size:12px;opacity:.7">${r.min}–${r.max}%</span>
+    </div>`;
+  }).join('');
+}
+</script>
+
+<style id="ep-styles">
+.ep-fab{position:fixed;bottom:22px;right:22px;z-index:800;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#1a0d04,#240808);border:1px solid rgba(212,164,74,.55);box-shadow:0 4px 20px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .22s;color:#d4a44a;}
+.ep-fab:hover{transform:scale(1.12);box-shadow:0 6px 24px rgba(0,0,0,.6),0 0 0 6px rgba(212,164,74,.12);}
+.ep-fab.active{background:linear-gradient(135deg,#d4a44a,#b8893b);color:#1a0800;border-color:#f0cc72;}
+.ep-ov{position:fixed;inset:0;z-index:900;background:rgba(3,1,8,.97);backdrop-filter:blur(12px);display:none;flex-direction:column;overflow:hidden;}
+.ep-ov.open{display:flex;}
+.ep-tb{flex-shrink:0;height:52px;background:rgba(5,2,12,.98);border-bottom:1px solid rgba(212,164,74,.2);display:flex;align-items:center;gap:12px;padding:0 18px;}
+.ep-tb-title{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:#d4a44a;flex:1;}
+.ep-count{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;padding:3px 8px;border-radius:2px;background:rgba(212,164,74,.12);color:rgba(212,164,74,.7);border:1px solid rgba(212,164,74,.25);}
+.ep-x{width:28px;height:28px;border-radius:50%;border:1px solid rgba(212,164,74,.35);background:transparent;color:rgba(212,164,74,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .14s;}
+.ep-x:hover{background:rgba(212,164,74,.14);color:#d4a44a;}
+.ep-body{flex:1;display:grid;grid-template-columns:290px 1fr;overflow:hidden;}
+.ep-lcol{display:flex;flex-direction:column;border-right:1px solid rgba(212,164,74,.12);overflow:hidden;}
+.ep-lhdr{flex-shrink:0;padding:10px 12px;border-bottom:1px solid rgba(212,164,74,.1);display:flex;gap:7px;align-items:center;}
+.ep-srch{flex:1;padding:6px 9px;background:rgba(232,223,200,.06);border:1px solid rgba(212,164,74,.22);border-radius:2px;color:#e8dfc8;font-family:'EB Garamond',serif;font-size:13px;outline:none;}
+.ep-srch:focus{border-color:rgba(212,164,74,.5);}
+.ep-srch::placeholder{color:rgba(232,223,200,.25);}
+.ep-new{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:6px 10px;border:1px solid rgba(212,164,74,.45);border-radius:2px;background:rgba(212,164,74,.08);color:#d4a44a;cursor:pointer;white-space:nowrap;transition:all .14s;}
+.ep-new:hover{background:rgba(212,164,74,.2);}
+.ep-tags{display:flex;gap:5px;flex-wrap:wrap;padding:7px 12px 4px;border-bottom:1px solid rgba(212,164,74,.07);}
+.ep-tg{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:2px 7px;border-radius:10px;border:1px solid rgba(212,164,74,.18);color:rgba(212,164,74,.4);cursor:pointer;transition:all .12s;}
+.ep-tg.on{border-color:rgba(212,164,74,.6);color:#d4a44a;background:rgba(212,164,74,.12);}
+.ep-list{flex:1;overflow-y:auto;padding:4px 0;scrollbar-width:thin;scrollbar-color:rgba(124,90,31,.3) transparent;}
+.ep-list::-webkit-scrollbar{width:3px}.ep-list::-webkit-scrollbar-thumb{background:rgba(124,90,31,.3);}
+.ep-li{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(212,164,74,.05);transition:background .1s;position:relative;}
+.ep-li:hover{background:rgba(212,164,74,.06);}
+.ep-li.sel{background:rgba(212,164,74,.12);}
+.ep-li-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.ep-li-info{flex:1;min-width:0;}
+.ep-li-name{font-family:'Cinzel',serif;font-size:11px;font-weight:500;color:#e8dfc8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
+.ep-li-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:rgba(232,223,200,.38);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ep-li-del{opacity:0;background:none;border:none;cursor:pointer;color:rgba(248,113,113,.55);font-size:13px;padding:2px 3px;transition:all .1s;flex-shrink:0;}
+.ep-li:hover .ep-li-del{opacity:1;}
+.ep-li-del:hover{color:#f87171;}
+.ep-rcol{display:flex;flex-direction:column;overflow:hidden;}
+.ep-fwrap{flex:1;overflow-y:auto;padding:18px 22px;scrollbar-width:thin;scrollbar-color:rgba(124,90,31,.3) transparent;}
+.ep-fwrap::-webkit-scrollbar{width:3px}.ep-fwrap::-webkit-scrollbar-thumb{background:rgba(124,90,31,.3);}
+.ep-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:9px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(232,223,200,.3);}
+.ep-ph span{font-size:28px;}
+.ep-ftitle{font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:.07em;color:#d4a44a;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(212,164,74,.14);}
+.ep-field{margin-bottom:13px;}
+.ep-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(212,164,74,.65);display:block;margin-bottom:4px;}
+.ep-inp,.ep-ta,.ep-sel{width:100%;padding:7px 10px;background:rgba(232,223,200,.05);border:1px solid rgba(212,164,74,.22);border-radius:2px;color:#e8dfc8;font-family:'EB Garamond',serif;font-size:14px;outline:none;transition:border-color .13s;}
+.ep-inp:focus,.ep-ta:focus,.ep-sel:focus{border-color:rgba(212,164,74,.5);background:rgba(232,223,200,.09);}
+.ep-inp::placeholder,.ep-ta::placeholder{color:rgba(232,223,200,.22);}
+.ep-ta{resize:vertical;min-height:75px;line-height:1.5;}
+.ep-sel{cursor:pointer;}.ep-sel option{background:#0d0a1a;color:#e8dfc8;}
+.ep-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ep-row4{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.ep-ans-w{display:flex;gap:5px;align-items:center;}
+.ep-ans-l{font-family:'Cinzel',serif;font-size:9px;color:rgba(212,164,74,.5);width:12px;flex-shrink:0;}
+.ep-corr{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:5px;}
+.ep-co{display:flex;align-items:center;gap:5px;padding:5px 7px;border:1px solid rgba(212,164,74,.18);border-radius:2px;cursor:pointer;transition:all .12s;}
+.ep-co.on{border-color:#7c9e6b;background:rgba(124,158,107,.14);}
+.ep-co input{accent-color:#7c9e6b;cursor:pointer;}
+.ep-co label{font-family:'Cinzel',serif;font-size:9px;color:#e8dfc8;cursor:pointer;}
+.ep-fftr{flex-shrink:0;padding:10px 22px;border-top:1px solid rgba(212,164,74,.1);background:rgba(4,2,10,.9);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.ep-sv{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:8px 18px;border:1px solid rgba(212,164,74,.55);border-radius:2px;background:rgba(212,164,74,.13);color:#d4a44a;cursor:pointer;transition:all .14s;}
+.ep-sv:hover{background:rgba(212,164,74,.28);color:#f0cc72;}
+.ep-dv{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:8px 14px;border:1px solid rgba(248,113,113,.3);border-radius:2px;background:rgba(248,113,113,.06);color:rgba(248,113,113,.65);cursor:pointer;transition:all .14s;}
+.ep-dv:hover{background:rgba(248,113,113,.16);color:#f87171;}
+.ep-rst{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;padding:7px 10px;border:1px solid rgba(212,164,74,.15);border-radius:2px;background:transparent;color:rgba(212,164,74,.35);cursor:pointer;transition:all .13s;margin-left:auto;}
+.ep-rst:hover{background:rgba(212,164,74,.07);color:rgba(212,164,74,.65);}
+.ep-exp{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:7px 9px;border:1px solid rgba(103,232,249,.22);border-radius:2px;background:transparent;color:rgba(103,232,249,.45);cursor:pointer;transition:all .13s;}
+.ep-exp:hover{background:rgba(103,232,249,.07);color:rgba(103,232,249,.75);}
+.ep-imp-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:7px 9px;border:1px solid rgba(103,232,249,.22);border-radius:2px;background:transparent;color:rgba(103,232,249,.45);cursor:pointer;transition:all .13s;}
+.ep-imp-lbl:hover{background:rgba(103,232,249,.07);color:rgba(103,232,249,.75);}
+.ep-imp{display:none;}
+.ep-subl{display:grid;gap:5px;margin-top:6px;}
+.ep-sub{display:flex;gap:6px;align-items:flex-start;}
+.ep-sub .ep-inp{flex:1;}
+.ep-sdel{background:none;border:none;color:rgba(248,113,113,.45);cursor:pointer;font-size:13px;padding:7px 3px;flex-shrink:0;transition:color .11s;}
+.ep-sdel:hover{color:#f87171;}
+.ep-sadd{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:5px 10px;border:1px dashed rgba(212,164,74,.28);border-radius:2px;background:transparent;color:rgba(212,164,74,.45);cursor:pointer;transition:all .12s;margin-top:4px;}
+.ep-sadd:hover{border-color:rgba(212,164,74,.55);color:#d4a44a;}
+.ep-toast{position:fixed;bottom:80px;right:22px;z-index:1000;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;padding:9px 16px;border-radius:3px;border:1px solid rgba(134,239,172,.4);background:rgba(58,102,56,.25);color:#86efac;animation:tIn .3s ease,tOut .3s ease 1.7s both;pointer-events:none;}
+@keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tOut{to{opacity:0;transform:translateY(8px)}}
+@media(max-width:700px){.ep-body{grid-template-columns:1fr;}.ep-rcol{position:fixed;inset:52px 0 0 0;background:rgba(4,2,10,.98);z-index:5;display:none;}.ep-rcol.mob{display:flex;flex-direction:column;}}
+</style>
+
+<div class="ep-fab" id="qFab" title="Edit Questions" onclick="qEpOpen()">✏</div>
+<div class="ep-ov" id="qEp">
+  <div class="ep-tb">
+    <span class="ep-tb-title">⚙ Question Editor</span>
+    <span class="ep-count" id="qEpCount">0 questions</span>
+    <button class="ep-exp" onclick="qExport()">Export JSON</button>
+    <label class="ep-imp-lbl">Import JSON<input class="ep-imp" type="file" accept=".json" onchange="qImport(this)"></label>
+    <button class="ep-rst" onclick="qReset()">Reset Defaults</button>
+    <button class="ep-x" onclick="qEpClose()">✕</button>
+  </div>
+  <div class="ep-body">
+    <div class="ep-lcol">
+      <div class="ep-lhdr">
+        <input class="ep-srch" id="qSrch" placeholder="Search questions…" oninput="qRenderList()">
+        <button class="ep-new" onclick="qNew()">+ New</button>
+      </div>
+      <div class="ep-tags" id="qTags">
+        <span class="ep-tg on" data-d="all" onclick="qSetDiff(this)">All</span>
+        <span class="ep-tg" data-d="easy" onclick="qSetDiff(this)" style="color:#7c9e6b;border-color:rgba(124,158,107,.3);">Common Lore</span>
+        <span class="ep-tg" data-d="medium" onclick="qSetDiff(this)">Scholar's Query</span>
+        <span class="ep-tg" data-d="hard" onclick="qSetDiff(this)" style="color:rgba(248,113,113,.6);border-color:rgba(248,113,113,.25);">Chronicler's Test</span>
+      </div>
+      <div class="ep-list" id="qList"></div>
+    </div>
+    <div class="ep-rcol" id="qRcol">
+      <div class="ep-fwrap" id="qFwrap">
+        <div class="ep-ph"><span>📜</span>Select a question to edit,<br>or click + New to add one.</div>
+      </div>
+      <div class="ep-fftr" id="qFftr" style="display:none;">
+        <button class="ep-sv" onclick="qSave()">✦ Save Question</button>
+        <button class="ep-dv" onclick="qDelete()">✕ Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  // Patch: load from LS
+  try{const s=localStorage.getItem('arshmunnu_quiz_q');if(s){const d=JSON.parse(s);if(Array.isArray(d)&&d.length){ALL_Q.length=0;ALL_Q.push(...d);}}}catch(e){}
+})();
+
+function epToast(m,ok=true){
+  const t=document.createElement('div');t.className='ep-toast';t.textContent=m;
+  if(!ok)t.style.cssText='border-color:rgba(248,113,113,.4);background:rgba(120,40,40,.25);color:#f87171;';
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2100);
+}
+
+let qDiffF='all', qSelIdx=null;
+const Q_DEFAULT_COUNT = ALL_Q.length;
+
+function qEpOpen(){
+  document.getElementById('qEp').classList.add('open');
+  document.getElementById('qFab').classList.add('active');
+  qRenderList();
+}
+function qEpClose(){
+  document.getElementById('qEp').classList.remove('open');
+  document.getElementById('qFab').classList.remove('active');
+}
+function qSetDiff(el){
+  document.querySelectorAll('#qTags .ep-tg').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on'); qDiffF=el.dataset.d; qRenderList();
+}
+function qRenderList(){
+  const q=(document.getElementById('qSrch').value||'').toLowerCase();
+  const list=document.getElementById('qList'); list.innerHTML='';
+  const items=ALL_Q.map((item,i)=>({item,i}))
+    .filter(({item})=>(qDiffF==='all'||item.d===qDiffF)&&(!q||item.q.toLowerCase().includes(q)));
+  document.getElementById('qEpCount').textContent=ALL_Q.length+' questions';
+  items.forEach(({item,i})=>{
+    const el=document.createElement('div'); el.className='ep-li'+(qSelIdx===i?' sel':'');
+    const dc={easy:'#7c9e6b',medium:'#d4a44a',hard:'#f87171'}[item.d]||'#888';
+    el.innerHTML=`<span class="ep-li-dot" style="background:${dc}"></span>
+      <div class="ep-li-info">
+        <div class="ep-li-name">${item.q.substring(0,70)}${item.q.length>70?'…':''}</div>
+        <div class="ep-li-sub">${{easy:'Common Lore',medium:"Scholar's Query",hard:"Chronicler's Test"}[item.d]} · Answer: ${item.a[item.c]?.substring(0,24)||'?'}</div>
+      </div>
+      <button class="ep-li-del" onclick="event.stopPropagation();qDeleteIdx(${i})">✕</button>`;
+    el.onclick=()=>qSelect(i);
+    list.appendChild(el);
+  });
+}
+function qSelect(i){
+  qSelIdx=i; qRenderList(); qRenderForm(ALL_Q[i]);
+  document.getElementById('qFftr').style.display='flex';
+  document.getElementById('qRcol').classList.add('mob');
+}
+function qRenderForm(q){
+  const w=document.getElementById('qFwrap');
+  w.innerHTML=`<div class="ep-ftitle">${qSelIdx===null||qSelIdx>=ALL_Q.length?'New Question':'Edit Question #'+(qSelIdx+1)}</div>
+    <div class="ep-field">
+      <label class="ep-lbl">Difficulty</label>
+      <select class="ep-sel" id="qD">
+        <option value="easy" ${q?.d==='easy'?'selected':''}>Common Lore (Easy)</option>
+        <option value="medium" ${q?.d==='medium'?'selected':''}>Scholar's Query (Medium)</option>
+        <option value="hard" ${q?.d==='hard'?'selected':''}>Chronicler's Test (Hard)</option>
+      </select>
+    </div>
+    <div class="ep-field">
+      <label class="ep-lbl">Question</label>
+      <textarea class="ep-ta" id="qQ" rows="3">${q?.q||''}</textarea>
+    </div>
+    <div class="ep-field">
+      <label class="ep-lbl">Answer Choices</label>
+      <div class="ep-row4">
+        ${['A','B','C','D'].map((l,i)=>`<div class="ep-ans-w"><span class="ep-ans-l">${l}</span><input class="ep-inp" id="qA${i}" value="${(q?.a?.[i]||'').replace(/"/g,'&quot;')}" placeholder="Answer ${l}"></div>`).join('')}
+      </div>
+    </div>
+    <div class="ep-field">
+      <label class="ep-lbl">Correct Answer</label>
+      <div class="ep-corr">
+        ${['A','B','C','D'].map((l,i)=>`<div class="ep-co ${q?.c===i?'on':''}" onclick="qPickCorr(${i})"><input type="radio" name="qCorr" id="qR${i}" ${q?.c===i?'checked':''}><label for="qR${i}">${l}</label></div>`).join('')}
+      </div>
+    </div>
+    <div class="ep-field">
+      <label class="ep-lbl">Lore Note / Explanation</label>
+      <textarea class="ep-ta" id="qNote" rows="3">${q?.note||''}</textarea>
+    </div>
+  `;
+}
+function qPickCorr(i){
+  document.querySelectorAll('#qFwrap .ep-co').forEach((el,j)=>el.classList.toggle('on',i===j));
+  document.getElementById('qR'+i).checked=true;
+}
+function qNew(){
+  qSelIdx=ALL_Q.length; // placeholder index
+  qRenderForm(null);
+  document.getElementById('qFftr').style.display='flex';
+  document.getElementById('qRcol').classList.add('mob');
+}
+function qSave(){
+  const d=document.getElementById('qD')?.value;
+  const q=document.getElementById('qQ')?.value?.trim();
+  const a=[0,1,2,3].map(i=>document.getElementById('qA'+i)?.value?.trim()||'');
+  const c=[...(document.querySelectorAll('#qFwrap .ep-co.on'))].map((_,i)=>i);
+  const cc=c.length?c[0]:0;
+  const note=document.getElementById('qNote')?.value?.trim()||'';
+  if(!q){epToast('Question text required',false);return;}
+  if(a.some(x=>!x)){epToast('All 4 answers required',false);return;}
+  const obj={d,q,a,c:cc,note};
+  if(qSelIdx!==null&&qSelIdx<ALL_Q.length) ALL_Q[qSelIdx]=obj;
+  else{ALL_Q.push(obj);qSelIdx=ALL_Q.length-1;}
+  qSaveLS(); qRenderList(); epToast('Question saved ✦');
+}
+function qDelete(){
+  if(qSelIdx===null||qSelIdx>=ALL_Q.length)return;
+  if(!confirm('Delete this question?'))return;
+  qDeleteIdx(qSelIdx);
+}
+function qDeleteIdx(i){
+  ALL_Q.splice(i,1); qSaveLS();
+  qSelIdx=null;
+  document.getElementById('qFwrap').innerHTML='<div class="ep-ph"><span>📜</span>Select a question to edit.</div>';
+  document.getElementById('qFftr').style.display='none';
+  document.getElementById('qRcol').classList.remove('mob');
+  qRenderList(); epToast('Question deleted');
+}
+function qSaveLS(){localStorage.setItem('arshmunnu_quiz_q',JSON.stringify(ALL_Q));}
+function qReset(){
+  if(!confirm('Reset ALL questions to defaults? This cannot be undone.'))return;
+  localStorage.removeItem('arshmunnu_quiz_q');
+  location.reload();
+}
+function qExport(){
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(ALL_Q,null,2));
+  a.download='arshmunnu_quiz_questions.json'; a.click();
+}
+function qImport(el){
+  const f=el.files[0]; if(!f)return;
+  const r=new FileReader(); r.onload=e=>{
+    try{const d=JSON.parse(e.target.result);
+      if(!Array.isArray(d)){epToast('Invalid format',false);return;}
+      ALL_Q.length=0;ALL_Q.push(...d);qSaveLS();qRenderList();epToast('Imported '+d.length+' questions ✦');
+    }catch(err){epToast('Parse error',false);}
+  };r.readAsText(f);
+}
+</script>
+
+</body>
+</html>

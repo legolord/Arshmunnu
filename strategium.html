@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Arshmunnu — Strategium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #040210; --panel: rgba(12,8,32,.8); --text: #e8dfc8;
+  --gold: #d4a44a; --goldD: #7c5a1f; --goldL: #f0cc72;
+  --coalition: #a32a2a; --imperial: #d4a44a;
+  --board-bg: #110d1a; --cell-dark: #1f182b; --cell-light: #2c223d;
+  --highlight: rgba(240, 204, 114, 0.4); --attack: rgba(163, 42, 42, 0.6); --spec: rgba(0, 191, 255, 0.5);
+  --last-move: rgba(255, 255, 255, 0.12);
+  --cell-size: min(50px, calc((100vw - 44px) / 10));
+  --board-gap: 2px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'EB Garamond', serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
+.topbar { width: 100%; height: 50px; background: rgba(4,2,16,.97); border-bottom: 1px solid var(--goldD); display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: clamp(12px, 2.5vw, 18px); color: var(--goldL); font-weight: 600; letter-spacing: 2px; }
+.layout { display: flex; gap: 30px; margin-top: 30px; max-width: 1400px; width: 100%; padding: 0 20px; flex-wrap: wrap; justify-content: center; }
+.sidebar { width: 320px; background: var(--panel); border: 1px solid var(--goldD); padding: 20px; border-radius: 5px; height: fit-content; }
+.sb-title { font-family: 'Cinzel', serif; font-size: 20px; color: var(--goldL); margin-bottom: 15px; border-bottom: 1px solid var(--goldD); padding-bottom: 5px; }
+.status { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--gold); text-align: center;}
+.status.p2 { color: var(--coalition); }
+.status.ai-thinking { animation: pulse 1s infinite; color: var(--goldL); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+.occ-tracker { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+.occ-box { background: rgba(0,0,0,0.4); padding: 8px; border-radius: 4px; text-align: center; font-size: 11px; border: 1px solid #333; }
+.occ-val { display: block; font-size: 16px; font-family: 'Cinzel', serif; margin-top: 2px; }
+
+.ability-panel { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid rgba(212,164,74,0.2); min-height: 100px; }
+button { background: rgba(212,164,74,.1); border: 1px solid var(--goldD); color: var(--text); padding: 10px; font-family: 'Cinzel', serif; cursor: pointer; transition: 0.2s; width: 100%; margin-bottom: 5px; }
+button:hover { background: rgba(212,164,74,.3); color: var(--goldL); }
+button.active { background: var(--goldD); color: #000; font-weight: bold; }
+button.special-btn { background: #1a1a3a; border-color: #00bfff; color: #00bfff; display: none; }
+button.special-btn.on { background: #00bfff; color: #000; }
+button.undo-btn { background: rgba(163,42,42,.2); border-color: var(--coalition); }
+button.undo-btn:hover { background: rgba(163,42,42,.4); color: #ff6666; }
+
+/* Graveyard */
+.graveyard { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid rgba(212,164,74,0.15); }
+.graveyard-title { font-family: 'Cinzel', serif; font-size: 13px; color: var(--goldD); margin-bottom: 8px; }
+.graveyard-row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; min-height: 24px; }
+.graveyard-piece { font-size: 16px; opacity: 0.6; }
+.graveyard-piece.team-0 { color: var(--imperial); } .graveyard-piece.team-1 { color: var(--coalition); }
+
+/* Move History */
+.history { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid rgba(212,164,74,0.15); max-height: 180px; overflow-y: auto; font-family: 'Cinzel', serif; font-size: 12px; }
+.history-title { color: var(--goldD); margin-bottom: 6px; font-size: 13px; }
+.history-entry { padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(232,223,200,.7); }
+.history-entry:last-child { border-bottom: none; color: var(--goldL); }
+.history-entry.imp { color: var(--imperial); }
+.history-entry.coa { color: var(--coalition); }
+
+/* Tooltip */
+.tooltip { position: absolute; background: rgba(4,2,16,0.95); border: 1px solid var(--goldD); padding: 10px 14px; border-radius: 4px; font-size: 13px; color: var(--text); z-index: 3000; pointer-events: none; max-width: 220px; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.7); }
+.tooltip .tt-name { font-family: 'Cinzel', serif; color: var(--goldL); font-size: 15px; margin-bottom: 4px; }
+.tooltip .tt-team { font-size: 11px; margin-bottom: 6px; opacity: 0.7; }
+.tooltip .tt-desc { font-size: 12px; line-height: 1.5; color: #bbb; }
+
+.log { font-size: 14px; color: rgba(232,223,200,.7); max-height: 100px; overflow-y: auto; border-top: 1px dashed var(--goldD); padding-top: 10px; font-family: monospace; margin-top: 10px;}
+.board-container { background: var(--board-bg); border: 3px solid var(--goldD); padding: 8px; border-radius: 5px; box-shadow: 0 0 30px rgba(0,0,0,0.8); position: relative; max-width: calc(var(--cell-size) * 10 + var(--board-gap) * 9 + 16px); }
+.board { display: grid; grid-template-columns: repeat(10, var(--cell-size)); grid-template-rows: repeat(10, var(--cell-size)); gap: var(--board-gap); background: #000; position: relative; }
+.cell { width: var(--cell-size); height: var(--cell-size); display: flex; align-items: center; justify-content: center; font-size: calc(var(--cell-size) * 0.55); cursor: pointer; position: relative; user-select: none; transition: background 0.2s; }
+.cell:hover { filter: brightness(1.15); }
+@media (hover: none) { .cell:hover { filter: none; } }
+.light { background: var(--cell-light); } .dark { background: var(--cell-dark); }
+.cell.center { background: #262220; } 
+.cell.seat-imp { box-shadow: inset 0 0 15px var(--imperial); }
+.cell.seat-coa { box-shadow: inset 0 0 15px var(--coalition); }
+.cell.wall { background: #444 !important; }
+.cell.wall::after { content: '🧱'; font-size: calc(var(--cell-size) * 0.28); position: absolute; }
+.cell.valid-move::after { content: ''; position: absolute; width: calc(var(--cell-size) * 0.32); height: calc(var(--cell-size) * 0.32); background: var(--highlight); border-radius: 50%; }
+.cell.valid-attack::after { content: ''; position: absolute; width: 100%; height: 100%; background: var(--attack); border: 2px solid red;}
+.cell.valid-spec { background: var(--spec) !important; border: 1px solid #00bfff; }
+.cell.selected { box-shadow: inset 0 0 20px var(--goldL); border: 2px solid var(--goldL); }
+.cell.last-move { box-shadow: inset 0 0 12px var(--last-move); }
+.cell.last-move-from { box-shadow: inset 0 0 12px rgba(240,204,114,0.25); }
+
+.piece { text-shadow: 2px 2px 4px #000; z-index: 2; transition: transform 0.25s ease, opacity 0.2s; pointer-events: none; display: inline-block; font-size: calc(var(--cell-size) * 0.55); }
+.piece.capturing { animation: captureAnim 0.3s ease; }
+@keyframes captureAnim { 0%{transform:scale(1)} 50%{transform:scale(1.4)} 100%{transform:scale(0);opacity:0} }
+.team-0 { color: var(--imperial); } .team-1 { color: var(--coalition); }
+
+/* AI controls */
+.ai-controls { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
+.rating-bar { display:flex; align-items:center; gap:8px; background:linear-gradient(180deg,rgba(212,164,74,.1),rgba(4,2,16,.5)); border:1px solid var(--goldD); border-radius:5px; padding:8px 12px; margin-bottom:12px; }
+.rating-bar .rb-label { font-family:'Cinzel',serif; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--goldD); }
+.rating-bar .rb-elo { font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:var(--goldL); margin-left:auto; line-height:1; }
+.rating-bar .rb-rec { font-size:11px; font-style:italic; color:#888; width:100%; text-align:right; margin-top:-2px; }
+.win-rating { margin:6px 0 14px; text-align:center; }
+.win-rating .wr-line { font-family:'Cinzel',serif; font-size:20px; color:var(--text); letter-spacing:.04em; }
+.win-rating .wr-line b { font-weight:700; }
+.win-rating .wr-delta { font-size:16px; margin-left:4px; }
+.win-rating .wr-sub { font-size:12px; font-style:italic; color:#888; margin-top:4px; letter-spacing:.06em; }
+.ai-controls button { width: auto; flex: 1; padding: 8px; font-size: 12px; margin: 0; }
+.ai-controls select { background: rgba(4,2,16,0.8); border: 1px solid var(--goldD); color: var(--text); padding: 8px; font-family: 'Cinzel', serif; font-size: 12px; cursor: pointer; flex: 1; }
+
+/* Move notation in corner */
+.move-notation { position: absolute; bottom: 1px; right: 2px; font-size: 9px; color: rgba(255,255,255,0.25); font-family: 'Cinzel', serif; pointer-events: none; z-index: 1; }
+.rank-label, .file-label { position: absolute; font-size: 9px; color: rgba(255,255,255,0.3); font-family: 'Cinzel', serif; pointer-events: none; }
+.rank-label { left: -14px; top: 50%; transform: translateY(-50%); }
+.file-label { bottom: -16px; left: 50%; transform: translateX(-50%); }
+
+.nav-tab { background: rgba(212,164,74,.1); border: 1px solid var(--goldD); color: var(--text); padding: 8px 16px; font-family: 'Cinzel', serif; cursor: pointer; transition: 0.2s; font-size: 13px; }
+.nav-tab:hover { background: rgba(212,164,74,.3); color: var(--goldL); }
+.nav-tab.active { background: var(--goldD); color: #000; font-weight: bold; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.win-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4,2,16,0.95); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
+.win-screen.show { display: flex; }
+.win-title { font-family: 'Cinzel', serif; font-size: 48px; color: var(--goldL); text-shadow: 0 0 30px var(--gold); margin-bottom: 20px; }
+.win-sub { font-size: 20px; color: var(--text); margin-bottom: 40px; font-style: italic; }
+.win-btn { width: auto; padding: 15px 40px; font-size: 18px; }
+
+/* ========== POST-BATTLE STATS ========== */
+.stats-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; margin: 20px 0; max-width: 600px; width: 100%; }
+.stats-section { background: rgba(0,0,0,0.4); border: 1px solid rgba(212,164,74,0.2); border-radius: 6px; padding: 15px; }
+.stats-section-title { font-family: 'Cinzel', serif; font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
+.stats-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; color: rgba(232,223,200,0.8); }
+.stats-val { font-family: 'Cinzel', serif; color: var(--goldL); }
+.stats-pieces { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; min-height: 20px; }
+.stats-piece { font-size: 18px; }
+.stats-piece.team-0 { color: var(--imperial); } .stats-piece.team-1 { color: var(--coalition); }
+.stats-divider { width: 1px; background: rgba(212,164,74,0.2); }
+.stats-footer { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; font-size: 13px; color: #888; font-family: 'Cinzel', serif; margin-bottom: 20px; border-top: 1px solid rgba(212,164,74,0.15); padding-top: 12px; max-width: 600px; width: 100%; }
+.stats-footer span { color: var(--text); }
+
+/* ========== SETTINGS PANEL ========== */
+.settings-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4,2,16,0.92); z-index: 2500; flex-direction: column; align-items: center; justify-content: center; }
+.settings-screen.show { display: flex; }
+.settings-box { background: var(--panel); border: 1px solid var(--goldD); border-radius: 6px; padding: 30px; max-width: 400px; width: 90%; }
+.settings-title { font-family: 'Cinzel', serif; font-size: 24px; color: var(--goldL); text-align: center; margin-bottom: 25px; letter-spacing: 2px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(212,164,74,0.1); }
+.settings-label { font-size: 15px; color: var(--text); }
+.settings-toggle { position: relative; width: 44px; height: 24px; cursor: pointer; }
+.settings-toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #333; border-radius: 24px; transition: 0.3s; border: 1px solid #555; }
+.toggle-slider::after { content: ''; position: absolute; width: 18px; height: 18px; background: #888; border-radius: 50%; top: 2px; left: 2px; transition: 0.3s; }
+.settings-toggle input:checked + .toggle-slider { background: rgba(212,164,74,0.3); border-color: var(--goldD); }
+.settings-toggle input:checked + .toggle-slider::after { background: var(--goldL); left: 22px; }
+.settings-close { margin-top: 20px; width: 100%; }
+.settings-gear { font-size: 18px; cursor: pointer; color: var(--goldD); background: none; border: none; width: auto; padding: 4px 8px; margin: 0; transition: 0.2s; }
+.settings-gear:hover { color: var(--goldL); }
+
+/* ========== MOBILE RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .layout { flex-direction: column; align-items: center; gap: 15px; margin-top: 15px; padding: 0 10px; }
+  .sidebar { width: 100%; max-width: calc(var(--cell-size) * 10 + var(--board-gap) * 9 + 16px); padding: 15px; }
+  .topbar { height: 44px; padding: 0 10px !important; font-size: 13px; letter-spacing: 1px; }
+  .topbar span:nth-child(2) { display: none; } /* hide long title */
+  .board-container { padding: 5px; border-width: 2px; }
+  .move-notation, .rank-label, .file-label { display: none; } /* hide corner labels */
+  .sb-title { font-size: 16px; }
+  .status { font-size: 18px; }
+  .occ-box { font-size: 10px; padding: 6px; }
+  .graveyard-piece { font-size: 14px; }
+  .history { max-height: 140px; }
+  .ai-controls button, .ai-controls select { padding: 6px; font-size: 11px; }
+  .controls { gap: 4px; }
+  .controls button { padding: 8px; font-size: 12px; }
+  .log { max-height: 80px; font-size: 12px; }
+  .tooltip { max-width: 180px; font-size: 12px; padding: 8px 10px; }
+  .win-title { font-size: 32px; }
+  .win-sub { font-size: 16px; }
+  .win-btn { padding: 12px 30px; font-size: 16px; }
+}
+
+@media (max-width: 400px) {
+  :root { --cell-size: calc((100vw - 28px) / 10); }
+  .topbar { font-size: 11px; height: 40px; }
+  .nav-tab { padding: 5px 10px !important; font-size: 11px !important; }
+  .sidebar { padding: 10px; }
+  .ability-panel { min-height: 80px; }
+  #selName { font-size: 15px !important; }
+  #selDesc { font-size: 11px !important; }
+}
+
+/* Prevent tooltip overflow on mobile */
+@media (max-width: 768px) {
+  .tooltip { left: auto !important; right: 10px !important; top: auto !important; bottom: 80px !important; position: fixed; }
+  .stats-grid { gap: 10px; }
+  .stats-section { padding: 10px; }
+  .stats-section-title { font-size: 14px; }
+  .stats-row { font-size: 12px; }
+  .stats-footer { gap: 12px; font-size: 11px; }
+  .settings-box { padding: 20px; }
+  .settings-title { font-size: 20px; }
+}
+/* ===== Online multiplayer overlay ===== */
+#onlineOverlay { position:fixed; inset:0; background:rgba(4,2,16,0.94); z-index:1200; display:none; align-items:center; justify-content:center; }
+#onlineOverlay.show { display:flex; }
+#onlineBox { background:linear-gradient(160deg, rgba(20,12,40,0.97), rgba(8,4,20,0.97)); border:1px solid var(--goldD); border-radius:10px; padding:28px 30px; width:min(440px,92vw); text-align:center; box-shadow:0 0 50px rgba(0,0,0,0.7); }
+#onlineBox h2 { font-family:'Cinzel',serif; color:var(--goldL); letter-spacing:2px; margin:0 0 6px; font-size:24px; }
+#onlineBox .sub { color:#9a8; font-size:13px; font-style:italic; margin-bottom:18px; }
+#onlineBox label { display:block; text-align:left; font-size:11px; color:#aa9; letter-spacing:1px; margin:12px 0 4px; text-transform:uppercase; }
+#onlineBox input { width:100%; box-sizing:border-box; background:rgba(4,2,16,0.8); border:1px solid var(--goldD); color:var(--text); padding:9px 11px; font-family:'Cinzel',serif; font-size:13px; border-radius:4px; }
+#onlineBox .obtn { width:100%; padding:12px; margin-top:16px; font-family:'Cinzel',serif; font-size:15px; letter-spacing:1px; cursor:pointer; background:linear-gradient(180deg,var(--goldD),#2a1c08); border:1px solid var(--gold); color:var(--goldL); border-radius:5px; }
+#onlineBox .obtn.secondary { background:#2a1414; border-color:#5a2a2a; color:#d99; }
+#onlineStatus { margin-top:14px; font-size:13px; color:var(--text); min-height:18px; }
+.spinner { width:34px; height:34px; margin:14px auto 0; border:3px solid rgba(212,175,55,0.25); border-top-color:var(--goldL); border-radius:50%; animation:spin 0.9s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.online-badge { display:inline-block; font-size:11px; padding:2px 8px; border-radius:10px; margin-left:6px; vertical-align:middle; }
+</style>
+<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
+</head>
+<body>
+<div class="tooltip" id="tooltip"></div>
+<div class="topbar" style="justify-content:space-between; padding:0 30px;">
+  <span style="font-size:14px; color:var(--goldD);">Arshmunnu</span>
+  <span>Strategium: The Game of Commands</span>
+  <div style="display:flex; gap:10px; align-items:center;">
+    <button onclick="showTab('game')" id="tab-game" class="nav-tab active" style="width:auto; padding:6px 16px; font-size:13px; margin:0;">Game</button>
+    <button onclick="showTab('codex')" id="tab-codex" class="nav-tab" style="width:auto; padding:6px 16px; font-size:13px; margin:0;">Codex</button>
+    <button onclick="showTab('lore')" id="tab-lore" class="nav-tab" style="width:auto; padding:6px 16px; font-size:13px; margin:0;">Lore</button>
+    <button class="settings-gear" onclick="toggleSettings()" title="Settings">&#9881;</button>
+  </div>
+</div>
+<div class="layout">
+  <div class="board-container">
+    <div class="board" id="board"></div>
+  </div>
+  <div class="sidebar">
+    <div class="sb-title">Command Tent</div>
+    
+    <!-- AI Controls -->
+    <div class="ai-controls">
+      <button id="modePVP" class="active" onclick="setGameMode('pvp')">PvP</button>
+      <button id="modeAI" onclick="setGameMode('ai')">vs AI</button>
+      <button id="modeWatch" onclick="setGameMode('watch')">Watch</button>
+      <button id="modeOnline" onclick="openOnline()">Online</button>
+      <select id="aiDifficulty" onchange="setAIDifficulty(this.value)" style="display:none;">
+        <option value="1">Easy</option>
+        <option value="2" selected>Medium</option>
+        <option value="3">Hard</option>
+        <option value="4">Impossible</option>
+      </select>
+      <select id="sideSelect" onchange="setPlayerSide(this.value)" style="display:none;">
+        <option value="0" selected>Play Imperial</option>
+        <option value="1">Play Coalition</option>
+      </select>
+      <button id="watchPauseBtn" onclick="toggleWatchPause()" style="display:none;">Pause</button>
+    </div>
+
+    <div class="status" id="statusText">Imperial Legion</div>
+
+    <div class="rating-bar" id="ratingBar" title="Your ladder rating from games against the AI engine">
+      <span class="rb-label">Your Rating</span>
+      <span class="rb-elo" id="ratingValue">1200</span>
+      <span class="rb-rec" id="ratingRecord">0W &middot; 0L &middot; peak 1200</span>
+    </div>
+    
+    <div class="occ-tracker">
+        <div class="occ-box" style="border-color: var(--imperial);">
+            Imp. Occupation
+            <span id="occ0" class="occ-val" style="color: var(--imperial);">0 / 6</span>
+        </div>
+        <div class="occ-box" style="border-color: var(--coalition);">
+            Coa. Occupation
+            <span id="occ1" class="occ-val" style="color: var(--coalition);">0 / 6</span>
+        </div>
+    </div>
+
+    <!-- Graveyard -->
+    <div class="graveyard">
+      <div class="graveyard-title">Fallen Warriors</div>
+      <div class="graveyard-row" id="graveyard0"></div>
+      <div class="graveyard-row" id="graveyard1"></div>
+    </div>
+
+    <!-- Ability Panel -->
+    <div class="ability-panel">
+        <div id="selName" style="font-family:'Cinzel'; color:var(--goldL); font-size: 18px;">Legion Command</div>
+        <div id="selDesc" style="font-size: 13px; font-style: italic; color: #888; margin: 5px 0;">Select a stone to begin.</div>
+        <button id="abilityBtn" class="special-btn" onclick="toggleAbilityMode()">USE SPECIAL</button>
+        <button id="skipBtn" style="display:none; background:#3a1a1a;" onclick="endTurn()">Decline Command</button>
+    </div>
+
+    <!-- Move History -->
+    <div class="history" id="moveHistory">
+      <div class="history-title">Battle Chronicle</div>
+      <div id="historyList"></div>
+    </div>
+
+    <div class="controls" style="display:flex; gap:5px;">
+      <button onclick="undoMove()" class="undo-btn" id="undoBtn" style="flex:1;" title="Undo last move">Undo</button>
+      <button onclick="resetGame()" style="flex:1;">Reset</button>
+    </div>
+    <div class="log" id="battleLog">The battle begins...</div>
+  </div>
+</div>
+
+<script>
+const ROWS = 10, COLS = 10;
+let boardState = Array(ROWS).fill(null).map(() => Array(COLS).fill(null));
+let turn = 0, selectedSquare = null, validMoves = [], gameOver = false;
+let abilityMode = false, officerPhase = false, walls = [];
+let occImperial = 0, occCoalition = 0;
+let knightPhase = false;
+let knightTwinArmed = false;         // Twin Strike must be activated via the ability button
+let lastKnightDouble = [-10, -10];   // per-team half-move stamp of last Knight double-action
+let lastServantSpawn = [-10, -10];   // per-team half-move stamp of last Servant spawn
+let commanderRallyUsed = false;      // Imperial Commander's once-per-game "advance the line" order
+
+// Feature state
+let gameMode = 'pvp'; // 'pvp' or 'ai'
+let aiDepth = 2;
+let aiTeam = 1; // team the AI controls in 'ai' mode (opposite of the player)
+let playerTeam = 0; // team the human controls in 'ai' mode (default: Imperial)
+let watchPaused = false; // pause flag for AI-vs-AI spectator mode
+// --- Online multiplayer state ---
+let mqttClient = null;       // active MQTT connection (null when offline)
+let onlineMatched = false;   // true once paired with an opponent
+let myTeam = 0;              // the team this client controls online (0=Imperial host, 1=Coalition guest)
+let myId = '';               // random per-session client id
+let oppName = 'Opponent';
+let lobbyTopic = 'strategium/v1/lobby';
+let gameTopic = '';          // unique topic for the matched game
+let stateSeq = 0;            // monotonic snapshot counter (mover increments)
+let lastApplied = -1;        // highest snapshot seq applied from opponent
+let helloTimer = null, hbTimer = null, oppHbAt = 0;
+let lastWinner = -1, lastWinReason = ''; // recorded synchronously when a game ends (for online sync)
+let capturedPieces = [[], []]; // graveyard per team
+let moveHistory = [];
+let lastMove = null;
+let moveCount = 0;
+
+// Stat tracking for post-battle
+let battleStats = {
+  totalMoves: 0,
+  wallsBuilt: 0,
+  promotions: 0,
+  magePushes: 0,
+  maxOccStreak: [0, 0],
+  capturesByType: { CMD:0, OFF:0, MGE:0, CAV:0, ARC:0, SPR:0, SCT:0, ENG:0, LT:0, BHP:0 }
+};
+
+// QoL Settings
+let settings = {
+  sound: true,
+  boardRotation: true,
+  tooltips: true
+};
+
+const FILES = ['A','B','C','D','E','F','G','H','I','J'];
+
+const PIECES = {
+  'CMD': { char: '♚', name: 'Commander', value: 100, desc: 'Moves 1 square any direction. Leaps 2 squares (ignores mid). Imperial only: once per game, rally every Spearman to advance one square. If slain, battle is lost.' },
+  'LT': { char: '♝', name: 'Lieutenant', value: 8, desc: 'Moves 1 square any direction, or slides 2 squares diagonally. Special: swap places with any allied piece on a same-colored square, anywhere on the board.' },
+  'BHP': { char: '♗', name: 'Bishop', value: 8, desc: 'Imperial. Moves 1 square any direction, or slides 2 squares diagonally. Convert: turn an adjacent enemy Spearman to the Imperial cause instead of capturing it.' },
+  'CAV': { char: '♞', name: 'Cavalry', value: 10, desc: 'L-shaped knight move (2+1 like chess), leaps over pieces. Can also capture adjacent enemies without moving.' },
+  'ARC': { char: '🏹', name: 'Archer', value: 8, desc: 'Moves 1 square any direction. Ranged: shoots 2 or 3 squares cardinal. Cannot shoot through walls or shield walls.' },
+  'SPR': { char: '♟', name: 'Spearman', value: 5, desc: 'Moves 1 forward (or 2 from its starting rank), captures diagonal forward. Promotes to Officer on enemy back rank. Shield wall with orthogonal spearman neighbor blocks arrows.' },
+  'SCT': { char: '👁', name: 'Scout', value: 4, desc: 'Moves 2 squares any direction, leaps 1 square. Evasion: when captured, retreats to back rank (once).' },
+  'ENG': { char: '⚒', name: 'Engineer', value: 6, desc: 'Moves 1 square any direction. Special: Build wall on adjacent empty square (not Seat). Walls are impassable terrain and crumble after 8 turns.' },
+  'OFF': { char: '♜', name: 'Officer', value: 15, desc: 'Promoted Spearman. Moves 1 square any direction. Command Aura: after moving, one adjacent ally gets a free move.' },
+  'MGE': { char: '🔯', name: 'Mage', value: 12, desc: 'Moves 1 square any direction. Special: push an enemy in a diamond (2 orthogonal, 1 diagonal). If blocked, target is expelled.' },
+  'KNT': { char: '♘', name: 'Knight', value: 14, desc: 'Imperial. Moves or captures 1 square orthogonally (no diagonals), or 2 squares straight toward the enemy line — including capturing at that range. Twin Strike: activate via the ability button to move twice this turn (once every 10 half-moves).' },
+  'CAT': { char: '♖', name: 'Catapult', value: 9, desc: 'Moves 1 square any direction (cannot capture adjacent). Siege: strike an enemy exactly 3 squares away, or a wall 2-3 squares away, in a cardinal line, lobbing over intervening pieces.' },
+  'SVT': { char: '🪄', name: 'Servant', value: 6, desc: "Arod's Servant. Coalition. Moves 1 square any direction. Special: every 5 full rounds, conjure a new Spearman on an adjacent empty square." }
+};
+
+// =================== AUDIO ENGINE ===================
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(freq, type, duration, volume = 0.08, delay = 0) {
+  const ctx = getAudio();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.value = volume;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(ctx.currentTime + delay);
+  osc.stop(ctx.currentTime + delay + duration);
+}
+function playSound(name) {
+  if(!settings.sound) return;
+  try {
+    const ctx = getAudio();
+    const t = ctx.currentTime;
+    switch(name) {
+      case 'move':
+        playTone(200, 'sine', 0.08, 0.06);
+        playTone(280, 'sine', 0.06, 0.04, 0.04);
+        break;
+      case 'capture':
+        playTone(150, 'square', 0.12, 0.05);
+        playTone(100, 'sawtooth', 0.15, 0.04, 0.05);
+        playTone(80, 'square', 0.2, 0.03, 0.1);
+        break;
+      case 'ranged':
+        playTone(600, 'sine', 0.08, 0.04);
+        playTone(800, 'sine', 0.1, 0.03, 0.06);
+        playTone(400, 'sine', 0.12, 0.02, 0.12);
+        break;
+      case 'mage':
+        playTone(300, 'sine', 0.15, 0.06);
+        playTone(500, 'sine', 0.12, 0.05, 0.08);
+        playTone(700, 'sine', 0.15, 0.04, 0.15);
+        playTone(200, 'sine', 0.3, 0.03, 0.25);
+        break;
+      case 'wall':
+        playTone(80, 'square', 0.2, 0.06);
+        playTone(60, 'sawtooth', 0.25, 0.05, 0.1);
+        break;
+      case 'promote':
+        playTone(400, 'sine', 0.1, 0.05);
+        playTone(530, 'sine', 0.1, 0.05, 0.1);
+        playTone(660, 'sine', 0.15, 0.06, 0.2);
+        break;
+      case 'victory':
+        [262,330,392,523].forEach((f,i) => playTone(f, 'sine', 0.3, 0.05, i*0.15));
+        break;
+      case 'start':
+        [200,250,300,350,400].forEach((f,i) => playTone(f, 'sine', 0.15, 0.04, i*0.08));
+        break;
+      case 'undo':
+        playTone(350, 'sine', 0.08, 0.04);
+        playTone(250, 'sine', 0.1, 0.03, 0.06);
+        break;
+    }
+  } catch(e) {}
+}
+
+// =================== BOARD INIT ===================
+function initBoard() {
+  boardState = Array(ROWS).fill(null).map(() => Array(COLS).fill(null));
+  walls = []; occImperial = 0; occCoalition = 0; turn = 0; gameOver = false; officerPhase = false;
+  capturedPieces = [[], []]; moveHistory = []; lastMove = null; moveCount = 0;
+  knightPhase = false; knightTwinArmed = false; lastKnightDouble = [-10, -10]; lastServantSpawn = [-10, -10];
+  commanderRallyUsed = false;
+  battleStats = { totalMoves:0, wallsBuilt:0, promotions:0, magePushes:0, maxOccStreak:[0,0], capturesByType:{ CMD:0, OFF:0, MGE:0, CAV:0, ARC:0, SPR:0, SCT:0, ENG:0, LT:0, BHP:0, KNT:0, CAT:0, SVT:0 } };
+  selectedSquare = null; validMoves = []; abilityMode = false;
+  const setupSide = (row, t) => {
+    const ltOrBhp = (t === 0) ? 'BHP' : 'LT';   // Bishop -> Imperial, Lieutenant -> Coalition
+    // Back rank: one Archer replaced by a Catapult; corners hold the swap/convert piece
+    const back = ['ENG','CAV', ltOrBhp, 'OFF','CMD','ARC','CAT','CAV','ENG', ltOrBhp];
+    back.forEach((type, col) => boardState[row][col] = { type, team: t, escaped: false });
+    let front = (t === 0) ? row - 1 : row + 1;
+    // Front rank: Scouts at corners, a single Mage at B, Spearmen across the center,
+    // and the faction-unique piece at I (Imperial Knight / Coalition Servant)
+    boardState[front][0] = { type: 'SCT', team: t, escaped: false };
+    boardState[front][1] = { type: 'MGE', team: t };
+    for(let i=2; i<=7; i++) boardState[front][i] = { type: 'SPR', team: t };
+    boardState[front][8] = { type: (t === 0) ? 'KNT' : 'SVT', team: t };
+    boardState[front][9] = { type: 'SCT', team: t, escaped: false };
+  };
+  setupSide(ROWS - 1, 0); setupSide(0, 1);
+  updateOccDisplay();
+  updateGraveyard();
+  updateHistoryDisplay();
+  updateUndoButton();
+}
+
+function isWallAt(r, c) { return walls.some(w => w.r === r && w.c === c); }
+function isSeat(r, c) { return (r === 0 && c === 4) || (r === ROWS - 1 && c === 4); }
+
+function isShielded(r, c, team, shooterTeam) {
+    if(shooterTeam === team) return false;
+    let orthoSpearmen = 0;
+    const orthoDirs = [[-1,0],[1,0],[0,-1],[0,1]];
+    orthoDirs.forEach(([di, dj]) => {
+        let nr = r + di, nc = c + dj;
+        if(nr>=0 && nr<ROWS && nc>=0 && nc<COLS && boardState[nr][nc] && boardState[nr][nc].type==='SPR' && boardState[nr][nc].team===team) orthoSpearmen++;
+    });
+    if(boardState[r][c] && boardState[r][c].type === 'SPR' && orthoSpearmen >= 1 && shooterTeam !== team) return true;
+    if (team !== 0) return false;
+    let rankShield = false;
+    [1, -1].forEach(dc => {
+        let nc = c + dc;
+        if(nc>=0 && nc<COLS && boardState[r][nc] && boardState[r][nc].type==='SPR' && boardState[r][nc].team===0) rankShield = true;
+    });
+    return rankShield;
+}
+
+// =================== DRAW BOARD ===================
+// Board rotates so active player always sees their pieces at the bottom
+// When turn === 1 (Coalition), render rows and columns in reverse order
+function drawBoard() {
+  const b = document.getElementById('board'); b.innerHTML = '';
+  const flip = (settings.boardRotation && gameMode === 'pvp' && turn === 1) || (gameMode === 'ai' && playerTeam === 1) || (gameMode === 'online' && myTeam === 1);
+  const rowStart = flip ? ROWS - 1 : 0;
+  const rowEnd = flip ? -1 : ROWS;
+  const rowStep = flip ? -1 : 1;
+  const colStart = flip ? COLS - 1 : 0;
+  const colEnd = flip ? -1 : COLS;
+  const colStep = flip ? -1 : 1;
+
+  for(let ri = rowStart; ri !== rowEnd; ri += rowStep){
+    for(let ci = colStart; ci !== colEnd; ci += colStep){
+      let r = ri, c = ci;
+      let cell = document.createElement('div');
+      cell.className = `cell ${(r+c)%2===0 ? 'light' : 'dark'}`;
+      if((r===4||r===5) && (c===4||c===5)) cell.classList.add('center');
+      if(r===0 && c===4) cell.classList.add('seat-coa');
+      if(r===ROWS-1 && c===4) cell.classList.add('seat-imp');
+      if(isWallAt(r,c)) cell.classList.add('wall');
+      if(selectedSquare && selectedSquare.r === r && selectedSquare.c === c) cell.classList.add('selected');
+      if(lastMove) {
+        if(lastMove.fr === r && lastMove.fc === c) cell.classList.add('last-move-from');
+        if(lastMove.tr === r && lastMove.tc === c) cell.classList.add('last-move');
+      }
+      let move = validMoves.find(m => m.r === r && m.c === c);
+      if(move) {
+        if(move.action === 'move') cell.classList.add('valid-move');
+        else if(move.action === 'spec' || move.action === 'siege') cell.classList.add('valid-spec');
+        else cell.classList.add('valid-attack'); // capture, ranged
+      }
+      // Move notation
+      let not = document.createElement('div');
+      not.className = 'move-notation';
+      not.innerText = FILES[c] + (ROWS-r);
+      cell.appendChild(not);
+      // Rank/file labels
+      if(c===0) { let rl = document.createElement('div'); rl.className='rank-label'; rl.innerText=(ROWS-r); cell.appendChild(rl); }
+      if(r===ROWS-1) { let fl = document.createElement('div'); fl.className='file-label'; fl.innerText=FILES[c]; cell.appendChild(fl); }
+
+      let p = boardState[r][c];
+      if(p) {
+        let pEl = document.createElement('div');
+        pEl.className = `piece team-${p.team}`;
+        pEl.innerText = PIECES[p.type].char;
+        cell.appendChild(pEl);
+      }
+      cell.onclick = () => handleCellClick(r, c);
+      if(settings.tooltips) { cell.onmouseenter = (e) => showTooltip(e, r, c); cell.onmouseleave = hideTooltip; }
+      b.appendChild(cell);
+    }
+  }
+}
+
+// =================== TOOLTIP ===================
+function showTooltip(e, r, c) {
+  const tt = document.getElementById('tooltip');
+  const p = boardState[r][c];
+  if(!p) { hideTooltip(); return; }
+  const teamName = p.team === 0 ? 'Imperial Legion' : 'Free Coalition';
+  const teamColor = p.team === 0 ? 'var(--imperial)' : 'var(--coalition)';
+  tt.innerHTML = `
+    <div class="tt-name">${PIECES[p.type].name}</div>
+    <div class="tt-team" style="color:${teamColor};">${teamName}</div>
+    <div class="tt-desc">${PIECES[p.type].desc}</div>
+  `;
+  tt.style.display = 'block';
+  const rect = e.target.getBoundingClientRect();
+  let left = rect.right + 10;
+  let top = rect.top;
+  if(left + 240 > window.innerWidth) left = rect.left - 240;
+  tt.style.left = left + 'px';
+  tt.style.top = top + 'px';
+}
+function hideTooltip() {
+  document.getElementById('tooltip').style.display = 'none';
+}
+
+// =================== GRAVEYARD ===================
+function updateGraveyard() {
+  for(let t=0; t<2; t++) {
+    const el = document.getElementById('graveyard' + t);
+    el.innerHTML = capturedPieces[t].map(type => `<span class="graveyard-piece team-${1-t}">${PIECES[type].char}</span>`).join('');
+  }
+}
+
+// =================== MOVE HISTORY ===================
+function addToHistory(notation, team) {
+  moveCount++;
+  battleStats.totalMoves++;
+  moveHistory.push({ notation, team, board: cloneBoard(), turn, occImperial, occCoalition, walls: walls.map(w=>({...w})), captured: [capturedPieces[0].slice(), capturedPieces[1].slice()], moveCount, commanderRallyUsed });
+  updateHistoryDisplay();
+  updateUndoButton();
+}
+function updateHistoryDisplay() {
+  const list = document.getElementById('historyList');
+  list.innerHTML = moveHistory.map((m, i) => {
+    const cls = m.team === 0 ? 'imp' : 'coa';
+    return `<div class="history-entry ${cls}">${Math.ceil((i+1)/2)}. ${m.notation}</div>`;
+  }).join('');
+  list.scrollTop = list.scrollHeight;
+}
+function updateUndoButton() {
+  document.getElementById('undoBtn').style.display = (moveHistory.length > 0 && gameMode === 'pvp') ? 'block' : 'none';
+}
+
+function getCoordNotation(r, c) { return FILES[c] + (ROWS - r); }
+function getMoveNotation(fr, fc, tr, tc, action, pType) {
+  const pChar = PIECES[pType].name.substring(0, 3);
+  const from = getCoordNotation(fr, fc);
+  const to = getCoordNotation(tr, tc);
+  if(action === 'ranged') return `${pChar} ${from} → ${to} (shot)`;
+  if(action === 'spec') return `${pChar} ${from} special`;
+  return `${pChar} ${from} → ${to}`;
+}
+
+function cloneBoard() {
+  return boardState.map(row => row.map(cell => cell ? {...cell} : null));
+}
+function restoreBoard(cloned) {
+  boardState = cloned.map(row => row.map(cell => cell ? {...cell} : null));
+}
+
+function undoMove() {
+  if(moveHistory.length === 0 || gameMode === 'ai') return;
+  playSound('undo');
+  moveHistory.pop();
+  if(moveHistory.length > 0) {
+    const last = moveHistory[moveHistory.length - 1];
+    restoreBoard(last.board);
+    turn = last.turn;
+    occImperial = last.occImperial;
+    occCoalition = last.occCoalition;
+    walls = last.walls.map(w => ({...w}));
+    capturedPieces = [last.captured[0].slice(), last.captured[1].slice()];
+    moveCount = last.moveCount;
+    if(last.commanderRallyUsed !== undefined) commanderRallyUsed = last.commanderRallyUsed;
+    lastMove = null;
+    if(moveHistory.length >= 2) {
+      const prev = moveHistory[moveHistory.length - 2];
+      lastMove = parseNotation(prev.notation, prev.team);
+    }
+  } else {
+    resetGame();
+    return;
+  }
+  gameOver = false;
+  officerPhase = false;
+  selectedSquare = null;
+  validMoves = [];
+  abilityMode = false;
+  hideWinScreen();
+  updateOccDisplay();
+  updateGraveyard();
+  updateHistoryDisplay();
+  updateUndoButton();
+  updateStatus();
+  drawBoard();
+}
+function parseNotation(notation, team) {
+  // simple parse: extract coordinates like "A10" from notation
+  const match = notation.match(/([A-J](?:10|[1-9])).*?→.*?([A-J](?:10|[1-9]))/);
+  if(match) {
+    const fc = FILES.indexOf(match[1][0]), fr = ROWS - parseInt(match[1].slice(1));
+    const tc = FILES.indexOf(match[2][0]), tr = ROWS - parseInt(match[2].slice(1));
+    return { fr, fc, tr, tc, team };
+  }
+  return null;
+}
+
+// =================== INPUT HANDLING ===================
+function handleCellClick(r, c) {
+  if(gameOver) return;
+  if(isAITurn()) return; // AI's turn (vs-AI opponent, or either side in Watch mode)
+  if(gameMode === 'online' && (!onlineMatched || turn !== myTeam)) return; // not your turn online
+  let move = validMoves.find(m => m.r === r && m.c === c);
+  if(move) {
+    if(officerPhase) { applyOfficerAlly(r, c); return; }
+    executeMove(selectedSquare.r, selectedSquare.c, r, c, move.action);
+    return;
+  }
+  let p = boardState[r][c];
+  if(p && p.team === turn && !officerPhase && !knightPhase) {
+    selectedSquare = {r, c}; abilityMode = false; knightTwinArmed = false;
+    validMoves = getValidMoves(r, c);
+    updateUIInfo(p);
+  } else if (!officerPhase && !knightPhase) {
+    selectedSquare = null; validMoves = [];
+    document.getElementById('abilityBtn').style.display = 'none';
+  }
+  drawBoard();
+}
+
+function updateUIInfo(p) {
+    document.getElementById('selName').innerText = PIECES[p.type].name;
+    const desc = PIECES[p.type].desc;
+    document.getElementById('selDesc').innerText = desc.length > 80 ? desc.substring(0, 80) + '...' : desc;
+    const btn = document.getElementById('abilityBtn');
+    const knightReady = (p.type === 'KNT' && (moveCount - lastKnightDouble[p.team] >= 10));
+    const cmdRallyReady = (p.type === 'CMD' && p.team === 0 && !commanderRallyUsed);
+    btn.style.display = (['MGE','ENG','LT','BHP','SVT'].includes(p.type) || knightReady || cmdRallyReady) ? 'block' : 'none';
+    btn.innerText = knightReady ? 'TWIN STRIKE' : (cmdRallyReady ? 'RALLY THE LINE' : (p.type === 'BHP' ? 'CONVERT' : 'USE SPECIAL'));
+    btn.classList.remove('on');
+}
+
+function toggleAbilityMode() {
+    if(!selectedSquare) return;
+    const sel = boardState[selectedSquare.r][selectedSquare.c];
+    const btn = document.getElementById('abilityBtn');
+    if(sel && sel.type === 'CMD' && sel.team === 0 && !commanderRallyUsed) {
+        // Imperial Commander's once-per-game order — advance the whole spearline
+        doCommanderRally();
+        return;
+    }
+    if(sel && sel.type === 'KNT') {
+        // arm/disarm Twin Strike — normal moves stay shown; the double kicks in after the move
+        knightTwinArmed = !knightTwinArmed;
+        btn.classList.toggle('on', knightTwinArmed);
+        validMoves = getValidMoves(selectedSquare.r, selectedSquare.c);
+        drawBoard();
+        return;
+    }
+    abilityMode = !abilityMode;
+    if(abilityMode) { btn.classList.add('on'); validMoves = getSpecialTargets(selectedSquare.r, selectedSquare.c); }
+    else { btn.classList.remove('on'); validMoves = getValidMoves(selectedSquare.r, selectedSquare.c); }
+    drawBoard();
+}
+
+// =================== MOVE GENERATION ===================
+function getValidMoves(r, c) {
+  let moves = [], p = boardState[r][c], d = p.team === 0 ? -1 : 1;
+  const add = (nr, nc, type='both') => {
+    if(nr<0||nr>=ROWS||nc<0||nc>=COLS || isWallAt(nr, nc)) return; // walls are impassable terrain
+    let target = boardState[nr][nc];
+    if(!target && (type==='both'||type==='move')) moves.push({r:nr, c:nc, action:'move'});
+    else if(target && target.team !== p.team && (type==='both'||type==='atk')) moves.push({r:nr, c:nc, action:'capture'});
+  };
+
+  if(p.type==='SPR') {
+    add(r+d, c, 'move');
+    // double-step only from the starting rank, and only if the path is clear
+    let startRow = (p.team === 0) ? ROWS - 2 : 1;
+    if(r === startRow && r+2*d>=0 && r+2*d<ROWS && !isWallAt(r+d,c) && !boardState[r+d][c] && !isWallAt(r+2*d,c) && !boardState[r+2*d][c]) {
+      moves.push({r:r+2*d, c, action:'move'});
+    }
+    add(r+d, c-1, 'atk'); add(r+d, c+1, 'atk');
+  }
+  else if(['CMD','OFF','ENG','MGE','LT','BHP','SVT'].includes(p.type)) {
+    for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) if(i!==0||j!==0) add(r+i, c+j);
+    if(p.type==='CMD') for(let i=-2; i<=2; i++) for(let j=-2; j<=2; j++) {
+        if(Math.abs(i)===2||Math.abs(j)===2) {
+            let midR = r + i/2, midC = c + j/2;
+            if(!isWallAt(midR, midC)) add(r+i, c+j, 'move');
+        }
+    }
+    if(p.type==='LT' || p.type==='BHP') { // mobility buff: slide 2 diagonally with a clear path
+        [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([di,dj]) => {
+            let mR=r+di, mC=c+dj;
+            if(mR>=0&&mR<ROWS&&mC>=0&&mC<COLS && !boardState[mR][mC] && !isWallAt(mR,mC)) add(r+2*di, c+2*dj);
+        });
+    }
+  }
+  else if(p.type==='KNT') {
+    // orthogonal king-step only — no diagonals
+    [[-1,0],[1,0],[0,-1],[0,1]].forEach(([i,j]) => add(r+i, c+j));
+    // plus a 2-square advance straight toward the enemy line, path must be clear;
+    // it may now also capture an enemy waiting at that square (capture mirrors the move set)
+    if(r+d>=0 && r+d<ROWS && !boardState[r+d][c] && !isWallAt(r+d,c)) add(r+2*d, c);
+  }
+  else if(p.type==='CAT') {
+    // 1-square reposition only — it cannot capture an adjacent enemy
+    for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) if(i!==0||j!==0) add(r+i, c+j, 'move');
+    // siege bombardment: cardinal lines, lobbing over intervening pieces
+    // pieces can only be hit at exactly 3 squares; walls can be broken at 2 or 3 squares
+    [[-1,0],[1,0],[0,-1],[0,1]].forEach(([dr,dc]) => {
+      for(let s=1; s<=3; s++) {
+        let nr=r+dr*s, nc=c+dc*s;
+        if(nr<0||nr>=ROWS||nc<0||nc>=COLS) break;
+        if(isWallAt(nr,nc)) { if(s>=2) moves.push({r:nr, c:nc, action:'siege'}); continue; }
+        let t = boardState[nr][nc];
+        if(t && t.team !== p.team && s===3) moves.push({r:nr, c:nc, action:'ranged'});
+      }
+    });
+  }
+  else if(p.type==='ARC') {
+    for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) if(i!==0||j!==0) add(r+i, c+j, 'move');
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(dir => {
+      for(let s=1; s<=3; s++) {
+        let nr=r+dir[0]*s, nc=c+dir[1]*s;
+        if(nr<0 || nr>=ROWS || nc<0 || nc>=COLS || isWallAt(nr, nc)) break;
+        if(s >= 2 && boardState[nr][nc] && boardState[nr][nc].team !== p.team) {
+            if(isShielded(nr, nc, boardState[nr][nc].team, p.team)) break;
+            moves.push({r:nr, c:nc, action:'ranged'}); break; 
+        }
+      }
+    });
+  }
+  else if(p.type==='CAV') {
+    const knightMoves = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+    knightMoves.forEach(([dr, dc]) => {
+      // Knights cannot leap over or onto walls
+      const midR = r + (Math.abs(dr) === 2 ? dr/2 : 0);
+      const midC = c + (Math.abs(dc) === 2 ? dc/2 : 0);
+      if(!isWallAt(midR, midC)) add(r+dr, c+dc);
+    });
+    for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) {
+        if(i===0 && j===0) continue;
+        let nr = r + i, nc = c + j;
+        if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS && !isWallAt(nr, nc)) {
+            let target = boardState[nr][nc];
+            if(target && target.team !== p.team) moves.push({r:nr, c:nc, action:'capture'});
+        }
+    }
+  }
+  else if(p.type==='SCT') {
+    for(let i=-2; i<=2; i++) for(let j=-2; j<=2; j++) {
+        if(Math.abs(i)===2 && j===0 || Math.abs(j)===2 && i===0 || Math.abs(i)===2 && Math.abs(j)===2) {
+            let midR = r + (i/2), midC = c + (j/2);
+            if(!isWallAt(midR, midC)) add(r+i, c+j);
+        }
+    }
+  }
+  return moves;
+}
+
+function getSpecialTargets(r, c) {
+    let p = boardState[r][c], s = [];
+    if(p.type==='LT') {
+        // swap with any allied piece sitting on a same-colored square, anywhere on the board
+        let myColor = (r + c) % 2;
+        for(let nr=0; nr<ROWS; nr++) for(let nc=0; nc<COLS; nc++) {
+            if(nr===r && nc===c) continue;
+            if(((nr+nc)%2) !== myColor) continue; // must be same square color
+            let target = boardState[nr][nc];
+            if(target && target.team === p.team && target.type !== 'CMD') s.push({r:nr, c:nc, action:'spec'});
+        }
+    } else if(p.type==='BHP') {
+        // Imperial Bishop: convert an adjacent enemy Spearman to the Imperial cause (in place of capturing)
+        for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) {
+            if(i===0 && j===0) continue;
+            let nr=r+i, nc=c+j;
+            if(nr<0||nr>=ROWS||nc<0||nc>=COLS) continue;
+            let target = boardState[nr][nc];
+            if(target && target.team !== p.team && target.type === 'SPR') s.push({r:nr, c:nc, action:'spec'});
+        }
+    } else if(p.type==='SVT') {
+        // conjure a Spearman on an adjacent empty square, once every 10 half-moves (5 full rounds)
+        if(moveCount - lastServantSpawn[p.team] < 10) return s;
+        for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) {
+            if(i===0 && j===0) continue;
+            let nr=r+i, nc=c+j;
+            if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS && !boardState[nr][nc] && !isWallAt(nr, nc) && !isSeat(nr, nc)) s.push({r:nr, c:nc, action:'spec'});
+        }
+    } else if(p.type==='MGE') {
+        for(let i=-2; i<=2; i++) for(let j=-2; j<=2; j++) {
+            if(i===0 && j===0) continue;
+            // diamond: any of the 8 adjacent squares (range 1), plus straight lines at range 2 only
+            let inner = Math.max(Math.abs(i), Math.abs(j)) === 1;
+            let orthoFar = (Math.abs(i)===2 && j===0) || (Math.abs(j)===2 && i===0);
+            if(!inner && !orthoFar) continue;
+            let nr=r+i, nc=c+j, pathBlocked = false;
+            if(orthoFar) {
+                let midR = r + (i === 0 ? 0 : i/Math.abs(i)), midC = c + (j === 0 ? 0 : j/Math.abs(j));
+                if(isWallAt(midR, midC)) pathBlocked = true;
+            }
+            if(!pathBlocked && nr>=0&&nr<ROWS&&nc>=0&&nc<COLS && boardState[nr][nc] && boardState[nr][nc].team!==p.team)
+                s.push({r:nr, c:nc, action:'spec'});
+        }
+    } else if(p.type==='ENG') {
+        if (isSeat(r,c)) return s;
+        for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) {
+            let nr=r+i, nc=c+j;
+            if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS && !boardState[nr][nc] && !isWallAt(nr, nc) && !isSeat(nr, nc)) s.push({r:nr, c:nc, action:'spec'});
+        }
+    }
+    return s;
+}
+
+// =================== MOVE EXECUTION ===================
+function handleCapture(r, c, isRanged) {
+    let p = boardState[r][c];
+    if (p.type === 'SCT' && !p.escaped) {
+        p.escaped = true;
+        logMsg("Scout evaded and retreated!");
+        let retreatR = (p.team === 0) ? ROWS-1 : 0;
+        let found = false;
+        for (let j=0; j<COLS; j++) {
+            if (!boardState[retreatR][j] && !isWallAt(retreatR, j)) {
+                boardState[retreatR][j] = p;
+                boardState[r][c] = null;
+                found = true; break;
+            }
+        }
+        if (!found) boardState[r][c] = null;
+        return true;
+    }
+    capturedPieces[p.team].push(p.type);
+    if(battleStats.capturesByType[p.type] !== undefined) battleStats.capturesByType[p.type]++;
+    if (p.type === 'CMD') { 
+        logMsg("COMMANDER FALLEN!"); 
+        gameOver = true; 
+        let winner = (p.team === 0) ? 1 : 0;
+        let reason = (winner === 0) 
+            ? "The Imperial Commander has fallen. The Coalition scatters the Legions." 
+            : "The Coalition Commander has fallen. The Imperial banner rises over the field.";
+        lastWinner = winner; lastWinReason = reason;
+        setTimeout(() => { playSound('victory'); showWinScreen(winner, reason); }, 300);
+    }
+    return false;
+}
+
+function executeMove(fr, fc, tr, tc, action) {
+  let p = boardState[fr][fc];
+  let soundName = 'move';
+  lastMove = { fr, fc, tr, tc, team: turn };
+
+  if(action === 'spec') {
+    if(p.type==='LT') { let target = boardState[tr][tc]; boardState[tr][tc] = p; boardState[fr][fc] = target; logMsg("Swap."); }
+    else if(p.type==='BHP') { soundName = 'promote'; let t = boardState[tr][tc]; if(t) t.team = p.team; logMsg("A Coalition spearman is turned to the Imperial cause!"); }
+    else if(p.type==='SVT') {
+      soundName = 'promote';
+      lastServantSpawn[turn] = moveCount; // stamp before addToHistory increments the clock
+      boardState[tr][tc] = { type: 'SPR', team: p.team };
+      logMsg("A new Spearman answers Arod's call!");
+    }
+    else if(p.type==='MGE') {
+      soundName = 'mage';
+      battleStats.magePushes++;
+      let dr = tr - fr, dc = tc - fc, pushR = dr === 0 ? 0 : dr/Math.abs(dr), pushC = dc === 0 ? 0 : dc/Math.abs(dc), nr = tr + pushR, nc = tc + pushC;
+      if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS && !boardState[nr][nc] && !isWallAt(nr, nc)) {
+        boardState[nr][nc] = boardState[tr][tc]; boardState[tr][tc] = null; logMsg("Push.");
+      } else { 
+          if (!handleCapture(tr, tc)) boardState[tr][tc] = null;
+          logMsg("Expelled."); 
+      }
+    } else if(p.type==='ENG') { soundName = 'wall'; battleStats.wallsBuilt++; walls.push({r:tr, c:tc, exp: turn+8}); logMsg("Wall Built."); }
+    addToHistory(getMoveNotation(fr, fc, tr, tc, action, p.type), turn);
+    playSound(soundName);
+    endTurn();
+  } else if(action === 'siege') {
+    // Catapult shatters a wall at range without moving
+    soundName = 'wall';
+    walls = walls.filter(w => !(w.r===tr && w.c===tc));
+    logMsg("Catapult shatters a wall!");
+    addToHistory(getMoveNotation(fr, fc, tr, tc, 'spec', p.type), turn);
+    playSound(soundName);
+    endTurn();
+  } else {
+    if(action==='ranged') {
+        soundName = 'ranged';
+        if (!handleCapture(tr, tc, true)) boardState[tr][tc] = null;
+    } else {
+        let victim = boardState[tr][tc];
+        if (victim) { handleCapture(tr, tc); soundName = 'capture'; }
+        boardState[tr][tc] = p; boardState[fr][fc] = null;
+        if(boardState[tr][tc] && boardState[tr][tc].type==='SPR' && (tr===0 || tr===ROWS-1)) { 
+            boardState[tr][tc].type = 'OFF'; soundName = 'promote'; battleStats.promotions++; logMsg("Promoted!"); 
+        }
+    }
+    addToHistory(getMoveNotation(fr, fc, tr, tc, action, p.type), turn);
+    playSound(soundName);
+    if(gameOver) endTurn();   // a killing blow ends the turn immediately (skips follow-up phases) so the result syncs online
+    else if(p.type==='OFF' && action !== 'ranged') startOfficerPhase(tr, tc);
+    else if(p.type==='KNT' && knightTwinArmed && !knightPhase && action !== 'ranged' && (moveCount - lastKnightDouble[turn] >= 10)) startKnightPhase(tr, tc);
+    else endTurn();
+  }
+}
+
+function doCommanderRally() {
+    // Imperial Commander orders every Spearman to advance one square (once per game).
+    // Imperial advances toward row 0. Process rows low->high so a spearman's target
+    // square is already vacated by any ally ahead of it before this one tries to step.
+    let moved = 0;
+    for(let r = 0; r < ROWS; r++) {
+        for(let c = 0; c < COLS; c++) {
+            let pc = boardState[r][c];
+            if(pc && pc.type === 'SPR' && pc.team === 0) {
+                let nr = r - 1;
+                if(nr >= 0 && !boardState[nr][c] && !isWallAt(nr, c)) {
+                    boardState[nr][c] = pc;
+                    boardState[r][c] = null;
+                    moved++;
+                    if(nr === 0) { boardState[nr][c].type = 'OFF'; battleStats.promotions++; } // reached enemy back rank
+                }
+            }
+        }
+    }
+    commanderRallyUsed = true;
+    lastMove = null;
+    logMsg(`The Commander rallies the line — ${moved} Spearmen advance!`);
+    playSound('promote');
+    addToHistory(`CMD rallies the line (${moved} advance)`, turn);
+    endTurn();
+}
+
+function startKnightPhase(r, c) {
+    knightPhase = true;
+    lastKnightDouble[turn] = moveCount; // consumes the cooldown
+    selectedSquare = {r, c};
+    validMoves = getValidMoves(r, c);
+    logMsg("Twin Strike — the Knight may move again!");
+    document.getElementById('skipBtn').style.display = 'block';
+    drawBoard();
+}
+
+function startOfficerPhase(r, c) {
+    officerPhase = true; validMoves = [];
+    for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) {
+        let nr=r+i, nc=c+j;
+        if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS && boardState[nr][nc] && boardState[nr][nc].team===turn && boardState[nr][nc].type!=='OFF')
+            validMoves.push({r:nr, c:nc, action:'spec'});
+    }
+    document.getElementById('skipBtn').style.display = 'block'; drawBoard();
+}
+
+function applyOfficerAlly(r, c) {
+    selectedSquare = {r, c}; validMoves = getValidMoves(r, c);
+    officerPhase = false; document.getElementById('skipBtn').style.display = 'none'; drawBoard();
+}
+
+function endTurn() {
+  turn = (turn === 0) ? 1 : 0;
+  checkOccupation(); 
+  selectedSquare = null; validMoves = []; abilityMode = false; officerPhase = false; knightPhase = false; knightTwinArmed = false;
+  walls = walls.filter(w => w.exp > (turn + 2)); 
+  document.getElementById('skipBtn').style.display = 'none';
+  document.getElementById('abilityBtn').style.display = 'none';
+  updateStatus();
+  updateGraveyard();
+  // Redraw board with new orientation (flips in PvP when turn changes)
+  drawBoard();
+
+  // Trigger AI if needed (vs-AI opponent, or both sides in Watch mode)
+  triggerAIIfNeeded(gameMode === 'watch' ? 650 : 400);
+  // Online: broadcast the new authoritative position to the opponent
+  if(gameMode === 'online' && onlineMatched) publishOnlineState();
+}
+
+function updateStatus() {
+  const st = document.getElementById('statusText');
+  st.innerText = turn === 0 ? "Imperial Legion" : "Free Coalition";
+  st.className = `status ${turn===0?'':'p2'}`;
+  const sideName = turn === 0 ? "Imperial" : "Coalition";
+  if(gameMode === 'online' && onlineMatched) {
+    if(gameOver) return;
+    st.innerText = (turn === myTeam) ? "Your move" : `${oppName}'s move…`;
+    if(turn !== myTeam) st.classList.add('ai-thinking');
+    return;
+  }
+  if(gameMode === 'watch' && watchPaused) {
+    st.innerText = sideName + " — paused";
+  } else if(isAITurn()) {
+    st.innerText = sideName + " AI thinking...";
+    st.classList.add('ai-thinking');
+  }
+}
+
+// =================== GAME MODE ===================
+// True when the side to move is controlled by the AI (vs-AI opponent, or both sides in Watch mode).
+function isAITurn() {
+  if(gameOver) return false;
+  if(gameMode === 'watch') return true;
+  if(gameMode === 'ai') return turn === aiTeam;
+  return false;
+}
+// Schedule the AI to play the current side, if it should.
+function triggerAIIfNeeded(delay) {
+  if(!isAITurn()) return;
+  if(gameMode === 'watch' && watchPaused) return;
+  updateStatus();
+  document.getElementById('statusText').classList.add('ai-thinking');
+  setTimeout(() => { makeAIMove(); }, delay === undefined ? 400 : delay);
+}
+
+function setGameMode(mode) {
+  if(gameStartedOnline && mode !== 'online') { teardownOnline(false); }
+  gameMode = mode;
+  document.getElementById('modePVP').classList.toggle('active', mode === 'pvp');
+  document.getElementById('modeAI').classList.toggle('active', mode === 'ai');
+  document.getElementById('modeWatch').classList.toggle('active', mode === 'watch');
+  const mo = document.getElementById('modeOnline'); if(mo) mo.classList.remove('active');
+  const usesAI = (mode === 'ai' || mode === 'watch');
+  document.getElementById('aiDifficulty').style.display = usesAI ? 'block' : 'none';
+  document.getElementById('sideSelect').style.display = (mode === 'ai') ? 'block' : 'none';
+  const wb = document.getElementById('watchPauseBtn');
+  wb.style.display = (mode === 'watch') ? 'block' : 'none';
+  wb.innerText = 'Pause';
+  watchPaused = false;
+  const dr = document.getElementById('aiDiffRow'); if(dr) dr.style.display = usesAI ? 'flex' : 'none';
+  resetGame();
+}
+function setPlayerSide(val) {
+  playerTeam = parseInt(val);
+  aiTeam = playerTeam ^ 1;
+  const a = document.getElementById('sideSelect'), b = document.getElementById('setSide');
+  if(a) a.value = String(playerTeam);
+  if(b) b.value = String(playerTeam);
+  resetGame();
+}
+function toggleWatchPause() {
+  watchPaused = !watchPaused;
+  const wb = document.getElementById('watchPauseBtn');
+  if(wb) wb.innerText = watchPaused ? 'Resume' : 'Pause';
+  if(watchPaused) {
+    document.getElementById('statusText').classList.remove('ai-thinking');
+    updateStatus();
+  } else {
+    triggerAIIfNeeded(200);
+  }
+}
+function setAIDifficulty(val) {
+  aiDepth = parseInt(val);
+  const a = document.getElementById('aiDifficulty'), b = document.getElementById('setAIDiff');
+  if(a) a.value = String(aiDepth);
+  if(b) b.value = String(aiDepth);
+  resetGame();
+}
+
+// =================== ONLINE MULTIPLAYER (MQTT relay) ===================
+// No backend of our own: two browsers rendezvous on a public MQTT broker,
+// pair up, then exchange an authoritative board snapshot after each turn.
+function randId() { return Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4); }
+function oSetStatus(msg) { const el = document.getElementById('onlineStatus'); if(el) el.innerText = msg; }
+function oShowSetup(setup) {
+  document.getElementById('onlineSetup').style.display = setup ? 'block' : 'none';
+  document.getElementById('onlineSearching').style.display = setup ? 'none' : 'block';
+}
+function openOnline() {
+  if(typeof mqtt === 'undefined') { alert("Online play needs the network library, which failed to load. Check your internet connection and reload."); return; }
+  document.getElementById('onlineOverlay').classList.add('show');
+  oShowSetup(true);
+}
+function closeOnline() { document.getElementById('onlineOverlay').classList.remove('show'); }
+
+function onlineFindMatch() {
+  const url = (document.getElementById('brokerUrl').value || '').trim();
+  if(!/^wss?:\/\//.test(url)) { alert("Broker URL must start with ws:// or wss://"); return; }
+  oppName = (document.getElementById('onlineName').value || '').trim() || 'Anonymous Commander';
+  myId = randId();
+  onlineMatched = false; gameTopic = ''; lastApplied = -1; stateSeq = 0;
+  oShowSetup(false);
+  oSetStatus('Connecting to the relay…');
+
+  try {
+    mqttClient = mqtt.connect(url, { clientId: 'strat_' + myId, clean: true, connectTimeout: 9000, reconnectPeriod: 0, keepalive: 30 });
+  } catch(e) { oSetStatus('Could not connect: ' + e.message); oShowSetup(true); return; }
+
+  mqttClient.on('connect', () => {
+    mqttClient.subscribe(lobbyTopic, () => {
+      oSetStatus('Searching for an opponent…');
+      lobbySend({ t: 'HELLO', id: myId });
+      helloTimer = setInterval(() => { if(!onlineMatched) lobbySend({ t: 'HELLO', id: myId }); }, 1800);
+    });
+  });
+  mqttClient.on('message', (topic, payload) => {
+    let m; try { m = JSON.parse(payload.toString()); } catch(e) { return; }
+    if(topic === lobbyTopic) handleLobby(m);
+    else if(topic === gameTopic) handleGameMsg(m);
+  });
+  mqttClient.on('error', (e) => { if(!onlineMatched) { oSetStatus('Connection error: ' + (e.message || e) + '. Try another broker.'); oShowSetup(true); cleanupMqtt(); } });
+  mqttClient.on('close', () => { if(!onlineMatched) oSetStatus('Disconnected from relay.'); });
+}
+
+function lobbySend(obj) { if(mqttClient && mqttClient.connected) mqttClient.publish(lobbyTopic, JSON.stringify(obj)); }
+function gameSend(obj) { if(mqttClient && mqttClient.connected && gameTopic) mqttClient.publish(gameTopic, JSON.stringify(obj)); }
+
+function handleLobby(m) {
+  if(onlineMatched || !m || m.id === myId) return;
+  if(m.t === 'HELLO') {
+    // Deterministic pairing: the smaller id initiates so only one side hosts.
+    if(myId < m.id) {
+      const gid = myId + '_' + m.id;
+      onlineMatched = true;                 // optimistic; reverted if no ack
+      becomeHost(gid, m.id);
+      lobbySend({ t: 'MATCH', to: m.id, host: myId, gameId: gid });
+      oSetStatus('Opponent found — establishing battlefield…');
+      // safety: if the guest never joins, resume searching
+      setTimeout(() => { if(onlineMatched && !gameStartedOnline) resumeSearch(); }, 4500);
+    }
+    // larger id waits for a MATCH addressed to it
+  } else if(m.t === 'MATCH' && m.to === myId) {
+    onlineMatched = true;
+    becomeGuest(m.gameId, m.host);
+  }
+}
+
+let gameStartedOnline = false;
+function resumeSearch() {
+  if(gameStartedOnline) return;
+  onlineMatched = false; gameTopic = '';
+  oSetStatus('Searching for an opponent…');
+}
+
+function subscribeGame(gid, cb) {
+  gameTopic = 'strategium/v1/game/' + gid;
+  mqttClient.subscribe(gameTopic, cb || (()=>{}));
+}
+function becomeHost(gid, guestId) {
+  myTeam = 0;                               // host commands the Imperial Legion and moves first
+  subscribeGame(gid);
+}
+function becomeGuest(gid, hostId) {
+  myTeam = 1;                               // guest commands the Free Coalition
+  subscribeGame(gid, () => {
+    gameSend({ t: 'JOIN', id: myId, name: oppName });   // tell host we're in
+    startOnlineGame();
+    oSetStatus('Joined. Waiting for the Imperial opening move…');
+  });
+}
+
+function handleGameMsg(m) {
+  if(!m || m.id === myId) return;
+  oppHbAt = Date.now();
+  if(m.t === 'JOIN') {                       // host learns the guest arrived
+    oppName = m.name || 'Opponent';
+    gameSend({ t: 'INFO', id: myId, name: (document.getElementById('onlineName').value || 'Anonymous Commander') });
+    if(!gameStartedOnline) startOnlineGame();
+  } else if(m.t === 'INFO') {
+    oppName = m.name || oppName; updateStatus();
+  } else if(m.t === 'STATE') {
+    if(m.seq > lastApplied) { lastApplied = m.seq; applyOnlineState(m.snap); }
+  } else if(m.t === 'HB') {
+    /* presence only */
+  } else if(m.t === 'RESIGN' || m.t === 'BYE') {
+    if(gameStartedOnline && !gameOver) onlineOpponentGone('Your opponent has left the field. Victory by forfeit.');
+  }
+}
+
+function startOnlineGame() {
+  if(gameStartedOnline) return;
+  gameStartedOnline = true;
+  if(helloTimer) { clearInterval(helloTimer); helloTimer = null; }
+  if(mqttClient) mqttClient.unsubscribe(lobbyTopic);
+  gameMode = 'online';
+  ['modePVP','modeAI','modeWatch'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById('modeOnline').classList.add('active');
+  document.getElementById('aiDifficulty').style.display = 'none';
+  document.getElementById('sideSelect').style.display = 'none';
+  document.getElementById('watchPauseBtn').style.display = 'none';
+  closeOnline();
+  initBoard(); drawBoard(); updateStatus();
+  logMsg(`Online match — you command the ${myTeam === 0 ? 'Imperial Legion' : 'Free Coalition'}. Opponent: ${oppName}.`);
+  playSound('start');
+  oppHbAt = Date.now();
+  if(hbTimer) clearInterval(hbTimer);
+  hbTimer = setInterval(() => {
+    gameSend({ t: 'HB', id: myId });
+    if(gameStartedOnline && !gameOver && oppHbAt && Date.now() - oppHbAt > 12000) onlineOpponentGone('Lost contact with your opponent. Victory by forfeit.');
+  }, 3000);
+}
+
+// ----- authoritative state sync -----
+function serializeOnlineState() {
+  return {
+    board: cloneBoard(),
+    walls: walls.map(w => ({ ...w })),
+    occI: occImperial, occC: occCoalition,
+    turn, moveCount,
+    grave: [capturedPieces[0].slice(), capturedPieces[1].slice()],
+    lkd: lastKnightDouble.slice(), lss: lastServantSpawn.slice(),
+    rally: commanderRallyUsed,
+    last: lastMove ? { ...lastMove } : null,
+    over: gameOver, winner: lastWinner, reason: lastWinReason
+  };
+}
+function publishOnlineState() {
+  if(gameMode !== 'online' || !onlineMatched) return;
+  stateSeq++;
+  gameSend({ t: 'STATE', id: myId, seq: stateSeq, snap: serializeOnlineState() });
+}
+function applyOnlineState(s) {
+  if(!s) return;
+  boardState = s.board.map(row => row.map(c => c ? { ...c } : null));
+  walls = (s.walls || []).map(w => ({ ...w }));
+  occImperial = s.occI; occCoalition = s.occC;
+  turn = s.turn; moveCount = s.moveCount;
+  capturedPieces = [s.grave[0].slice(), s.grave[1].slice()];
+  lastKnightDouble = s.lkd.slice(); lastServantSpawn = s.lss.slice();
+  commanderRallyUsed = s.rally;
+  lastMove = s.last || null;
+  selectedSquare = null; validMoves = []; abilityMode = false;
+  officerPhase = false; knightPhase = false; knightTwinArmed = false;
+  gameOver = s.over;
+  updateOccDisplay(); updateGraveyard(); drawBoard(); updateStatus();
+  if(!gameOver) {
+    hideWinScreen();   // opponent hit "Fight Again" — clear any stale victory overlay and start the rematch cleanly
+    document.getElementById('selName').innerText = 'Legion Command';
+    document.getElementById('selDesc').innerText = 'Select a stone to begin.';
+    document.getElementById('abilityBtn').style.display = 'none';
+    playSound('move');
+  }
+  if(gameOver) { lastWinner = s.winner; lastWinReason = s.reason; playSound('victory'); showWinScreen(s.winner, s.reason); }
+}
+
+function onlineOpponentGone(msg) {
+  if(!gameStartedOnline || gameOver) return;
+  gameOver = true;
+  lastWinner = myTeam; lastWinReason = msg;
+  showWinScreen(myTeam, msg);
+  teardownOnline(false);
+}
+function onlineCancel() {
+  cleanupMqtt();
+  oShowSetup(true);
+  oSetStatus('');
+}
+function cleanupMqtt() {
+  if(helloTimer) { clearInterval(helloTimer); helloTimer = null; }
+  if(hbTimer) { clearInterval(hbTimer); hbTimer = null; }
+  if(mqttClient) { try { mqttClient.end(true); } catch(e) {} mqttClient = null; }
+  onlineMatched = false;
+}
+function teardownOnline(revertToPvp) {
+  if(mqttClient && onlineMatched) { try { gameSend({ t: 'BYE', id: myId }); } catch(e) {} }
+  cleanupMqtt();
+  gameStartedOnline = false;
+  if(revertToPvp) { gameMode = 'pvp'; setGameMode('pvp'); }
+}
+window.addEventListener('beforeunload', () => { if(mqttClient && onlineMatched) { try { gameSend({ t: 'BYE', id: myId }); mqttClient.end(true); } catch(e) {} } });
+
+
+function toggleSettings() {
+  const s = document.getElementById('settingsScreen');
+  s.classList.toggle('show');
+  if(s.classList.contains('show')) {
+    document.getElementById('setSound').checked = settings.sound;
+    document.getElementById('setRotate').checked = settings.boardRotation;
+    document.getElementById('setTooltip').checked = settings.tooltips;
+    document.getElementById('aiDiffRow').style.display = (gameMode === 'ai' || gameMode === 'watch') ? 'flex' : 'none';
+    const sr = document.getElementById('sideRow'); if(sr) sr.style.display = (gameMode === 'ai') ? 'flex' : 'none';
+  }
+}
+function toggleSetting(key, val) {
+  settings[key] = val;
+  if(key === 'boardRotation') drawBoard();
+  if(key === 'tooltips' && !val) hideTooltip();
+}
+
+// =================== AI ENGINE (negamax + quiescence, uses every ability) ===================
+const AI_MATE = 1000000, AI_INF = 9999999;
+let curQDepth = 4;
+let aiStart = 0, aiTimeCap = 1500, aiNodes = 0;
+const aiKillers = {}; // ply -> [moveKey,...]
+
+// depth = main search depth, qdepth = quiescence extension, timeMs = hard cap (iterative deepening),
+// randomness/topK = how often weaker tiers settle for a near-best move instead of the best.
+const AI_CONFIG = {
+  1: { depth: 2, qdepth: 0,  timeMs: 350,  randomness: 0.40, topK: 6 },  // Easy
+  2: { depth: 3, qdepth: 3,  timeMs: 900,  randomness: 0.12, topK: 4 },  // Medium
+  3: { depth: 4, qdepth: 6,  timeMs: 1800, randomness: 0.0,  topK: 1 },  // Hard
+  4: { depth: 7, qdepth: 10, timeMs: 3400, randomness: 0.0,  topK: 1 }   // Impossible
+};
+
+function aiCheckTime() { if(((++aiNodes) & 1023) === 0 && performance.now() - aiStart > aiTimeCap) throw 'timeout'; }
+function enemySeatRow(team) { return team === 0 ? 0 : ROWS - 1; }
+function ownSeatRow(team)   { return team === 0 ? ROWS - 1 : 0; }
+
+// ---- accurate move simulation: every action type, with proper undo ----
+function aiSimMove(m) {
+  const undo = { cells: [], wallsAdded: [], wallsRemoved: [], capturedType: null };
+  const setCell = (r, c, val) => { undo.cells.push({ r, c, prev: boardState[r][c] }); boardState[r][c] = val; };
+  // Scout evades capture once, retreating to its own back rank. Returns true if it survived.
+  const relocateScout = (tgt) => {
+    const back = (tgt.team === 0) ? ROWS - 1 : 0;
+    for(let j = 0; j < COLS; j++) {
+      if(!boardState[back][j] && !isWallAt(back, j)) { setCell(back, j, { ...tgt, escaped: true }); return true; }
+    }
+    return false;
+  };
+  const p = boardState[m.fr][m.fc];
+  if(!p) return undo;
+  const act = m.action;
+
+  if(act === 'spec') {
+    if(p.type === 'LT') {                               // swap with an ally
+      const tgt = boardState[m.tr][m.tc];
+      setCell(m.tr, m.tc, p); setCell(m.fr, m.fc, tgt);
+    } else if(p.type === 'BHP') {                        // convert an adjacent enemy Spearman; bishop stays
+      setCell(m.tr, m.tc, { type: 'SPR', team: p.team });
+    } else if(p.type === 'SVT') {                        // conjure a Spearman, servant stays
+      setCell(m.tr, m.tc, { type: 'SPR', team: p.team });
+    } else if(p.type === 'ENG') {                        // build a wall, engineer stays
+      const w = { r: m.tr, c: m.tc, exp: turn + 8 }; walls.push(w); undo.wallsAdded.push(w);
+    } else if(p.type === 'MGE') {                        // push / expel, mage stays
+      const tgt = boardState[m.tr][m.tc];
+      const pr = Math.sign(m.tr - m.fr), pc = Math.sign(m.tc - m.fc);
+      const nr = m.tr + pr, nc = m.tc + pc;
+      if(nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !boardState[nr][nc] && !isWallAt(nr, nc)) {
+        setCell(nr, nc, tgt); setCell(m.tr, m.tc, null);                 // shoved one square
+      } else {                                                          // shoved off the field
+        if(tgt && tgt.type === 'SCT' && !tgt.escaped) { setCell(m.tr, m.tc, null); if(!relocateScout(tgt)) undo.capturedType = 'SCT'; }
+        else { undo.capturedType = tgt ? tgt.type : null; setCell(m.tr, m.tc, null); }
+      }
+    }
+  } else if(act === 'siege') {                          // shatter a wall at range
+    const hit = walls.filter(w => w.r === m.tr && w.c === m.tc);
+    if(hit.length) { walls = walls.filter(w => !(w.r === m.tr && w.c === m.tc)); undo.wallsRemoved.push(...hit); }
+  } else if(act === 'ranged') {                         // archer/catapult strike, attacker stays
+    const tgt = boardState[m.tr][m.tc];
+    if(tgt && tgt.type === 'SCT' && !tgt.escaped) { setCell(m.tr, m.tc, null); if(!relocateScout(tgt)) undo.capturedType = 'SCT'; }
+    else if(tgt) { undo.capturedType = tgt.type; setCell(m.tr, m.tc, null); }
+  } else {                                              // move / capture
+    const tgt = boardState[m.tr][m.tc];
+    if(tgt && tgt.type === 'SCT' && !tgt.escaped && tgt.team !== p.team) {
+      setCell(m.tr, m.tc, null); if(!relocateScout(tgt)) undo.capturedType = 'SCT';
+      setCell(m.tr, m.tc, p); setCell(m.fr, m.fc, null);
+    } else {
+      if(tgt && tgt.team !== p.team) undo.capturedType = tgt.type;
+      setCell(m.tr, m.tc, p); setCell(m.fr, m.fc, null);
+    }
+    const moved = boardState[m.tr][m.tc];
+    if(moved && moved.type === 'SPR' && (m.tr === 0 || m.tr === ROWS - 1)) setCell(m.tr, m.tc, { ...moved, type: 'OFF' });
+  }
+  return undo;
+}
+
+function aiUndoMove(undo) {
+  for(let i = undo.cells.length - 1; i >= 0; i--) { const ch = undo.cells[i]; boardState[ch.r][ch.c] = ch.prev; }
+  if(undo.wallsAdded.length) walls = walls.filter(w => !undo.wallsAdded.includes(w));
+  if(undo.wallsRemoved.length) undo.wallsRemoved.forEach(w => walls.push(w));
+}
+
+// ---- evaluation (from `team`'s perspective; positive = good for team) ----
+function aiEval(team) {
+  const enemy = team ^ 1;
+  let s = 0, myCmd = null, enCmd = null;
+  const enSeatR = enemySeatRow(team), mySeatR = ownSeatRow(team);
+  for(let r = 0; r < ROWS; r++) for(let c = 0; c < COLS; c++) {
+    const p = boardState[r][c]; if(!p) continue;
+    const sign = (p.team === team) ? 1 : -1;
+    s += sign * (PIECES[p.type].value || 0) * 12;                       // material
+    const tgtR = (p.team === 0) ? 0 : ROWS - 1;
+    s += sign * (ROWS - 1 - Math.abs(r - tgtR)) * 2;                    // advance toward the seat it attacks
+    s += sign * (COLS - 1 - Math.abs(c - 4));                           // funnel toward the seat column
+    if((r === 4 || r === 5) && (c === 4 || c === 5)) s += sign * 7;     // center control
+    if(p.type === 'CMD') { if(p.team === team) myCmd = { r, c }; else enCmd = { r, c }; }
+  }
+  // seat occupation — decisive when a streak is already running
+  const occMine  = (team === 1) ? occCoalition : occImperial;
+  const occEnemy = (team === 1) ? occImperial  : occCoalition;
+  const onEn = boardState[enSeatR][4];
+  if(onEn && onEn.team === team  && onEn.type !== 'SCT') s += 260 + occMine  * 180;
+  const onMy = boardState[mySeatR][4];
+  if(onMy && onMy.team === enemy && onMy.type !== 'SCT') s -= 260 + occEnemy * 180;
+  // pressure around both seats
+  for(let i = -1; i <= 1; i++) for(let j = -1; j <= 1; j++) {
+    const ar = enSeatR + i, ac = 4 + j;
+    if(ar >= 0 && ar < ROWS && ac >= 0 && ac < COLS) { const q = boardState[ar][ac]; if(q && q.team === team  && q.type !== 'SCT') s += 14; }
+    const br = mySeatR + i, bc = 4 + j;
+    if(br >= 0 && br < ROWS && bc >= 0 && bc < COLS) { const q = boardState[br][bc]; if(q && q.team === enemy && q.type !== 'SCT') s -= 18; }
+  }
+  // cheap king-safety proxy (real captures are caught by search/quiescence as mate)
+  if(myCmd) {
+    let danger = 0, escapes = 0;
+    for(let i = -2; i <= 2; i++) for(let j = -2; j <= 2; j++) {
+      if(i === 0 && j === 0) continue; const nr = myCmd.r + i, nc = myCmd.c + j;
+      if(nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue;
+      const q = boardState[nr][nc];
+      if(q && q.team === enemy) danger += (Math.max(Math.abs(i), Math.abs(j)) === 1) ? 3 : 1;
+    }
+    for(let i = -1; i <= 1; i++) for(let j = -1; j <= 1; j++) {
+      if(i === 0 && j === 0) continue; const nr = myCmd.r + i, nc = myCmd.c + j;
+      if(nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !boardState[nr][nc] && !isWallAt(nr, nc)) escapes++;
+    }
+    s -= danger * 7;
+    s -= (8 - escapes) * 2;
+  }
+  if(enCmd) {
+    let pressure = 0;
+    for(let i = -2; i <= 2; i++) for(let j = -2; j <= 2; j++) {
+      if(i === 0 && j === 0) continue; const nr = enCmd.r + i, nc = enCmd.c + j;
+      if(nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue;
+      const q = boardState[nr][nc];
+      if(q && q.team === team) pressure += (Math.max(Math.abs(i), Math.abs(j)) === 1) ? 3 : 1;
+    }
+    s += pressure * 6;
+  }
+  return s;
+}
+
+// ---- move generation for the AI: normal moves + siege + ranged + every special ----
+function aiGenMoves(team) {
+  const moves = [];
+  for(let r = 0; r < ROWS; r++) for(let c = 0; c < COLS; c++) {
+    const p = boardState[r][c]; if(!p || p.team !== team) continue;
+    const mvs = getValidMoves(r, c);
+    for(let k = 0; k < mvs.length; k++) { const mv = mvs[k]; moves.push({ fr: r, fc: c, tr: mv.r, tc: mv.c, action: mv.action, pType: p.type }); }
+    if(p.type === 'MGE' || p.type === 'ENG' || p.type === 'LT' || p.type === 'BHP' || p.type === 'SVT') {
+      const sp = getSpecialTargets(r, c);
+      for(let k = 0; k < sp.length; k++) moves.push({ fr: r, fc: c, tr: sp[k].r, tc: sp[k].c, action: 'spec', pType: p.type });
+    }
+  }
+  return moves;
+}
+
+function aiMoveKey(m) { return m.fr + ',' + m.fc + ',' + m.tr + ',' + m.tc + ',' + m.action; }
+
+function aiMoveHeuristic(m, team) {
+  let s = 0;
+  const tgt = boardState[m.tr] ? boardState[m.tr][m.tc] : null;
+  if(m.action === 'capture' || m.action === 'ranged') {
+    const vv = tgt ? (PIECES[tgt.type].value || 0) : 0;
+    s += 1000 + vv * 12 - (PIECES[m.pType].value || 0);                 // MVV-LVA
+    if(tgt && tgt.type === 'CMD') s += 200000;
+  }
+  if(m.action === 'spec') {
+    if(m.pType === 'MGE') s += tgt ? 700 + (PIECES[tgt.type].value || 0) * 8 : 200;
+    else if(m.pType === 'SVT') s += 130;
+    else if(m.pType === 'LT') s += 50;
+    else if(m.pType === 'BHP') s += 700 + (PIECES.SPR.value || 5) * 16;   // convert: gains a spearman and denies one
+  }
+  if(m.action === 'siege') s += 90;
+  if(m.pType === 'SPR' && (m.tr === 0 || m.tr === ROWS - 1)) s += 600;  // promotion
+  const enSeatR = enemySeatRow(team);
+  if(m.tr === enSeatR && m.tc === 4) s += 2000;                         // seize the seat
+  if(m.tc === 4) s += 25;
+  const tgtR = (team === 0) ? 0 : ROWS - 1;
+  s += (ROWS - Math.abs(m.tr - tgtR));
+  return s;
+}
+
+function aiOrder(moves, team, ply) {
+  const killers = aiKillers[ply] || [];
+  for(const m of moves) { m._h = aiMoveHeuristic(m, team); if(killers.indexOf(aiMoveKey(m)) !== -1) m._h += 500; }
+  moves.sort((a, b) => b._h - a._h);
+}
+
+function aiAddKiller(m, ply) {
+  if(!aiKillers[ply]) aiKillers[ply] = [];
+  const key = aiMoveKey(m), arr = aiKillers[ply];
+  if(arr.indexOf(key) === -1) { arr.unshift(key); if(arr.length > 2) arr.pop(); }
+}
+
+function aiIsNoisy(m, team) {
+  if(m.action === 'capture' || m.action === 'ranged') return true;
+  if(m.action === 'spec' && m.pType === 'MGE') return true;
+  if(m.pType === 'SPR' && (m.tr === 0 || m.tr === ROWS - 1)) return true;
+  if(m.tr === enemySeatRow(team) && m.tc === 4) return true;
+  return false;
+}
+
+function aiQuiesce(team, alpha, beta, qd) {
+  aiCheckTime();
+  let stand = aiEval(team);
+  if(stand >= beta) return beta;
+  if(stand > alpha) alpha = stand;
+  if(qd <= 0) return alpha;
+  const moves = aiGenMoves(team).filter(m => aiIsNoisy(m, team));
+  aiOrder(moves, team, 64);
+  for(const m of moves) {
+    const undo = aiSimMove(m);
+    const score = (undo.capturedType === 'CMD') ? AI_MATE : -aiQuiesce(team ^ 1, -beta, -alpha, qd - 1);
+    aiUndoMove(undo);
+    if(score >= beta) return beta;
+    if(score > alpha) alpha = score;
+  }
+  return alpha;
+}
+
+function aiNegamax(team, depth, alpha, beta, ply) {
+  aiCheckTime();
+  if(depth <= 0) return aiQuiesce(team, alpha, beta, curQDepth);
+  const moves = aiGenMoves(team);
+  if(moves.length === 0) return aiEval(team);
+  aiOrder(moves, team, ply);
+  let best = -AI_INF;
+  for(const m of moves) {
+    const undo = aiSimMove(m);
+    const score = (undo.capturedType === 'CMD') ? (AI_MATE - ply) : -aiNegamax(team ^ 1, depth - 1, -beta, -alpha, ply + 1);
+    aiUndoMove(undo);
+    if(score > best) best = score;
+    if(best > alpha) alpha = best;
+    if(alpha >= beta) { if(m.action !== 'capture' && m.action !== 'ranged') aiAddKiller(m, ply); break; }
+  }
+  return best;
+}
+
+function aiSearchRoot(team, maxDepth, timeMs) {
+  aiStart = performance.now(); aiTimeCap = timeMs; aiNodes = 0;
+  for(const k in aiKillers) delete aiKillers[k];
+  let moves = aiGenMoves(team);
+  if(moves.length === 0) return { move: null, score: 0, scored: [] };
+  aiOrder(moves, team, 0);
+  let bestMove = moves[0], bestScore = -AI_INF, scored = moves.map(m => ({ m, score: 0 }));
+  for(let d = 1; d <= maxDepth; d++) {
+    try {
+      let aMove = null, aScore = -AI_INF, alpha = -AI_INF;
+      const beta = AI_INF, localScored = [];
+      if(bestMove) {                                                    // search the previous best first
+        const idx = moves.findIndex(x => aiMoveKey(x) === aiMoveKey(bestMove));
+        if(idx > 0) { const bm = moves.splice(idx, 1)[0]; moves.unshift(bm); }
+      }
+      for(const m of moves) {
+        const undo = aiSimMove(m);
+        const sc = (undo.capturedType === 'CMD') ? (AI_MATE - 1) : -aiNegamax(team ^ 1, d - 1, -beta, -alpha, 1);
+        aiUndoMove(undo);
+        localScored.push({ m, score: sc });
+        if(sc > aScore) { aScore = sc; aMove = m; }
+        if(sc > alpha) alpha = sc;
+      }
+      if(aMove) { bestMove = aMove; bestScore = aScore; scored = localScored; }
+      if(bestScore >= AI_MATE - 50) break;                             // forced win found
+    } catch(e) { if(e !== 'timeout') throw e; break; }                 // keep last completed depth
+  }
+  return { move: bestMove, score: bestScore, scored };
+}
+
+// ---- follow-up phases (Officer command aura, Knight Twin Strike) so the AI never stalls ----
+function aiBestFollowup(r, c, team) {
+  const p = boardState[r][c]; if(!p) return null;
+  const mvs = getValidMoves(r, c);
+  let best = null, bestSc = -AI_INF;
+  for(const mv of mvs) {
+    const m = { fr: r, fc: c, tr: mv.r, tc: mv.c, action: mv.action, pType: p.type };
+    const undo = aiSimMove(m);
+    const sc = (undo.capturedType === 'CMD') ? AI_MATE : aiEval(team);
+    aiUndoMove(undo);
+    if(sc > bestSc) { bestSc = sc; best = mv; }
+  }
+  return best;
+}
+
+function aiResolvePhases(actor) {
+  if(actor === undefined) actor = aiTeam;
+  let guard = 0;
+  while(!gameOver && turn === actor && (officerPhase || knightPhase) && guard++ < 10) {
+    if(officerPhase) {
+      const allies = validMoves.slice();
+      if(allies.length === 0) { endTurn(); break; }
+      let bestAlly = null, bestMv = null, bestSc = -AI_INF;
+      for(const a of allies) {
+        const ally = boardState[a.r][a.c]; if(!ally) continue;
+        for(const mv of getValidMoves(a.r, a.c)) {
+          const m = { fr: a.r, fc: a.c, tr: mv.r, tc: mv.c, action: mv.action, pType: ally.type };
+          const undo = aiSimMove(m);
+          const sc = (undo.capturedType === 'CMD') ? AI_MATE : aiEval(actor);
+          aiUndoMove(undo);
+          if(sc > bestSc) { bestSc = sc; bestMv = mv; bestAlly = a; }
+        }
+      }
+      if(bestAlly && bestMv) { applyOfficerAlly(bestAlly.r, bestAlly.c); executeMove(bestAlly.r, bestAlly.c, bestMv.r, bestMv.c, bestMv.action); }
+      else { endTurn(); break; }
+    } else if(knightPhase) {
+      const ks = selectedSquare;
+      const mv = aiBestFollowup(ks.r, ks.c, actor);
+      if(mv) executeMove(ks.r, ks.c, mv.r, mv.c, mv.action);
+      else { endTurn(); break; }
+    }
+  }
+}
+
+function makeAIMove() {
+  if(gameOver) return;
+  if(gameMode === 'watch' && watchPaused) return;
+  const actor = (gameMode === 'watch') ? turn : aiTeam;   // in Watch mode the AI plays whichever side is to move
+  const cfg = AI_CONFIG[aiDepth] || AI_CONFIG[3];
+  curQDepth = cfg.qdepth;
+  const snapBoard = cloneBoard(), snapWalls = walls.map(w => ({ ...w }));
+  let result;
+  try { result = aiSearchRoot(actor, cfg.depth, cfg.timeMs); }
+  catch(e) { result = { move: null, score: 0, scored: [] }; }
+  finally { restoreBoard(snapBoard); walls = snapWalls; }                // search must leave no trace
+
+  document.getElementById('statusText').classList.remove('ai-thinking');
+
+  let bestMove = result.move;
+  // weaker tiers occasionally settle for a near-best move so they stay beatable
+  if(bestMove && cfg.randomness > 0 && result.scored.length > 1 && Math.random() < cfg.randomness) {
+    const ranked = result.scored.slice().sort((a, b) => b.score - a.score);
+    const k = Math.min(ranked.length, cfg.topK);
+    bestMove = ranked[Math.floor(Math.random() * k)].m;
+  }
+  if(!bestMove) { endTurn(); return; }
+
+  // arm Twin Strike when moving a Knight off cooldown (so an Imperial AI double-strikes)
+  if(bestMove.pType === 'KNT' && bestMove.action !== 'ranged' && (moveCount - lastKnightDouble[actor] >= 10)) knightTwinArmed = true;
+
+  selectedSquare = { r: bestMove.fr, c: bestMove.fc };
+  validMoves = [{ r: bestMove.tr, c: bestMove.tc, action: bestMove.action }];
+  executeMove(bestMove.fr, bestMove.fc, bestMove.tr, bestMove.tc, bestMove.action);
+  aiResolvePhases(actor);
+}
+
+// =================== GAME FLOW ===================
+// =================== ELO RATING (local-first, vs-AI ladder) ===================
+// A standard Elo rating, kept in this browser. Only games against the AI engine
+// are rated: each difficulty is a fixed-strength opponent on the ladder.
+const RATING_KEY = 'strategium_rating_v1';
+const TIER_ELO  = { 1:800, 2:1200, 3:1600, 4:2000 };
+const TIER_NAME = { 1:'Easy', 2:'Medium', 3:'Hard', 4:'Impossible' };
+const K_FACTOR  = 32;
+let ratingApplied = false;   // guard: rate each finished game once
+
+function loadRating() {
+  const base = { elo:1200, peak:1200, games:0, wins:0, losses:0, tiers:{} };
+  try { return Object.assign(base, JSON.parse(localStorage.getItem(RATING_KEY)) || {}); }
+  catch(e) { return base; }
+}
+function saveRating(r) { try { localStorage.setItem(RATING_KEY, JSON.stringify(r)); } catch(e) {} }
+function updateRatingBar() {
+  const r = loadRating();
+  const v = document.getElementById('ratingValue'); if(v) v.innerText = r.elo;
+  const rec = document.getElementById('ratingRecord'); if(rec) rec.innerHTML = `${r.wins}W &middot; ${r.losses}L &middot; peak ${r.peak}`;
+}
+function applyRating(winner) {
+  if(gameMode !== 'ai' || ratingApplied) return null;   // only the AI ladder is rated
+  ratingApplied = true;
+  const r = loadRating();
+  const tier = aiDepth;                                  // difficulty level 1-4
+  const opp = TIER_ELO[tier] || 1200;
+  const S = (winner === playerTeam) ? 1 : 0;             // 1 = the human won
+  const E = 1 / (1 + Math.pow(10, (opp - r.elo) / 400));
+  const before = r.elo;
+  let delta = Math.round(K_FACTOR * (S - E));
+  if(S === 1 && delta < 1) delta = 1;                    // a win never costs points
+  if(S === 0 && delta > -1) delta = -1;                  // a loss always costs at least one
+  r.elo = before + delta;
+  r.games++; if(S) r.wins++; else r.losses++;
+  if(r.elo > r.peak) r.peak = r.elo;
+  if(!r.tiers[tier]) r.tiers[tier] = { w:0, l:0 };
+  if(S) r.tiers[tier].w++; else r.tiers[tier].l++;
+  saveRating(r);
+  updateRatingBar();
+  return { before, after:r.elo, delta, S, tier };
+}
+
+function showWinScreen(winner, reason) {
+  const screen = document.getElementById('winScreen');
+  const title = document.getElementById('winTitle');
+  const sub = document.getElementById('winSub');
+  const statsEl = document.getElementById('winStats');
+  if(winner === 0) {
+    title.innerText = "IMPERIAL VICTORY";
+    title.style.color = "var(--imperial)";
+    title.style.textShadow = "0 0 30px var(--imperial)";
+  } else {
+    title.innerText = "COALITION VICTORY";
+    title.style.color = "var(--coalition)";
+    title.style.textShadow = "0 0 30px var(--coalition)";
+  }
+  sub.innerText = reason;
+  // Build stats
+  const impCapt = capturedPieces[1].length, coaCapt = capturedPieces[0].length;
+  const impVal = capturedPieces[1].reduce((s,t) => s + (PIECES[t]?.value||0), 0);
+  const coaVal = capturedPieces[0].reduce((s,t) => s + (PIECES[t]?.value||0), 0);
+  statsEl.innerHTML = `
+    <div class="stats-grid">
+      <div class="stats-section">
+        <div class="stats-section-title" style="color:var(--imperial);">Imperial Legion</div>
+        <div class="stats-row"><span>Enemies slain</span><span class="stats-val">${impCapt}</span></div>
+        <div class="stats-row"><span>Value destroyed</span><span class="stats-val">${impVal}</span></div>
+        <div class="stats-row"><span>Longest occupation</span><span class="stats-val">${battleStats.maxOccStreak[0]} turns</span></div>
+        <div class="stats-pieces">${capturedPieces[1].map(t=>`<span class="stats-piece team-1">${PIECES[t].char}</span>`).join('')||'<span style="opacity:0.3;font-size:12px;">None</span>'}</div>
+      </div>
+      <div class="stats-divider"></div>
+      <div class="stats-section">
+        <div class="stats-section-title" style="color:var(--coalition);">Free Coalition</div>
+        <div class="stats-row"><span>Enemies slain</span><span class="stats-val">${coaCapt}</span></div>
+        <div class="stats-row"><span>Value destroyed</span><span class="stats-val">${coaVal}</span></div>
+        <div class="stats-row"><span>Longest occupation</span><span class="stats-val">${battleStats.maxOccStreak[1]} turns</span></div>
+        <div class="stats-pieces">${capturedPieces[0].map(t=>`<span class="stats-piece team-0">${PIECES[t].char}</span>`).join('')||'<span style="opacity:0.3;font-size:12px;">None</span>'}</div>
+      </div>
+    </div>
+    <div class="stats-footer">
+      <span>Moves: ${battleStats.totalMoves}</span>
+      <span>Walls: ${battleStats.wallsBuilt}</span>
+      <span>Promotions: ${battleStats.promotions}</span>
+      <span>Mage pushes: ${battleStats.magePushes}</span>
+    </div>
+  `;
+  // Ladder rating (vs-AI games only)
+  const wr = document.getElementById('winRating');
+  if(wr) {
+    const rd = applyRating(winner);
+    if(rd) {
+      const up = rd.delta >= 0, col = up ? '#6fcf6f' : '#cf6f6f', sign = up ? '+' : '';
+      wr.style.display = 'block';
+      wr.innerHTML = `<div class="wr-line">Rating <b>${rd.before}</b> &rarr; <b style="color:${col}">${rd.after}</b> <span class="wr-delta" style="color:${col}">(${sign}${rd.delta})</span></div>`
+        + `<div class="wr-sub">vs the ${TIER_NAME[rd.tier]} engine &middot; ${rd.S ? 'victory' : 'defeat'}</div>`;
+    } else {
+      wr.style.display = 'none';
+    }
+  }
+  screen.classList.add('show');
+}
+
+function hideWinScreen() {
+  document.getElementById('winScreen').classList.remove('show');
+}
+
+function showTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  if(tabName === 'game') {
+    document.getElementById('tab-game').classList.add('active');
+  } else if(tabName === 'codex') {
+    document.getElementById('codexPage').classList.add('active');
+    document.getElementById('tab-codex').classList.add('active');
+  } else if(tabName === 'lore') {
+    document.getElementById('lorePage').classList.add('active');
+    document.getElementById('tab-lore').classList.add('active');
+  }
+}
+
+function checkOccupation() {
+    let seatCoa = boardState[0][4];
+    if(seatCoa && seatCoa.team === 0 && seatCoa.type !== 'SCT') occImperial++;
+    else occImperial = 0;
+    let seatImp = boardState[ROWS-1][4];
+    if(seatImp && seatImp.team === 1 && seatImp.type !== 'SCT') occCoalition++;
+    else occCoalition = 0;
+    // Track max occupation streak
+    battleStats.maxOccStreak[0] = Math.max(battleStats.maxOccStreak[0], occImperial);
+    battleStats.maxOccStreak[1] = Math.max(battleStats.maxOccStreak[1], occCoalition);
+    updateOccDisplay();
+    if(occImperial >= 6) { 
+        logMsg("IMPERIAL OCCUPATION VICTORY!"); 
+        gameOver = true; 
+        lastWinner = 0; lastWinReason = "The Imperial Legions have seized the Coalition's Command Seat. The war tent flies the golden banner.";
+        setTimeout(() => { playSound('victory'); showWinScreen(0, "The Imperial Legions have seized the Coalition's Command Seat. The war tent flies the golden banner."); }, 300);
+    }
+    if(occCoalition >= 6) { 
+        logMsg("COALITION OCCUPATION VICTORY!"); 
+        gameOver = true; 
+        lastWinner = 1; lastWinReason = "The Free Coalition has captured the Imperial Command Seat. The emperor's war tent burns.";
+        setTimeout(() => { playSound('victory'); showWinScreen(1, "The Free Coalition has captured the Imperial Command Seat. The emperor's war tent burns."); }, 300);
+    }
+}
+
+function updateOccDisplay() {
+    document.getElementById('occ0').innerText = `${occImperial} / 6`;
+    document.getElementById('occ1').innerText = `${occCoalition} / 6`;
+}
+
+function logMsg(m) { let l = document.getElementById('battleLog'); l.innerHTML = `<div>> ${m}</div>` + l.innerHTML; }
+
+function resetGame() {
+  initBoard(); drawBoard(); hideWinScreen();
+  ratingApplied = false;                 // a fresh game is rateable again
+  updateRatingBar();
+  document.getElementById('selName').innerText = 'Legion Command';
+  document.getElementById('selDesc').innerText = 'Select a stone to begin.';
+  document.getElementById('abilityBtn').style.display = 'none';
+  logMsg("The battle begins...");
+  playSound('start');
+  updateStatus();
+  triggerAIIfNeeded(550);   // AI moves first in Watch mode, or when the human plays Coalition
+  if(gameMode === 'online' && onlineMatched) publishOnlineState();   // resync both players to a new game
+}
+
+initBoard();
+drawBoard();
+updateRatingBar();
+setTimeout(() => playSound('start'), 500);
+</script>
+
+<!-- ONLINE OVERLAY -->
+<div id="onlineOverlay">
+  <div id="onlineBox">
+    <h2>Online Battlefield</h2>
+    <div class="sub">Matched against a random commander across the network.</div>
+    <div id="onlineSetup">
+      <label for="onlineName">Your Banner (optional)</label>
+      <input id="onlineName" maxlength="16" placeholder="Anonymous Commander">
+      <label for="brokerUrl">Relay Broker (advanced)</label>
+      <input id="brokerUrl" value="wss://broker.emqx.io:8084/mqtt">
+      <button class="obtn" id="findBtn" onclick="onlineFindMatch()">Find Opponent</button>
+      <button class="obtn secondary" onclick="closeOnline()">Back</button>
+    </div>
+    <div id="onlineSearching" style="display:none;">
+      <div class="spinner"></div>
+      <div id="onlineStatus">Connecting to the relay…</div>
+      <button class="obtn secondary" onclick="onlineCancel()" style="margin-top:20px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- WIN SCREEN -->
+<div id="winScreen" class="win-screen">
+  <div class="win-title" id="winTitle">VICTORY</div>
+  <div class="win-sub" id="winSub">The battlefield is yours.</div>
+  <div class="win-rating" id="winRating" style="display:none;"></div>
+  <div id="winStats" style="display:flex; flex-direction:column; align-items:center;"></div>
+  <button class="win-btn" onclick="resetGame(); hideWinScreen();">Fight Again</button>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div id="settingsScreen" class="settings-screen">
+  <div class="settings-box">
+    <div class="settings-title">War Council</div>
+    <div class="settings-row">
+      <span class="settings-label">Sound Effects</span>
+      <label class="settings-toggle">
+        <input type="checkbox" id="setSound" checked onchange="toggleSetting('sound', this.checked)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Board Rotation (PvP)</span>
+      <label class="settings-toggle">
+        <input type="checkbox" id="setRotate" checked onchange="toggleSetting('boardRotation', this.checked)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Piece Tooltips</span>
+      <label class="settings-toggle">
+        <input type="checkbox" id="setTooltip" checked onchange="toggleSetting('tooltips', this.checked)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="settings-row" id="aiDiffRow" style="display:none;">
+      <span class="settings-label">AI Difficulty</span>
+      <select id="setAIDiff" onchange="setAIDifficulty(this.value)" style="background:rgba(4,2,16,0.8); border:1px solid var(--goldD); color:var(--text); padding:6px 10px; font-family:'Cinzel',serif; font-size:13px;">
+        <option value="1">Easy</option>
+        <option value="2" selected>Medium</option>
+        <option value="3">Hard</option>
+        <option value="4">Impossible</option>
+      </select>
+    </div>
+    <div class="settings-row" id="sideRow" style="display:none;">
+      <span class="settings-label">Your Side</span>
+      <select id="setSide" onchange="setPlayerSide(this.value)" style="background:rgba(4,2,16,0.8); border:1px solid var(--goldD); color:var(--text); padding:6px 10px; font-family:'Cinzel',serif; font-size:13px;">
+        <option value="0" selected>Imperial Legion</option>
+        <option value="1">Free Coalition</option>
+      </select>
+    </div>
+    <button class="settings-close" onclick="toggleSettings()">Close</button>
+  </div>
+</div>
+
+<!-- CODEX PAGE -->
+<div id="codexPage" class="tab-content" style="position:fixed; top:50px; left:0; width:100%; height:calc(100% - 50px); background:rgba(4,2,16,0.98); z-index:1000; overflow-y:auto; padding:40px 20px;">
+  <div style="max-width:900px; margin:0 auto;">
+    <h1 style="font-family:'Cinzel',serif; color:var(--goldL); text-align:center; font-size:32px; margin-bottom:10px; letter-spacing:3px;">Codex of War</h1>
+    <p style="text-align:center; color:var(--goldD); font-style:italic; margin-bottom:40px;">The laws that govern the battlefield</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-bottom:40px;">
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:20px; border-radius:5px;">
+        <h2 style="font-family:'Cinzel',serif; color:var(--goldL); font-size:20px; margin-bottom:15px; border-bottom:1px solid var(--goldD); padding-bottom:8px;">Victory Conditions</h2>
+        <ul style="list-style:none; padding:0; line-height:1.8; font-size:15px;">
+          <li><strong style="color:var(--gold);">Occupation:</strong> Control the enemy Command Seat for <strong>6 consecutive turns</strong>.</li>
+          <li style="margin-top:10px;"><strong style="color:var(--coalition);">Annihilation:</strong> Slay the enemy <strong>Commander</strong> (♚).</li>
+          <li style="margin-top:10px; color:#888; font-size:13px; font-style:italic;">Scouts cannot hold a Command Seat.</li>
+        </ul>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:20px; border-radius:5px;">
+        <h2 style="font-family:'Cinzel',serif; color:var(--goldL); font-size:20px; margin-bottom:15px; border-bottom:1px solid var(--goldD); padding-bottom:8px;">The Board</h2>
+        <ul style="list-style:none; padding:0; line-height:1.8; font-size:15px;">
+          <li><strong>10 × 8</strong> squares. Imperial Legion starts at the bottom, Free Coalition at the top.</li>
+          <li style="margin-top:10px;"><strong style="color:var(--gold);">Center Zone:</strong> The four central squares are the contested heart of the battlefield.</li>
+          <li style="margin-top:10px;"><strong style="color:#666;">Walls:</strong> Engineers may construct walls that block movement and line of sight. Walls crumble after 8 turns.</li>
+        </ul>
+      </div>
+    </div>
+    <h2 style="font-family:'Cinzel',serif; color:var(--goldL); font-size:24px; text-align:center; margin:30px 0 20px; letter-spacing:2px;">The Pieces</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:15px;">
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">♚</span><div><div style="font-family:'Cinzel',serif; color:var(--goldL); font-size:17px;">Commander</div><div style="font-size:12px; color:#888;">The soul of the army</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves one square in any direction, or leaps two squares (ignores the intervening square). If he falls, the battle is lost. <strong>Rally the Line (Imperial only):</strong> once per game, order <strong>every Imperial Spearman</strong> to advance one square — each steps forward only if the square ahead is open, otherwise it holds. Any Spearman reaching the enemy rank is promoted.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">♝</span><div><div style="font-family:'Cinzel',serif; color:var(--coalition); font-size:17px;">Lieutenant <span style="font-size:12px; color:#888;">(Coalition)</span></div><div style="font-size:12px; color:#888;">The flanker</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves one square in any direction, or <strong>slides two squares diagonally</strong> over empty ground. <strong>Special:</strong> swap places with any allied piece standing on a <strong>same-colored square anywhere on the board</strong>.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">♗</span><div><div style="font-family:'Cinzel',serif; color:var(--imperial); font-size:17px;">Bishop <span style="font-size:12px; color:#888;">(Imperial)</span></div><div style="font-size:12px; color:#888;">The standard-bearer</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">The standard-bearer of the Legion. Moves one square in any direction, or <strong>slides two squares diagonally</strong> over empty ground. <strong>Conversion:</strong> in place of capturing, turn an <strong>adjacent enemy Spearman</strong> to the Imperial cause — it changes sides where it stands and fights for the Legion.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">♞</span><div><div style="font-family:'Cinzel',serif; color:var(--goldL); font-size:17px;">Cavalry</div><div style="font-size:12px; color:#888;">Thundering hooves</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves in an <strong>L-shape</strong> like a chess knight — 2 squares in one direction then 1 square perpendicular, leaping over pieces. <strong>Walls block cavalry leaps</strong> — cannot jump over or land on a wall. <strong>Also may capture adjacent enemies without moving onto their square.</strong></p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">🏹</span><div><div style="font-family:'Cinzel',serif; color:var(--goldL); font-size:17px;">Archer</div><div style="font-size:12px; color:#888;">Death from afar</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves one square in any direction. <strong>Ranged attack:</strong> Shoots 2 or 3 squares in cardinal directions (N, S, E, W), passing over any pieces. <strong>Cannot shoot through walls or shield walls.</strong> Two adjacent Spearmen form a shield wall.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">♟</span><div><div style="font-family:'Cinzel',serif; color:var(--goldL); font-size:17px;">Spearman</div><div style="font-size:12px; color:#888;">The shield wall</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves one square forward, or <strong>two squares from its starting rank</strong> (the path must be clear); captures diagonally forward. <strong>Promotes to Officer</strong> upon reaching the enemy back rank. <strong>Shield Wall:</strong> Two orthogonally adjacent Spearmen of the same team form a shield wall — enemy Archers cannot target them.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">👁</span><div><div style="font-family:'Cinzel',serif; color:var(--goldL); font-size:17px;">Scout</div><div style="font-size:12px; color:#888;">The ghost</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves two squares in any direction, leaping the intervening square. <strong>Evasion:</strong> When captured, instead of dying, the Scout instantly retreats to any open square on your back rank. Can only evade once.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">⚒</span><div><div style="font-family:'Cinzel',serif; color:var(--goldL); font-size:17px;">Engineer</div><div style="font-size:12px; color:#888;">Fortifier</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves one square in any direction. <strong>Special:</strong> Build a Wall on any adjacent empty square (not a Command Seat). Walls are <strong>impassable terrain</strong> that block movement and line of sight and crumble after 8 full turns. Only a Catapult can destroy a wall early.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">♜</span><div><div style="font-family:'Cinzel',serif; color:var(--goldL); font-size:17px;">Officer</div><div style="font-size:12px; color:#888;">Field command</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Promoted Spearman. Moves one square in any direction. <strong>Command Aura:</strong> After moving, you may select one adjacent ally (except another Officer) and immediately take a free move with that piece.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">🔯</span><div><div style="font-family:'Cinzel',serif; color:var(--goldL); font-size:17px;">Mage</div><div style="font-size:12px; color:#888;">Arcane artillery</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves one square in any direction. <strong>Special:</strong> push an enemy within a <strong>diamond</strong> — two squares orthogonally (N/S/E/W) or one square in any of the eight directions. The target is shoved one square away; if blocked, it is expelled from the battlefield.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">♘</span><div><div style="font-family:'Cinzel',serif; color:var(--imperial); font-size:17px;">Knight <span style="font-size:12px; color:#888;">(Imperial)</span></div><div style="font-size:12px; color:#888;">The vanguard</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves <strong>or captures</strong> one square <strong>orthogonally</strong> (no diagonals), or <strong>two squares straight toward the enemy line</strong> over clear ground — and it may <strong>strike a foe at that two-square range</strong>, not just adjacent ones. <strong>Twin Strike:</strong> press the ability button to spend a charge (once every 5 full rounds) and take two moves in one turn.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">♖</span><div><div style="font-family:'Cinzel',serif; color:var(--goldL); font-size:17px;">Catapult</div><div style="font-size:12px; color:#888;">Siege engine</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves one square in any direction to reposition, but <strong>cannot capture an adjacent enemy</strong>. <strong>Bombardment (cardinal lines, lobbing over intervening pieces):</strong> destroys an enemy standing <strong>exactly three squares away</strong>, and shatters a wall <strong>two or three squares away</strong>. It is the only piece that can break a wall.</p>
+      </div>
+      <div style="background:var(--panel); border:1px solid var(--goldD); padding:15px; border-radius:5px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:28px;">🪄</span><div><div style="font-family:'Cinzel',serif; color:var(--coalition); font-size:17px;">Arod's Servant <span style="font-size:12px; color:#888;">(Coalition)</span></div><div style="font-size:12px; color:#888;">The conjurer</div></div></div>
+        <p style="font-size:14px; line-height:1.6; color:var(--text);">Moves one square in any direction. <strong>Conjure:</strong> once every 5 full rounds, summon a fresh Spearman onto an adjacent empty square — a slow but endless wellspring of levies.</p>
+      </div>
+    </div>
+    <div style="background:var(--panel); border:1px solid var(--goldD); padding:20px; border-radius:5px; margin-top:30px;">
+      <h2 style="font-family:'Cinzel',serif; color:var(--goldL); font-size:20px; margin-bottom:15px; border-bottom:1px solid var(--goldD); padding-bottom:8px;">Additional Laws</h2>
+      <ul style="list-style:none; padding:0; line-height:1.8; font-size:15px;">
+        <li><strong style="color:var(--gold);">Turn Order:</strong> Imperial Legion moves first, then Free Coalition.</li>
+        <li style="margin-top:8px;"><strong style="color:var(--gold);">Battlefield:</strong> The field is a 10×10 grid; each side fields 20 warriors.</li>
+        <li style="margin-top:8px;"><strong style="color:var(--gold);">Imperial Bishop:</strong> The Bishop slides two squares diagonally and, in place of capturing, may <strong>convert an adjacent enemy Spearman</strong> to the Imperial cause — the spearman changes sides where it stands.</li>
+        <li style="margin-top:8px;"><strong style="color:var(--gold);">Imperial Rally:</strong> Once per game, the Imperial Commander orders every Spearman to advance one square; each moves only if the square ahead is open.</li>
+        <li style="margin-top:8px;"><strong style="color:var(--gold);">Knight's Reach:</strong> The Imperial Knight may capture a foe two squares straight ahead, the same as its advance — not only adjacent enemies.</li>
+        <li style="margin-top:8px;"><strong style="color:var(--gold);">Knight's Twin Strike:</strong> Activate from the ability button to move the Imperial Knight twice in one turn — usable once every 5 full rounds.</li>
+        <li style="margin-top:8px;"><strong style="color:var(--gold);">Arod's Conjuring:</strong> The Coalition Servant summons a Spearman every 5 full rounds.</li>
+        <li style="margin-top:8px;"><strong style="color:var(--gold);">Walls:</strong> Impassable terrain that decays after 8 turns. Only a Catapult can break one early; no piece may pass through or capture a wall.</li>
+        <li style="margin-top:8px;"><strong style="color:var(--gold);">Seat Occupation:</strong> Only non-Scout pieces can hold a Command Seat.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- LORE PAGE -->
+<div id="lorePage" class="tab-content" style="position:fixed; top:50px; left:0; width:100%; height:calc(100% - 50px); background:rgba(4,2,16,0.98); z-index:1000; overflow-y:auto; padding:40px 20px;">
+  <div style="max-width:900px; margin:0 auto;">
+    <h1 style="font-family:'Cinzel',serif; color:var(--goldL); text-align:center; font-size:32px; margin-bottom:10px; letter-spacing:3px;">Chronicles of Arshmunnu</h1>
+    <p style="text-align:center; color:var(--goldD); font-style:italic; margin-bottom:40px;">The history and tradition of Strategium</p>
+    <div style="background:var(--panel); border:1px solid var(--goldD); padding:25px; border-radius:5px; margin-bottom:30px;">
+      <h2 style="font-family:'Cinzel',serif; color:var(--goldL); font-size:22px; margin-bottom:15px;">Origins</h2>
+      <p style="font-size:15px; line-height:1.8; color:var(--text); margin-bottom:15px;">
+        Strategium is the traditional war game of the <strong>As'hikan Nobility</strong>, played for centuries in the grand halls of the Imperial College of Warfare and the war tents of the Free Coalition alike. It is said that no officer of the As'hikan legions may command on a true battlefield until he has first proven his mind upon the Strategium board.
+      </p>
+      <p style="font-size:15px; line-height:1.8; color:var(--text); font-style:italic; border-left:3px solid var(--goldD); padding-left:15px; color:#aaa;">
+        "This game is taught to every As'hikan officer before he sees a real battlefield."<br>
+        <span style="font-size:13px; color:#666;">— Excerpt from the Manual of Arms, Imperial College of Warfare, Year 108 AU</span>
+      </p>
+    </div>
+    <div style="background:var(--panel); border:1px solid var(--goldD); padding:25px; border-radius:5px; margin-bottom:30px;">
+      <h2 style="font-family:'Cinzel',serif; color:var(--goldL); font-size:22px; margin-bottom:15px;">The Two Powers</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <div>
+          <h3 style="color:var(--imperial); font-family:'Cinzel',serif; font-size:18px; margin-bottom:10px;">The Imperial Legions</h3>
+          <p style="font-size:14px; line-height:1.7; color:var(--text);">Representing the might of the As'hikan Empire, the Imperial Legions fight beneath the golden banner of the seated emperor. Their war tent — the <strong>Command Seat</strong> at E1 — is a symbol of absolute authority. The Legions favor disciplined ranks, shield walls, and the thunderous charge of their cavalry.</p>
+        </div>
+        <div>
+          <h3 style="color:var(--coalition); font-family:'Cinzel',serif; font-size:18px; margin-bottom:10px;">The Free Coalition</h3>
+          <p style="font-size:14px; line-height:1.7; color:var(--text);">A confederation of free cities, mountain clans, and disaffected nobles who stand against imperial dominion. Their <strong>Command Seat</strong> at E10 is the battle drum around which their scattered forces rally. The Coalition relies on mobility, ambush, and the arcane arts of their Magi.</p>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center; color:#555; font-size:13px; margin-top:40px; font-style:italic;">"The board is the battlefield, and the mind is the sword."</p>
+  </div>
+</div>
+
+</body>
+</html>

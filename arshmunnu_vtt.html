@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
+<title>Arshmunnu VTT — Battle Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0608; --panel:#140b0f; --panel2:#1c1014; --panelL:#241519;
+  --gold:#d4a44a; --goldD:#7c5a1f; --goldL:#f0cc72;
+  --blood:#7a1a1a; --bloodL:#a83232; --teal:#3a8a8a; --green:#5a9e5a;
+  --text:#e8dfc8; --tdim:rgba(232,223,200,.55); --tdimmer:rgba(232,223,200,.3);
+  --border:rgba(212,164,74,.18); --border2:rgba(212,164,74,.34);
+  --ally:#4a82b0; --enemy:#a83232; --neutral:#b0902a;
+  --tr:cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{font-family:'EB Garamond',serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;}
+button{font-family:inherit;cursor:pointer;}
+.tbtn{background:var(--panel2);border:1px solid var(--border);color:var(--tdim);border-radius:4px;padding:8px 10px;font-size:12px;letter-spacing:.04em;transition:all .14s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.tbtn:hover{border-color:var(--border2);color:var(--text);background:var(--panelL);}
+.tbtn.on{background:var(--gold);border-color:var(--gold);color:#1a0800;font-weight:600;}
+.tbtn .ic{font-size:15px;}
+
+/* ── TOP BAR ── */
+.topbar{height:50px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:0 12px;
+  background:linear-gradient(180deg,#160c10,#0e0709);border-bottom:1px solid var(--border);z-index:50;}
+.tb-title{font-family:'Cinzel',serif;font-weight:700;font-size:16px;color:var(--goldL);letter-spacing:.06em;margin-right:8px;white-space:nowrap;}
+.tb-title .seal{color:var(--bloodL);margin-right:6px;}
+.tb-sep{width:1px;height:26px;background:var(--border);margin:0 2px;}
+.tb-spacer{flex:1;}
+.tb-zoom{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--tdim);}
+
+/* ── LAYOUT ── */
+.main{flex:1;display:flex;overflow:hidden;position:relative;}
+.toolbar{width:54px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;z-index:40;}
+.tool{width:38px;height:38px;border-radius:5px;background:transparent;border:1px solid transparent;color:var(--tdim);
+  font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .14s;position:relative;}
+.tool:hover{background:var(--panel2);color:var(--text);}
+.tool.on{background:var(--gold);color:#1a0800;border-color:var(--goldD);}
+.tool .tip{position:absolute;left:46px;top:50%;transform:translateY(-50%);background:#000;color:var(--text);
+  font-size:11px;padding:4px 8px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;border:1px solid var(--border);z-index:100;}
+.tool:hover .tip{opacity:1;}
+.tool-sep{width:30px;height:1px;background:var(--border);margin:3px 0;}
+
+/* ── BOARD ── */
+.stage{flex:1;position:relative;overflow:hidden;background:
+  repeating-conic-gradient(#0d0a12 0% 25%,#100c14 0% 50%) 50%/40px 40px;cursor:grab;}
+.stage.panning{cursor:grabbing;}
+.stage.tool-fog{cursor:cell;}
+.stage.tool-ping{cursor:crosshair;}
+.stage.tool-measure{cursor:crosshair;}
+.viewport{position:absolute;top:0;left:0;transform-origin:0 0;}
+#mapImg{position:absolute;top:0;left:0;pointer-events:none;user-select:none;display:none;}
+#gridCanvas,#fogCanvas{position:absolute;top:0;left:0;pointer-events:none;}
+.tokens{position:absolute;top:0;left:0;}
+.token{position:absolute;border-radius:50%;border:2px solid var(--neutral);
+  display:flex;align-items:center;justify-content:center;cursor:grab;user-select:none;
+  background:radial-gradient(circle at 35% 30%,#2a2024,#160e12);box-shadow:0 3px 10px rgba(0,0,0,.6);
+  font-size:20px;overflow:visible;transition:box-shadow .15s;}
+.token:active{cursor:grabbing;}
+.token.ally{border-color:var(--ally);}
+.token.enemy{border-color:var(--enemy);}
+.token.neutral{border-color:var(--neutral);}
+.token.sel{box-shadow:0 0 0 3px var(--goldL),0 3px 14px rgba(0,0,0,.7);}
+.token.active-turn{box-shadow:0 0 0 3px var(--green),0 0 18px var(--green);}
+.token.downed{filter:grayscale(1) brightness(.5);}
+.token img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.token .tk-name{position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);font-size:10px;
+  font-family:'Cinzel',serif;color:var(--text);background:rgba(0,0,0,.75);padding:1px 6px;border-radius:3px;white-space:nowrap;pointer-events:none;}
+.token .tk-hp{position:absolute;top:-7px;left:0;width:100%;height:5px;background:rgba(0,0,0,.6);border-radius:3px;overflow:hidden;pointer-events:none;}
+.token .tk-hp .fill{height:100%;background:linear-gradient(90deg,#7a1a1a,#c0843a);transition:width .2s;}
+.ping{position:absolute;width:50px;height:50px;border-radius:50%;border:3px solid var(--goldL);
+  transform:translate(-50%,-50%);pointer-events:none;animation:pingA 1s ease-out forwards;}
+@keyframes pingA{0%{opacity:1;transform:translate(-50%,-50%) scale(.3);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4);}}
+.measure-line{position:absolute;pointer-events:none;height:2px;background:var(--goldL);transform-origin:0 50%;box-shadow:0 0 6px var(--goldL);}
+.measure-label{position:absolute;background:#000;color:var(--goldL);font-size:12px;font-family:'Cinzel',serif;padding:2px 7px;border-radius:4px;pointer-events:none;border:1px solid var(--border2);transform:translate(-50%,-50%);}
+
+/* empty state */
+.empty-hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--tdimmer);pointer-events:none;text-align:center;}
+.empty-hint .big{font-family:'Cinzel',serif;font-size:20px;color:var(--tdim);}
+.empty-hint button{pointer-events:auto;}
+
+/* ── RIGHT PANEL ── */
+.side{width:300px;flex-shrink:0;background:var(--panel);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;z-index:40;}
+.side.collapsed{width:0;border:none;}
+.side-h{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);}
+.side-h h3{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);}
+.round-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--panel2);}
+.round-row .rnd{font-family:'Cinzel',serif;font-size:13px;color:var(--goldL);flex:1;}
+.init-list{flex:1;overflow-y:auto;padding:6px;}
+.init-card{background:var(--panel2);border:1px solid var(--border);border-left:3px solid var(--neutral);
+  border-radius:5px;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:all .14s;position:relative;}
+.init-card.ally{border-left-color:var(--ally);}
+.init-card.enemy{border-left-color:var(--enemy);}
+.init-card:hover{border-color:var(--border2);}
+.init-card.active{box-shadow:0 0 0 1px var(--green);border-left-color:var(--green);background:rgba(90,158,90,.08);}
+.init-card.sel{box-shadow:0 0 0 1px var(--goldL);}
+.ic-top{display:flex;align-items:center;gap:8px;}
+.ic-init{width:26px;height:26px;border-radius:4px;background:#000;border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:13px;color:var(--goldL);flex-shrink:0;cursor:text;}
+.ic-name{flex:1;font-family:'Cinzel',serif;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ic-x{background:none;border:none;color:var(--tdimmer);font-size:15px;line-height:1;padding:0 2px;}
+.ic-x:hover{color:var(--bloodL);}
+.ic-stats{display:flex;gap:5px;margin-top:6px;align-items:center;}
+.stat-pill{display:flex;align-items:center;gap:3px;font-size:11px;background:#000;border:1px solid var(--border);border-radius:3px;padding:2px 5px;}
+.stat-pill input{width:34px;background:none;border:none;color:var(--text);font-family:inherit;font-size:11px;text-align:right;outline:none;}
+.stat-pill .lab{color:var(--tdimmer);font-size:9px;letter-spacing:.05em;}
+.stat-pill.dl{color:var(--goldL);}
+.ic-bar{height:5px;border-radius:3px;background:rgba(0,0,0,.5);overflow:hidden;margin-top:6px;}
+.ic-bar .fill{height:100%;background:linear-gradient(90deg,#7a1a1a,#c0843a);}
+.ic-dmg{display:flex;gap:4px;margin-top:6px;}
+.ic-dmg input{flex:1;background:#000;border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:inherit;font-size:11px;padding:3px 6px;outline:none;width:100%;}
+.ic-dmg button{font-size:11px;padding:3px 7px;border-radius:3px;border:1px solid var(--border2);background:var(--panelL);color:var(--text);}
+.ic-dmg button.heal{color:var(--green);border-color:rgba(90,158,90,.4);}
+.ic-dmg button.dmg{color:var(--bloodL);border-color:rgba(168,50,50,.4);}
+.side-foot{padding:8px;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ── DICE TRAY ── */
+.dice-tray{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:5px;
+  background:rgba(10,6,8,.92);border:1px solid var(--border2);border-radius:8px;padding:7px 9px;z-index:45;backdrop-filter:blur(6px);}
+.dice-tray button{width:38px;height:38px;border-radius:5px;background:var(--panel2);border:1px solid var(--border);
+  color:var(--goldL);font-family:'Cinzel',serif;font-size:12px;transition:all .12s;}
+.dice-tray button:hover{border-color:var(--gold);background:var(--panelL);transform:translateY(-2px);}
+.dice-result{position:absolute;bottom:62px;left:50%;transform:translateX(-50%);background:rgba(10,6,8,.95);
+  border:1px solid var(--border2);border-radius:6px;padding:8px 16px;font-family:'Cinzel',serif;color:var(--goldL);
+  font-size:15px;z-index:46;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;}
+.dice-result.show{opacity:1;}
+
+/* ── MODAL ── */
+.ov{position:fixed;inset:0;z-index:200;background:rgba(5,3,8,.88);backdrop-filter:blur(5px);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto;}
+.ov.open{display:flex;}
+.modal{max-width:640px;width:100%;background:linear-gradient(165deg,var(--panel2),#100a0c);border:1px solid var(--border2);border-top:3px solid var(--gold);border-radius:8px;padding:24px 26px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.7);}
+.modal-close{position:absolute;top:12px;right:14px;background:rgba(168,50,50,.18);color:var(--bloodL);border:1px solid rgba(168,50,50,.4);width:30px;height:30px;border-radius:4px;font-size:17px;}
+.modal h3{font-family:'Cinzel',serif;color:var(--goldL);font-size:20px;margin-bottom:14px;}
+.modal h4{font-family:'Cinzel',serif;color:var(--gold);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:14px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px;}
+.bf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;max-height:50vh;overflow-y:auto;}
+.bf-card{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--tc);border-radius:5px;padding:9px 11px;cursor:pointer;transition:all .14s;}
+.bf-card:hover{border-color:var(--tc);background:var(--panelL);}
+.bf-card .n{font-family:'Cinzel',serif;font-size:13px;color:var(--text);}
+.bf-card .m{font-size:11px;color:var(--tdim);font-style:italic;margin-top:2px;}
+.bf-card .s{font-size:10px;color:var(--tdimmer);margin-top:4px;}
+.fld{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.fld label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--gold);}
+.fld input,.fld select{background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:inherit;font-size:15px;padding:8px 10px;outline:none;}
+.fld input:focus,.fld select:focus{border-color:var(--gold);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.mb{background:var(--gold);border:none;color:#1a0800;font-family:'Cinzel',serif;font-weight:600;font-size:13px;padding:9px 18px;border-radius:5px;letter-spacing:.04em;}
+.mb.ghost{background:var(--panel);border:1px solid var(--border2);color:var(--text);}
+.swatch{display:flex;gap:6px;flex-wrap:wrap;}
+.swatch .sw{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
+.swatch .sw.on{border-color:var(--goldL);}
+.statblock-mini .ab{background:rgba(0,0,0,.2);border-left:2px solid var(--gold);padding:6px 10px;margin:5px 0;border-radius:0 4px 4px 0;}
+.statblock-mini .ab .n{font-family:'Cinzel',serif;font-size:12px;color:var(--goldL);}
+.statblock-mini .ab .t{font-size:13px;color:var(--tdim);margin-top:2px;line-height:1.4;}
+.statblock-mini .ln{font-size:13px;margin:6px 0;line-height:1.4;}
+.statblock-mini .ln b{color:var(--gold);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.05em;text-transform:uppercase;display:block;}
+.hidefile{position:absolute;width:0;height:0;opacity:0;}
+@media(max-width:760px){.side{position:absolute;right:0;top:0;bottom:0;}.row3{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="tb-title"><span class="seal">&#9876;</span>Arshmunnu VTT</div>
+    <button class="tbtn" onclick="document.getElementById('mapFile').click()"><span class="ic">&#128506;</span> Map</button>
+    <input type="file" id="mapFile" class="hidefile" accept="image/*" onchange="mapImgPick(event)">
+    <button class="tbtn" id="gridBtn" onclick="toggleGrid()"><span class="ic">&#9638;</span> Grid</button>
+    <span class="tb-zoom">Hex <input type="number" value="64" min="16" style="width:46px;background:#000;border:1px solid var(--border);color:var(--text);border-radius:3px;padding:3px;font-family:inherit" onchange="setGridSize(this.value)"></span>
+    <div class="tb-sep"></div>
+    <button class="tbtn" onclick="openBestiaryPicker()"><span class="ic">&#128009;</span> Add Monster</button>
+    <button class="tbtn" onclick="openRosterPicker()"><span class="ic">&#9876;</span> Add Hero</button>
+    <button class="tbtn" onclick="openTokenEditor(null)"><span class="ic">&#9679;</span> Add Token</button>
+    <div class="tb-spacer"></div>
+    <div class="tb-zoom"><button class="tbtn" onclick="zoomBy(0.88);saveScene()">&minus;</button><span id="zoomLbl">100%</span><button class="tbtn" onclick="zoomBy(1.14);saveScene()">+</button><button class="tbtn" onclick="fitView()">Fit</button></div>
+    <div class="tb-sep"></div>
+    <button class="tbtn" onclick="newScene()">New</button>
+    <button class="tbtn" onclick="exportScene()">&#8595;</button>
+    <button class="tbtn" onclick="document.getElementById('sceneFile').click()">&#8593;</button>
+    <input type="file" id="sceneFile" class="hidefile" accept="application/json,.json" onchange="importScene(event)">
+    <button class="tbtn" onclick="toggleSide()">&#9776;</button>
+    <div class="tb-sep"></div>
+    <button class="tbtn" onclick="gotoApp('arshrpg','arshmunnu_arshrpg.html')" title="ArshRPG hub">&larrhk; ArshRPG</button>
+    <button class="tbtn" onclick="gotoApp('campaigns','arshmunnu_campaigns.html')" title="Campaigns">&#10070; Campaigns</button>
+    <button class="tbtn" onclick="gotoApp('characters','arshmunnu_characters.html')" title="Characters">&#9776; Characters</button>
+  </div>
+
+  <div class="main">
+    <!-- left tool rail -->
+    <div class="toolbar">
+      <button class="tool on" data-tool="select" onclick="setTool('select')">&#10021;<span class="tip">Select / Move (V)</span></button>
+      <button class="tool" data-tool="pan" onclick="setTool('pan')">&#9995;<span class="tip">Pan</span></button>
+      <div class="tool-sep"></div>
+      <button class="tool" data-tool="fog" onclick="setTool('fog')">&#9729;<span class="tip">Fog: cover</span></button>
+      <button class="tool" data-tool="erase" onclick="setTool('erase')">&#128167;<span class="tip">Fog: reveal</span></button>
+      <button class="tool" onclick="enableFog()">&#127761;<span class="tip">Cover all in fog</span></button>
+      <button class="tool" onclick="clearFog()">&#9728;<span class="tip">Clear fog</span></button>
+      <div class="tool-sep"></div>
+      <button class="tool" data-tool="measure" onclick="setTool('measure')">&#128207;<span class="tip">Measure (hexes)</span></button>
+      <button class="tool" data-tool="ping" onclick="setTool('ping')">&#128280;<span class="tip">Ping</span></button>
+    </div>
+
+    <!-- board -->
+    <div class="stage" id="stage">
+      <div class="viewport" id="viewport">
+        <img id="mapImg" alt="map">
+        <canvas id="gridCanvas"></canvas>
+        <canvas id="fogCanvas"></canvas>
+        <div class="tokens" id="tokens"></div>
+      </div>
+      <div class="empty-hint" id="emptyHint">
+        <div class="big">No map loaded</div>
+        <div style="color:var(--tdim);font-size:14px">Import a battle map image to begin, or add tokens to a blank grid.</div>
+        <button class="tbtn on" onclick="document.getElementById('mapFile').click()"><span class="ic">&#128506;</span> Import a Map</button>
+      </div>
+      <div class="dice-result" id="diceResult"></div>
+      <div class="dice-tray">
+        <button onclick="roll(4)">d4</button><button onclick="roll(6)">d6</button><button onclick="roll(8)">d8</button>
+        <button onclick="roll(10)">d10</button><button onclick="roll(12)">d12</button><button onclick="roll(20)">d20</button><button onclick="roll(100)">d%</button>
+      </div>
+    </div>
+
+    <!-- right panel: initiative -->
+    <div class="side" id="side">
+      <div class="side-h"><h3>Initiative</h3><button class="tbtn" onclick="rollInitiativeAll()" style="padding:5px 8px">&#127922; Roll All</button></div>
+      <div class="round-row">
+        <button class="tbtn" onclick="prevTurn()" style="padding:5px 9px">&lsaquo;</button>
+        <span class="rnd" id="roundLbl">Round 1</span>
+        <button class="tbtn" onclick="nextTurn()" style="padding:5px 9px">Next &rsaquo;</button>
+      </div>
+      <div class="init-list" id="initList"></div>
+      <div class="side-foot">
+        <button class="tbtn" onclick="openBestiaryPicker()" style="flex:1">&#128009; Monster</button>
+        <button class="tbtn" onclick="openRosterPicker()" style="flex:1">&#9876; Hero</button>
+        <button class="tbtn" onclick="openTokenEditor(null)" style="flex:1">&#9679; Token</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov" id="ov" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+
+<script>
+/* ===== ArshRPG VTT ===== single-screen GM battle map ===== */
+const SEED_MONSTERS = [{"name": "Dire Wolf", "tier": 2, "role": "Skirmisher", "type": "beast", "ep": "51", "dl": "19", "speed": "7", "ap": "4", "tohit": "+8 (bite)", "damage": "bite 1d10+4 Piercing; Great Success → target Prone", "saves": "Strong: Might +4, Agility +4 · Avg: Fort +3, Perception +3 · Weak: Wit +1, Will +1, Bearing +1", "skills": "Perception +5, Stealth +4", "abilities": [["Pack Tactics", "Advantage on attacks against a target that has one of the wolf's allies within 1 hex."]], "motive": "Hunger + Bring down isolated prey", "morale": "Flees at 40% EP or if fire is brandished.", "lore": "The great grey wolves of the northern reaches hunt in disciplined packs. Driven closer to roads in years of war and hard winter."}, {"name": "Cave Bear", "tier": 3, "role": "Brute", "type": "beast", "ep": "113", "dl": "21", "speed": "5", "ap": "3", "tohit": "+10 (claw/bite)", "damage": "claw 2d6+4 Slashing; bite 2d8+4 on a grappled target", "saves": "Strong: Might +5, Fort +5 · Avg: Will +4, Perception +4 · Weak: Agility +2, Wit +2, Bearing +2", "skills": "Athletics +6, Perception +4", "abilities": [["Crushing Embrace", "On a claw Great Success, the bear grapples (Restrained). A grappled target takes automatic bite damage each round."], ["Thick Hide", "Reduce Slashing and Piercing damage by 1."]], "motive": "Territory + Drive off or maul intruders", "morale": "Fights to defend its den; otherwise breaks at 30% EP.", "lore": "Mountain bears grown vast on a diet of fish and carrion. A wounded one is the deadliest thing in the highlands."}, {"name": "Steppe Ashclaw", "tier": 2, "role": "Skirmisher", "type": "beast", "ep": "60", "dl": "21", "speed": "7", "ap": "4", "tohit": "+8 (claw)", "damage": "claw 1d10+4 Slashing; Bleeding on Great Success", "saves": "Strong: Agility +4, Perception +4 · Avg: Might +3, Fort +3 · Weak: Wit +1, Will +1, Mana +1", "skills": "Stealth +6 (High-Ground Ambush), Acrobatics +5", "abilities": [["Pounce", "If it moves 3+ hexes and hits, the target saves Agility DC 14 or is knocked Prone; the Ashclaw may make a second claw at −2."]], "motive": "Hunger + Ambush the weakest traveller", "morale": "Solitary; breaks off at 40% EP to high ground.", "lore": "An ash-pale steppe cat, a third again the size of a leopard. It hunts the Szewian grasslands from rocky vantage."}, {"name": "Void-Corrupted Wolf", "tier": 2, "role": "Skirmisher", "type": "void", "ep": "60", "dl": "20", "speed": "7", "ap": "4", "tohit": "+8 (bite)", "damage": "bite 1d10+4 Piercing + 1d6 Void (Fort DC 14 or 1 Corruption Mark; Great Success → Prone)", "saves": "Strong: Agility +4, Fort +4 · Avg: Might +3, Perception +3 · Weak: Wit +1, Will +1, Bearing +1", "skills": "Perception +5, Stealth +5", "abilities": [["Void Aura", "A creature starting its turn within 2 hexes saves Will DC 13 or takes 2d6 Void; failure by 5+ also Shaken."], ["Void Leap (Recharge 5–6)", "Teleport up to 5 hexes; creatures within 1 hex of arrival save Agility DC 13 or take 2d8 Void."]], "motive": "Corruption + Hunt the living in packs", "morale": "Retreats via Void Leap if 2+ packmates fall.", "lore": "Once an ordinary wolf, unmade and remade by the Void near the Old Mouth. Its howl frays the nerve."}, {"name": "Voidspawn", "tier": 1, "role": "Minion", "type": "void", "ep": "12", "dl": "15", "speed": "5", "ap": "2", "tohit": "+4 (claw)", "damage": "claw 1d6+1 + 1d4 Void", "saves": "Strong: Agility +3 · Avg: Fort +2, Wit +1 · Weak: Might +0, Will +0, Mana +0, Bearing +0", "skills": "—", "abilities": [["Abyssal Hunger", "Advantage vs a target already grappled by another Voidspawn. Three+ may attempt a group grapple."]], "motive": "Hunger + Swarm the nearest warm thing", "morale": "Mindless; never breaks. Run in groups of 4–6.", "lore": "Small, eyeless, writhing. They boil up from Void-rent ground and seek warmth and flesh."}, {"name": "Hollow Phantom", "tier": 3, "role": "Controller", "type": "void", "ep": "80", "dl": "23", "speed": "5 (hover)", "ap": "4", "tohit": "+10 (spectral touch, vs Will)", "damage": "spectral touch 2d6+4 Psychic (targets Will Save instead of DL)", "saves": "Strong: Will +5, Wit +5 · Avg: Mana +4, Agility +4 · Weak: Might +2, Fort +2, Bearing +2", "skills": "—", "abilities": [["Aura of Unmaking", "A creature starting its turn within 6 hexes saves Will DC 13 or is Confused for one round."], ["Control Rider (Root)", "On hit, target speed 0 until end of its next turn. Cooldown 2 rounds."]], "motive": "Anguish + Make others feel what it cannot escape", "morale": "Cannot be reasoned with — only laid to rest (Radiant/Divine).", "lore": "Something that died near the Old Mouth long ago and did not finish dying. Vulnerable to Radiant light."}, {"name": "Void Seep Manifestation", "tier": 4, "role": "Solo", "type": "void", "ep": "324", "dl": "28", "speed": "4 (hover)", "ap": "4 (+2 Surge/Lair)", "tohit": "+14 (unmaking tendril)", "damage": "tendril 2d8+4 Void +6 TDB (unhealable; Will DC 18 or 1 Corruption Mark)", "saves": "Strong: Will +6, Mana +6 · Avg: Wit +5, Fort +5 · Weak: Might +3, Agility +3, Bearing +3", "skills": "—", "abilities": [["Intensified Flux", "Arcane Flux triggers on a natural 1–5 on Mana/Will rolls within 10 hexes."], ["Lair Action (init 0)", "A 2-hex zone of un-being: Will DC 18 or 3d8 Void and Rooted until end of next turn."], ["Cannot Be Slain", "At 0 EP it withdraws into the breach. WON by sealing the breach: Mana+Ritual DC 18 ×3, Arcturus must assist."], ["Solo Resistance", "Shrugs off the first Hard Control rider each round."]], "motive": "Unmaking + Widen the breach, erase the seal", "morale": "Cannot be reasoned with; recedes when the breach is sealed.", "lore": "The leading edge of the Void's awareness, pushing through a crack in the world's last seal."}, {"name": "Bandit", "tier": 1, "role": "Skirmisher", "type": "humanoid", "ep": "36", "dl": "17", "speed": "5", "ap": "3", "tohit": "+6 (dagger / sling)", "damage": "dagger 1d6+3 Piercing (Light); sling 1d6+3 Crushing (Near)", "saves": "Strong: Agility +3, Wit +3 · Avg: Might +2, Fort +2 · Weak: Will +0, Mana +0, Bearing +0", "skills": "Stealth +3, Deception +3", "abilities": [["Hit-and-Fade", "Strike, then move half speed for 1 AP."]], "motive": "Fear + Rob the vulnerable", "morale": "Breaks at 50% EP or when half the group is down.", "lore": "Desperate folk turned to the road in hard times. Most would rather take coin than a wound."}, {"name": "Veteran Soldier", "tier": 2, "role": "Line", "type": "humanoid", "ep": "81", "dl": "22", "speed": "4", "ap": "4", "tohit": "+7 (spear & shield)", "damage": "spear 1d8+4 Piercing (Reach, Brace); Guarded Strike +3 DL", "saves": "Strong: Fort +4, Will +4 · Avg: Might +3, Wit +3 · Weak: Agility +1, Mana +1, Bearing +1", "skills": "Command +3, Athletics +3", "abilities": [["Formation Step", "Adjacent to another soldier, both spend 1 AP for +2 DL until next turn (movement 0)."], ["Protect (Reaction)", "Adjacent ally hit; impose −2 on the attack total."]], "motive": "Duty + Hold the line", "morale": "Holds while an officer lives; disciplined withdrawal if outmatched.", "lore": "Professional infantry of the imperial cohorts. Discipline is their armour as much as their mail."}, {"name": "Battle-Mage", "tier": 3, "role": "Artillery", "type": "humanoid", "ep": "63", "dl": "21", "speed": "4", "ap": "4", "tohit": "+11 (spell, ranged) / +6 (staff)", "damage": "Flame Lance (2 AP): 3d8+4 Fire, Far range; Burning on Fort DC 15", "saves": "Strong: Mana +5, Will +5 · Avg: Wit +4, Fort +4 · Weak: Might +2, Agility +2, Bearing +2", "skills": "Arcana +6, Lore +5", "abilities": [["Arcane Pressure (APrV 6)", "2-hex radius; Will/Mana Save DC 16 at start of enemy turn."], ["Suppressing Fire (2 AP)", "2-hex burst at Far; Agility DC 16 or 2d8 Fire and Suppressed."]], "motive": "Conviction + Break the line from range", "morale": "Breaks at 50% EP if Engaged; flees toward his own.", "lore": "A war-trained Arcanist. Deadly at distance, fragile when a blade reaches him."}, {"name": "Lesser Drake", "tier": 3, "role": "Striker", "type": "dragon", "ep": "71", "dl": "22", "speed": "6 (fly 10)", "ap": "4", "tohit": "+11 (bite/claw)", "damage": "bite 2d6+4 Piercing +4 TDB; Lesser Breath (see below)", "saves": "Strong: Might +5, Fort +5 · Avg: Agility +4, Wit +4 · Weak: Will +2, Mana +2, Bearing +2", "skills": "Perception +5, Intimidation +5", "abilities": [["Lesser Breath (2 AP, Recharge 5–6)", "4-hex cone, Agility DC 16, 4d8 elemental (by breed), half on save."]], "motive": "Pride + Guard the approach, test the bold", "morale": "Disengages at 50% EP — won't die for routine duty.", "lore": "A young or minor dragon. Avoidable with the right name dropped, or a show of strength."}, {"name": "Elder Dragon (Metal)", "tier": 4, "role": "Elite", "type": "dragon", "ep": "262", "dl": "29", "speed": "5 (fly 9)", "ap": "4 (+1 Surge)", "tohit": "+13 (claw/bite)", "damage": "claw 2d8+4 Slashing +6 TDB; Lightning Breath (see below)", "saves": "Strong: Might +6, Fort +6 · Avg: Wit +5, Will +5 · Weak: Agility +3, Mana +3, Bearing +3", "skills": "Perception +7, Insight +6, Intimidation +6", "abilities": [["Lightning Breath (2 AP, Recharge 5–6)", "12-hex line, Fort DC 18, 8d10 Lightning (ignores shield DL); failure → Staggered."], ["Protect (Reaction)", "Intercept a hit aimed at a ward behind it."], ["Surge", "+1 AP once per round."]], "motive": "Duty + Judge who may pass", "morale": "Will not initiate; ends combat fast if forced.", "lore": "The ancient metal dragons of the Black Court. They respect competence, honesty, and dragon law — not human politics."}, {"name": "Risen Dead", "tier": 1, "role": "Line", "type": "undead", "ep": "49", "dl": "16", "speed": "3", "ap": "2", "tohit": "+5 (slam / rusted blade)", "damage": "slam 1d8+3 Crushing", "saves": "Strong: Fort +3, Will +3 · Avg: Might +2 · Weak: Agility +0, Wit +0, Mana +0, Bearing +0", "skills": "—", "abilities": [["Undying", "Immune to Poison, Exhaustion, Fear, Charm. Does not stop until destroyed."], ["Vulnerable: Radiant", "Takes +50% from Radiant/Divine sources."]], "motive": "Compulsion + Kill the living", "morale": "Mindless; never breaks.", "lore": "Corpses raised by necromancy or lingering corruption. Slow, relentless, tireless."}, {"name": "Wraith-Knight", "tier": 4, "role": "Elite", "type": "undead", "ep": "194", "dl": "26", "speed": "5 (hover)", "ap": "4 (+1 Surge)", "tohit": "+12 (spectral blade)", "damage": "spectral blade 2d8+4 Necrotic (drains: heal half dealt)", "saves": "Strong: Will +6, Fort +6 · Avg: Might +5, Wit +5 · Weak: Agility +3, Mana +3, Bearing +3", "skills": "Intimidation +6, Perception +5", "abilities": [["Life Drain", "Heals half the Necrotic damage it deals."], ["Aura of Dread", "Creatures within 4 hexes save Will DC 16 each round or be Shaken."], ["Resist mundane / Vulnerable Radiant", "Half from non-magical weapons; +50% from Radiant."]], "motive": "Oathbound hatred + Slay the living it once served", "morale": "Bound to its purpose; fights until destroyed.", "lore": "A knight who died under a broken oath and rose bound to it. Its blade drinks warmth."}, {"name": "Stone Crawler", "tier": 3, "role": "Brute", "type": "construct", "ep": "113", "dl": "25", "speed": "3", "ap": "3", "tohit": "+10 (slam)", "damage": "slam 2d6+4 Crushing +4 TDB (armour does not reduce; shields reduce by 1)", "saves": "Strong: Might +5, Fort +5 · Avg: Will +4, Mana +4 · Weak: Agility +2, Wit +2, Bearing +2", "skills": "—", "abilities": [["Stone Hide", "Immune to Piercing & Slashing — only Crushing, Arcane, or Void harms it."], ["Collapse (at 0 EP)", "Bursts: 1-hex radius, Agility DC 15 or 2d6 Crushing and Prone."]], "motive": "Mindless + Crush the source of heat and noise", "morale": "Never breaks; mindless.", "lore": "A crab-shaped mass of old masonry animated by seeped Void energy. No mind directs it."}, {"name": "Mountain Harpy", "tier": 2, "role": "Controller", "type": "aberration", "ep": "57", "dl": "20", "speed": "4 (fly 8)", "ap": "4", "tohit": "+8 (talon)", "damage": "talon 1d10+4 Slashing", "saves": "Strong: Agility +4, Will +4 · Avg: Wit +3, Perception +3 · Weak: Might +1, Fort +1, Mana +1", "skills": "Perception +5, Stealth +4", "abilities": [["Luring Call (Recharge 5–6)", "6-hex radius: Will DC 13 or Shaken; failure by 5+ also drawn 2 hexes (Forced Move)."], ["Control Rider (Forced Move)", "On a talon hit, push/pull the target 3 hexes — toward a ledge if near."]], "motive": "Hunger + Pull prey from the path into the rocks", "morale": "Flees to the heights at 40% EP.", "lore": "They nest in high passes and are drawn to the crackle of loose magic. They circle, call, then dive."}];
+function seedId(n){return "seed_"+n.toLowerCase().replace(/[^a-z0-9]+/g,"_");}
+
+/* storage: VTT scene state under its own key; reads the bestiary key (shared) for the roster */
+var VTT_KEY="arshmunnu_vtt_v1";
+var BESTIARY_KEY="arshmunnu_bestiary_v1";
+var Store=(function(){
+  var hasWS=(typeof window!=="undefined"&&window.storage&&typeof window.storage.get==="function");
+  function lsGet(k){try{var r=localStorage.getItem(k);return r?JSON.parse(r):null;}catch(e){return null;}}
+  function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+  async function get(k){
+    if(hasWS){try{var r=await window.storage.get(k);return r?JSON.parse(r.value):null;}catch(e){return null;}}
+    return lsGet(k);
+  }
+  function set(k,v){ if(hasWS)window.storage.set(k,JSON.stringify(v),false).catch(function(){}); else lsSet(k,v); }
+  return {get:get,set:set,hasWS:hasWS};
+})();
+
+/* live bestiary roster (seed + user custom/edits/deleted) */
+var ROSTER=[];
+async function loadRoster(){
+  var st=await Store.get(BESTIARY_KEY)||{custom:[],edits:{},deleted:[]};
+  st.custom=st.custom||[];st.edits=st.edits||{};st.deleted=st.deleted||[];
+  var out=[];
+  for(var i=0;i<SEED_MONSTERS.length;i++){var m=SEED_MONSTERS[i];var id=seedId(m.name);
+    if(st.deleted.indexOf(id)>=0)continue;
+    out.push(st.edits[id]?Object.assign({},st.edits[id],{_id:id}):Object.assign({},m,{_id:id}));
+  }
+  for(var j=0;j<st.custom.length;j++)out.push(st.custom[j]);
+  out.sort(function(a,b){return (a.tier-b.tier)||a.name.localeCompare(b.name);});
+  ROSTER=out;
+}
+
+/* ===== CHARACTER ROSTER (shared with the Characters app) ===== */
+var CHARS_KEY="arshmunnu_chars_v4";
+var CAMPAIGNS_KEY="arshmunnu_campaigns_v1";
+var VTT_PENDING_KEY="arshmunnu_vtt_pending";
+var SPECIES_TOK={
+  sofkarr:{c:"#7B9EA8",g:"\u25C8"}, drothmir:{c:"#4A3B5C",g:"\u25D1"}, viteine:{c:"#5B8C5A",g:"\u2741"},
+  roodin:{c:"#8B6F47",g:"\u27B3"}, astrylian:{c:"#C9952B",g:"\u2600"}, lunarian:{c:"#6B7B8D",g:"\u263E"},
+  shaiyan:{c:"#8B4557",g:"\u25BC"}, angel:{c:"#D4AF37",g:"\u2726"}, flyborn:{c:"#5A8B9E",g:"\u2744"},
+  myrmid:{c:"#4A7B8B",g:"\u265F"}, centaur:{c:"#8B7355",g:"\u265E"}, chamalian:{c:"#A0522D",g:"\u2605"},
+  prelling:{c:"#D8D0C0",g:"\u2727"}, human:{c:"#8B7355",g:"\u2637"}, bobrie:{c:"#4A6B5D",g:"\u2666"}
+};
+var CHARS=[];
+async function loadChars(){ CHARS=(await Store.get(CHARS_KEY))||[]; }
+function charTokenFromSaved(c){
+  var sp=SPECIES_TOK[c.species]||{};
+  var ep=(c.curEP!=null?c.curEP:(c.epMax||0))||0;
+  var mp=(c.curMP!=null?c.curMP:(c.mpMax||0))||0;
+  return { name:c.name||"Hero", baseName:c.name||"Hero", side:"ally",
+    glyph:sp.g||"\u2694", color:sp.c||"#4a82b0",
+    ep:ep, epMax:(c.epMax||ep||0), mp:mp, mpMax:(c.mpMax||mp||0),
+    dl:c.dl||0, initMod:0, init:0, size:1, charId:c._id,
+    img:(c.portrait&&/^data:/.test(c.portrait))?c.portrait:null };
+}
+function placeNewToken(t,n){
+  var sp=snapHex(S.mapW/2+(n%5)*hexColW(), S.mapH/2+Math.floor(n/5)*hexRowH());
+  t.x=sp.x; t.y=sp.y;
+}
+function addCharTokenObj(tk){
+  var n=0;for(var j=0;j<S.tokens.length;j++)if(S.tokens[j].side==="ally")n++;
+  var data=Object.assign({},tk);
+  var t=addToken(data); placeNewToken(t,n);
+  return t;
+}
+async function openRosterPicker(){
+  await loadChars();
+  var camps=(await Store.get(CAMPAIGNS_KEY))||[];
+  var html='<button class="modal-close" onclick="closeModal()">&times;</button><h3>Add Hero from your Characters</h3>';
+  if(!CHARS.length){
+    html+='<div style="color:var(--tdimmer);font-style:italic;text-align:center;padding:24px">No saved characters yet. Build one in the Character Creator, then return here.</div>';
+    openModal(html); return;
+  }
+  // campaign quick-add row
+  if(camps.length){
+    html+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">';
+    camps.forEach(function(cp){
+      var cnt=(cp.members||[]).length;
+      html+='<button class="tbtn" onclick="addCampaignParty(\''+cp.id+'\')" style="font-size:12px">&#10070; '+esc(cp.name)+' &middot; '+cnt+'</button>';
+    });
+    html+='</div>';
+  }
+  html+='<input id="rfSearch" placeholder="Search heroes\u2026" oninput="renderRfList()" style="width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:inherit;font-size:15px;padding:8px 10px;margin-bottom:12px;outline:none">';
+  html+='<div class="bf-grid" id="rfGrid"></div>';
+  openModal(html); renderRfList();
+}
+function renderRfList(){
+  var q=(($("rfSearch")||{}).value||"").toLowerCase();
+  var g=$("rfGrid"); if(!g)return; var html="";
+  CHARS.filter(function(c){return !q||((c.name||"")+" "+(c.species||"")+" "+(c.calling||"")).toLowerCase().indexOf(q)>=0;}).forEach(function(c){
+    var sp=SPECIES_TOK[c.species]||{};
+    html+='<div class="bf-card" style="--tc:'+(sp.c||"#4a82b0")+'" onclick="spawnFromChar(\''+c._id+'\')">'
+      +'<div class="n">'+(sp.g||"\u2694")+' '+esc(c.name||"Unnamed")+'</div>'
+      +'<div class="m">Lvl '+(c.level||1)+' '+esc(c.species||"")+'</div>'
+      +'<div class="s">EP '+((c.curEP!=null?c.curEP:(c.epMax||"\u2014")))+'</div></div>';
+  });
+  g.innerHTML=html||'<div style="color:var(--tdimmer);font-style:italic;grid-column:1/-1;text-align:center;padding:20px">No match.</div>';
+}
+function spawnFromChar(id){
+  var c=null;for(var i=0;i<CHARS.length;i++)if(CHARS[i]._id===id)c=CHARS[i];
+  if(!c)return;
+  addCharTokenObj(charTokenFromSaved(c));
+  renderTokens();renderInit();saveScene();closeModal();
+}
+async function addCampaignParty(campId){
+  var camps=(await Store.get(CAMPAIGNS_KEY))||[];
+  var cp=null;for(var i=0;i<camps.length;i++)if(camps[i].id===campId)cp=camps[i];
+  if(!cp)return;
+  await loadChars();
+  var ids=cp.members||[]; var added=0;
+  ids.forEach(function(cid){
+    var c=null;for(var j=0;j<CHARS.length;j++)if(CHARS[j]._id===cid)c=CHARS[j];
+    if(c){ addCharTokenObj(charTokenFromSaved(c)); added++; }
+  });
+  renderTokens();renderInit();saveScene();closeModal();
+}
+/* pending hand-off from Characters app / Campaigns app */
+async function importPending(){
+  var pend=await Store.get(VTT_PENDING_KEY);
+  if(!pend||!pend.tokens||!pend.tokens.length)return;
+  var label=pend.campaign?(' from "'+pend.campaign+'"'):'';
+  var ok=confirm("Add "+pend.tokens.length+" character token"+(pend.tokens.length>1?"s":"")+label+" to the map?");
+  if(ok){ pend.tokens.forEach(function(tk){ addCharTokenObj(tk); }); renderTokens();renderInit();saveScene(); }
+  Store.set(VTT_PENDING_KEY,{tokens:[]});
+}
+/* cross-app navigation (works embedded in the Archive, or standalone) */
+function gotoApp(appId,file){
+  try{ if(window.parent && window.parent!==window && typeof window.parent.openApp==="function"){ window.parent.openApp(appId); return; } }catch(e){}
+  window.location.href=file;
+}
+
+/* ===== SCENE STATE ===== */
+var S={
+  map:null,            // data-URL of map image
+  mapW:0,mapH:0,
+  grid:{size:64,on:true,offX:0,offY:0,color:"rgba(212,164,74,0.22)"},
+  tokens:[],           // {id,name,side,x,y,size,color,img,glyph,ep,epMax,mp,mpMax,dl,init,downed,stat}
+  fog:null,            // data-URL of fog canvas (painted)
+  fogOn:false,
+  round:1,
+  turnIdx:-1,
+  view:{x:0,y:0,z:1}
+};
+var SEL=null;          // selected token id
+var TOOL="select";     // select | pan | fog | erase | ping | measure
+var fogDirty=false;
+
+function saveScene(){
+  // serialise fog from canvas
+  try{ S.fog = S.fogOn ? fogCanvas.toDataURL("image/png") : null; }catch(e){}
+  Store.set(VTT_KEY,S);
+}
+function uid(){return "tk_"+Date.now()+"_"+Math.floor(Math.random()*1000);}
+
+/* ===== DOM ===== */
+var stage,viewport,mapImg,gridCanvas,fogCanvas,tokensEl,gctx,fctx;
+function $(id){return document.getElementById(id);}
+
+function initDom(){
+  stage=$("stage");viewport=$("viewport");mapImg=$("mapImg");
+  gridCanvas=$("gridCanvas");fogCanvas=$("fogCanvas");tokensEl=$("tokens");
+  gctx=gridCanvas.getContext("2d");fctx=fogCanvas.getContext("2d");
+}
+
+/* ===== MAP ===== */
+function setMap(dataURL){
+  S.map=dataURL;
+  var img=new Image();
+  img.onload=function(){
+    S.mapW=img.width;S.mapH=img.height;
+    mapImg.src=dataURL;mapImg.style.display="block";
+    mapImg.style.width=img.width+"px";mapImg.style.height=img.height+"px";
+    sizeCanvases();drawGrid();
+    if(S.fog){var f=new Image();f.onload=function(){fctx.clearRect(0,0,fogCanvas.width,fogCanvas.height);fctx.drawImage(f,0,0);};f.src=S.fog;}
+    fitView();renderTokens();$("emptyHint").style.display="none";
+    saveScene();
+  };
+  img.src=dataURL;
+}
+function sizeCanvases(){
+  [gridCanvas,fogCanvas].forEach(function(cv){cv.width=S.mapW;cv.height=S.mapH;cv.style.width=S.mapW+"px";cv.style.height=S.mapH+"px";});
+}
+/* ===== HEX GRID (flat-top) =====
+   S.grid.size = hex WIDTH (corner-to-corner across the flats' points, the wide axis).
+   For a flat-top hex: R = size/2 (center→vertex). Column spacing = 1.5*R; row spacing = sqrt(3)*R.
+   We use axial (col q, row r) with "odd-q" vertical layout and cube coords for true hex distance. */
+function hexR(){return S.grid.size/2;}                 // center-to-vertex
+function hexW(){return 2*hexR();}                      // full width (point to point)
+function hexH(){return Math.sqrt(3)*hexR();}           // full height (flat to flat)
+function hexColW(){return 1.5*hexR();}                 // horizontal center spacing
+function hexRowH(){return hexH();}                     // vertical center spacing
+
+// pixel center of hex at column q, row r (offset / "odd-q" layout, flat-top)
+function hexToPixel(q,r){
+  var x=hexColW()*q + hexR();
+  var y=hexRowH()*r + ((q&1)? hexRowH()/2 : 0) + hexRowH()/2;
+  return {x:x,y:y};
+}
+// pixel -> nearest hex (q,r) for flat-top, via cube rounding
+function pixelToHex(px,py){
+  var R=hexR();
+  var q=( (2/3)*(px-R) )/R;
+  // adjust py for column offset handled in cube conversion below
+  var ry=(py-hexRowH()/2);
+  var r=( ry/hexRowH() ) - ((Math.round(q)&1)?0.5:0);
+  // convert axial(q,r offset) → cube for rounding
+  // first convert offset r to axial using current q estimate
+  var qf=q, rf=( (py - hexRowH()/2 - ((Math.round(qf)&1)?hexRowH()/2:0)) / hexRowH() );
+  return roundHex(qf,rf);
+}
+// cube rounding on axial (q,r) where x=q, z=r, y=-x-z
+function roundHex(q,r){
+  var x=q, z=r, y=-x-z;
+  var rx=Math.round(x), ry=Math.round(y), rz=Math.round(z);
+  var dx=Math.abs(rx-x), dy=Math.abs(ry-y), dz=Math.abs(rz-z);
+  if(dx>dy&&dx>dz)rx=-ry-rz; else if(dy>dz)ry=-rx-rz; else rz=-rx-ry;
+  return {q:rx, r:rz};
+}
+// hex distance between two pixel points, in whole hexes
+function hexDistancePx(x0,y0,x1,y1){
+  var a=pixelToHexCube(x0,y0), b=pixelToHexCube(x1,y1);
+  return (Math.abs(a.x-b.x)+Math.abs(a.y-b.y)+Math.abs(a.z-b.z))/2;
+}
+function pixelToHexCube(px,py){
+  // robust offset(odd-q)→cube. Estimate column, then row using that column's vertical offset.
+  var R=hexR();
+  var col=Math.round(((px-R)/hexColW()));
+  var offY=(col&1)?hexRowH()/2:0;
+  var row=Math.round(((py-hexRowH()/2-offY)/hexRowH()));
+  // refine by checking the candidate and neighbors for the closest center
+  var best=null,bestD=1e9;
+  for(var dc=-1;dc<=1;dc++)for(var dr=-1;dr<=1;dr++){
+    var c=col+dc, rr=row+dr;var ctr=hexToPixel(c,rr);
+    var d=(ctr.x-px)*(ctr.x-px)+(ctr.y-py)*(ctr.y-py);
+    if(d<bestD){bestD=d;best={c:c,r:rr};}
+  }
+  // offset(odd-q) → cube
+  var x=best.c;
+  var z=best.r-((best.c-(best.c&1))/2);
+  var y=-x-z;
+  return {x:x,y:y,z:z};
+}
+
+function drawGrid(){
+  gctx.clearRect(0,0,gridCanvas.width,gridCanvas.height);
+  if(!S.grid.on)return;
+  gctx.strokeStyle=S.grid.color;gctx.lineWidth=1;
+  var R=hexR();
+  var cols=Math.ceil(S.mapW/hexColW())+2;
+  var rows=Math.ceil(S.mapH/hexRowH())+2;
+  for(var q=0;q<cols;q++){
+    for(var r=0;r<rows;r++){
+      var c=hexToPixel(q,r);
+      if(c.x-R> S.mapW+R || c.y-R> S.mapH+R) continue;
+      gctx.beginPath();
+      for(var i=0;i<6;i++){
+        var ang=Math.PI/180*(60*i); // flat-top: vertices at 0,60,120…
+        var vx=c.x+R*Math.cos(ang), vy=c.y+R*Math.sin(ang);
+        if(i===0)gctx.moveTo(vx,vy); else gctx.lineTo(vx,vy);
+      }
+      gctx.closePath();gctx.stroke();
+    }
+  }
+}
+
+/* ===== VIEW (pan/zoom) ===== */
+function applyView(){viewport.style.transform="translate("+S.view.x+"px,"+S.view.y+"px) scale("+S.view.z+")";$("zoomLbl").textContent=Math.round(S.view.z*100)+"%";}
+function fitView(){
+  if(!S.mapW){return;}
+  var sw=stage.clientWidth,sh=stage.clientHeight;
+  var z=Math.min(sw/S.mapW,sh/S.mapH)*0.96;z=Math.max(.1,Math.min(z,2));
+  S.view.z=z;S.view.x=(sw-S.mapW*z)/2;S.view.y=(sh-S.mapH*z)/2;applyView();
+}
+function zoomBy(f,cx,cy){
+  var oz=S.view.z,nz=Math.max(.1,Math.min(oz*f,4));
+  if(cx==null){cx=stage.clientWidth/2;cy=stage.clientHeight/2;}
+  // keep point under cursor stable
+  var wx=(cx-S.view.x)/oz, wy=(cy-S.view.y)/oz;
+  S.view.z=nz;S.view.x=cx-wx*nz;S.view.y=cy-wy*nz;applyView();
+}
+function screenToWorld(sx,sy){var r=stage.getBoundingClientRect();return {x:(sx-r.left-S.view.x)/S.view.z,y:(sy-r.top-S.view.y)/S.view.z};}
+function snapHex(px,py){var h=pixelToHex(px,py);return hexToPixel(h.q,h.r);}
+
+/* ===== TOKENS ===== */
+function addToken(t){
+  t.id=t.id||uid();
+  t.size=t.size||1;t.side=t.side||"neutral";t.x=t.x!=null?t.x:S.mapW/2;t.y=t.y!=null?t.y:S.mapH/2;
+  if(t.init==null)t.init=0;
+  S.tokens.push(t);renderTokens();renderInit();saveScene();
+  return t;
+}
+function tokenById(id){for(var i=0;i<S.tokens.length;i++)if(S.tokens[i].id===id)return S.tokens[i];return null;}
+function removeToken(id){S.tokens=S.tokens.filter(function(t){return t.id!==id;});if(SEL===id)SEL=null;renderTokens();renderInit();saveScene();}
+
+function renderTokens(){
+  var html="";
+  for(var i=0;i<S.tokens.length;i++){var t=S.tokens[i];
+    var px=t.size*hexH()*0.92; // fit within hex (flat-to-flat height), slight inset
+    var active=(S.turnIdx>=0 && orderedTokens()[S.turnIdx] && orderedTokens()[S.turnIdx].id===t.id);
+    var hpPct=t.epMax?Math.max(0,Math.min(100,(t.ep/t.epMax)*100)):100;
+    var inner = t.img?('<img src="'+t.img+'">'):(t.glyph||"●");
+    html+='<div class="token '+t.side+(SEL===t.id?' sel':'')+(active?' active-turn':'')+(t.downed?' downed':'')+'" '
+      +'data-id="'+t.id+'" style="left:'+(t.x-px/2)+'px;top:'+(t.y-px/2)+'px;width:'+px+'px;height:'+px+'px;'
+      +(t.color?'border-color:'+t.color+';':'')+'">'
+      +(t.epMax?'<div class="tk-hp"><div class="fill" style="width:'+hpPct+'%"></div></div>':'')
+      +inner
+      +'<div class="tk-name">'+esc(t.name)+'</div>'
+      +'</div>';
+  }
+  tokensEl.innerHTML=html;
+}
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+/* ===== INITIATIVE ===== */
+function orderedTokens(){return S.tokens.slice().sort(function(a,b){return (b.init-a.init)||a.name.localeCompare(b.name);});}
+function renderInit(){
+  var list=$("initList");var ord=orderedTokens();
+  if(!ord.length){list.innerHTML='<div style="color:var(--tdimmer);font-style:italic;font-size:13px;text-align:center;padding:30px 10px">No combatants yet. Add tokens from the toolbar.</div>';return;}
+  var html="";
+  for(var i=0;i<ord.length;i++){var t=ord[i];var active=(i===S.turnIdx);
+    var hpPct=t.epMax?Math.max(0,Math.min(100,(t.ep/t.epMax)*100)):0;
+    html+='<div class="init-card '+t.side+(active?' active':'')+(SEL===t.id?' sel':'')+'" data-id="'+t.id+'" onclick="selectToken(\''+t.id+'\')">'
+      +'<div class="ic-top">'
+        +'<div class="ic-init" onclick="event.stopPropagation();editInit(\''+t.id+'\')" title="Click to set initiative">'+t.init+'</div>'
+        +'<div class="ic-name">'+esc(t.name)+'</div>'
+        +'<button class="ic-x" onclick="event.stopPropagation();removeToken(\''+t.id+'\')">&times;</button>'
+      +'</div>';
+    if(t.epMax||t.dl){
+      html+='<div class="ic-stats">';
+      if(t.dl)html+='<span class="stat-pill dl"><span class="lab">DL</span>'+t.dl+'</span>';
+      if(t.epMax){html+='<span class="stat-pill"><span class="lab">EP</span><input value="'+t.ep+'" onchange="setEP(\''+t.id+'\',this.value)" onclick="event.stopPropagation()">/'+t.epMax+'</span>';}
+      if(t.mpMax){html+='<span class="stat-pill"><span class="lab">MP</span><input value="'+t.mp+'" onchange="setMP(\''+t.id+'\',this.value)" onclick="event.stopPropagation()">/'+t.mpMax+'</span>';}
+      html+='</div>';
+      if(t.epMax)html+='<div class="ic-bar"><div class="fill" style="width:'+hpPct+'%"></div></div>';
+      html+='<div class="ic-dmg"><input type="number" placeholder="±" id="dmg-'+t.id+'" onclick="event.stopPropagation()">'
+        +'<button class="dmg" onclick="event.stopPropagation();applyDmg(\''+t.id+'\',1)">Hit</button>'
+        +'<button class="heal" onclick="event.stopPropagation();applyDmg(\''+t.id+'\',-1)">Heal</button>'
+        +(t.stat?'<button onclick="event.stopPropagation();showStat(\''+t.id+'\')" title="Stat block">▤</button>':'')
+        +'</div>';
+    }
+    html+='</div>';
+  }
+  list.innerHTML=html;
+  $("roundLbl").textContent="Round "+S.round;
+}
+function editInit(id){var t=tokenById(id);if(!t)return;var v=prompt("Initiative for "+t.name+":",t.init);if(v!==null){t.init=parseInt(v)||0;renderInit();renderTokens();saveScene();}}
+function setEP(id,v){var t=tokenById(id);if(!t)return;t.ep=Math.max(0,Math.min(t.epMax,parseInt(v)||0));t.downed=(t.ep<=0);renderInit();renderTokens();saveScene();}
+function setMP(id,v){var t=tokenById(id);if(!t)return;t.mp=Math.max(0,Math.min(t.mpMax,parseInt(v)||0));renderInit();saveScene();}
+function applyDmg(id,sign){var t=tokenById(id);if(!t)return;var inp=$("dmg-"+id);var n=parseInt(inp.value)||0;if(!n)return;
+  t.ep=Math.max(0,Math.min(t.epMax,t.ep-sign*n));t.downed=(t.ep<=0);inp.value="";renderInit();renderTokens();saveScene();
+  toastDice((sign>0?"−":"+")+n+" EP → "+t.name+"  ("+t.ep+"/"+t.epMax+")");
+}
+function nextTurn(){
+  var ord=orderedTokens();if(!ord.length)return;
+  S.turnIdx++;
+  if(S.turnIdx>=ord.length){S.turnIdx=0;S.round++;}
+  renderInit();renderTokens();saveScene();
+  var cur=ord[S.turnIdx];if(cur)centerOn(cur);
+}
+function prevTurn(){var ord=orderedTokens();if(!ord.length)return;S.turnIdx--;if(S.turnIdx<0){S.turnIdx=ord.length-1;S.round=Math.max(1,S.round-1);}renderInit();renderTokens();saveScene();}
+function centerOn(t){var sw=stage.clientWidth,sh=stage.clientHeight;S.view.x=sw/2-t.x*S.view.z;S.view.y=sh/2-t.y*S.view.z;applyView();}
+function selectToken(id){SEL=id;renderTokens();renderInit();}
+function rollInitiativeAll(){
+  for(var i=0;i<S.tokens.length;i++){var t=S.tokens[i];var ab=t.initMod||0;t.init=Math.floor(Math.random()*20)+1+ab;}
+  S.turnIdx=-1;S.round=1;renderInit();renderTokens();saveScene();toastDice("Initiative rolled for all combatants.");
+}
+
+/* ===== FOG ===== */
+function enableFog(){
+  S.fogOn=true;
+  fctx.clearRect(0,0,fogCanvas.width,fogCanvas.height);
+  fctx.fillStyle="rgba(8,5,10,0.97)";fctx.fillRect(0,0,fogCanvas.width,fogCanvas.height);
+  saveScene();
+}
+function clearFog(){fctx.clearRect(0,0,fogCanvas.width,fogCanvas.height);S.fogOn=false;saveScene();}
+function paintFog(wx,wy,reveal){
+  var r=S.grid.size*1.1;
+  fctx.save();
+  fctx.globalCompositeOperation = reveal?"destination-out":"source-over";
+  fctx.fillStyle = reveal?"rgba(0,0,0,1)":"rgba(8,5,10,0.97)";
+  fctx.beginPath();fctx.arc(wx,wy,r,0,Math.PI*2);fctx.fill();
+  fctx.restore();
+  fogDirty=true;
+}
+
+/* ===== DICE ===== */
+function roll(sides,n){n=n||1;var tot=0,parts=[];for(var i=0;i<n;i++){var r=Math.floor(Math.random()*sides)+1;parts.push(r);tot+=r;}
+  var crit=(sides===20&&n===1&&parts[0]===20)?" ★":(sides===20&&n===1&&parts[0]===1)?" ✦":"";
+  toastDice("d"+sides+(n>1?"×"+n:"")+": ["+parts.join(", ")+"] = "+tot+crit);}
+var diceTimer;
+function toastDice(msg){var el=$("diceResult");el.textContent=msg;el.classList.add("show");clearTimeout(diceTimer);diceTimer=setTimeout(function(){el.classList.remove("show");},2600);}
+
+/* ===== TOOLS ===== */
+function setTool(t){TOOL=t;document.querySelectorAll(".tool[data-tool]").forEach(function(b){b.classList.toggle("on",b.dataset.tool===t);});
+  stage.className="stage"+(t!=="select"?" tool-"+t:"");}
+
+/* ===== BESTIARY PICKER ===== */
+function openBestiaryPicker(){
+  var html='<button class="modal-close" onclick="closeModal()">&times;</button><h3>Add Monster from Bestiary</h3>';
+  html+='<input id="bfSearch" placeholder="Search…" oninput="renderBfList()" style="width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:inherit;font-size:15px;padding:8px 10px;margin-bottom:12px;outline:none">';
+  html+='<div class="bf-grid" id="bfGrid"></div>';
+  openModal(html);renderBfList();
+}
+var TYPECOLOR={beast:"#7c9e6b",void:"#9370b0",humanoid:"#4a82b0",dragon:"#d4a44a",undead:"#5a8b8b",construct:"#8a8a9a",aberration:"#c0843a"};
+function renderBfList(){
+  var q=(($("bfSearch")||{}).value||"").toLowerCase();
+  var g=$("bfGrid");var html="";
+  ROSTER.filter(function(m){return !q||(m.name+" "+m.type+" "+m.role).toLowerCase().indexOf(q)>=0;}).forEach(function(m){
+    var c=TYPECOLOR[m.type]||"#d4a44a";
+    html+='<div class="bf-card" style="--tc:'+c+'" onclick="spawnMonster(\''+m._id+'\')">'
+      +'<div class="n">'+esc(m.name)+'</div><div class="m">T'+m.tier+' '+esc(m.role)+'</div>'
+      +'<div class="s">EP '+esc(m.ep)+' · DL '+esc(m.dl)+'</div></div>';
+  });
+  g.innerHTML=html||'<div style="color:var(--tdimmer);font-style:italic;grid-column:1/-1;text-align:center;padding:20px">No creatures. Add some in the Bestiary first.</div>';
+}
+function parseNum(v){var m=/(\d+)/.exec(String(v||""));return m?parseInt(m[1]):0;}
+function spawnMonster(id){
+  var m=null;for(var i=0;i<ROSTER.length;i++)if(ROSTER[i]._id===id)m=ROSTER[i];
+  if(!m)return;
+  var ep=parseNum(m.ep);
+  // count existing copies for numbering
+  var n=0;for(var j=0;j<S.tokens.length;j++)if(S.tokens[j].baseName===m.name)n++;
+  var t=addToken({
+    name:m.name+(n>0?" "+(n+1):""),baseName:m.name,side:"enemy",
+    glyph:glyphFor(m.type),color:TYPECOLOR[m.type],
+    ep:ep,epMax:ep,mp:0,mpMax:0,dl:parseNum(m.dl),
+    initMod:0,init:0,size:m.tier>=4?2:1,
+    stat:{tohit:m.tohit,damage:m.damage,saves:m.saves,skills:m.skills,abilities:m.abilities,motive:m.motive,morale:m.morale,speed:m.speed,ap:m.ap,role:m.role,tier:m.tier,type:m.type,lore:m.lore}
+  });
+  // place near center, offset by count
+  var sp=snapHex(S.mapW/2+(n%5)*hexColW(), S.mapH/2+Math.floor(n/5)*hexRowH()); t.x=sp.x; t.y=sp.y;
+  renderTokens();saveScene();closeModal();
+}
+function glyphFor(type){return ({beast:"🐾",void:"🌀",humanoid:"⚔",dragon:"🐉",undead:"💀",construct:"🗿",aberration:"👁"})[type]||"●";}
+
+function showStat(id){
+  var t=tokenById(id);if(!t||!t.stat)return;var s=t.stat;
+  var c=TYPECOLOR[s.type]||"#d4a44a";
+  var h='<button class="modal-close" onclick="closeModal()">&times;</button>';
+  h+='<h3 style="color:'+c+'">'+esc(t.name)+'</h3>';
+  h+='<div style="font-style:italic;color:var(--tdim);margin-top:-8px;margin-bottom:10px">Tier '+s.tier+' '+esc(s.role)+' — '+esc(s.type)+'</div>';
+  h+='<div class="statblock-mini">';
+  h+='<div class="ln"><b>Core</b>EP '+t.ep+'/'+t.epMax+' · DL '+t.dl+' · Speed '+esc(s.speed)+' · AP '+esc(s.ap)+'</div>';
+  h+='<div class="ln"><b>To-Hit</b>'+esc(s.tohit)+'</div>';
+  h+='<div class="ln"><b>Damage</b>'+esc(s.damage)+'</div>';
+  h+='<div class="ln"><b>Saves</b>'+esc(s.saves)+'</div>';
+  if(s.skills&&s.skills!=="—")h+='<div class="ln"><b>Skills</b>'+esc(s.skills)+'</div>';
+  if(s.abilities&&s.abilities.length){h+='<h4>Traits &amp; Abilities</h4>';s.abilities.forEach(function(a){h+='<div class="ab"><div class="n">'+esc(a[0])+'</div><div class="t">'+esc(a[1])+'</div></div>';});}
+  h+='<div class="ln" style="margin-top:10px"><b>Motive</b>'+esc(s.motive)+'</div><div class="ln"><b>Morale</b>'+esc(s.morale)+'</div>';
+  h+='</div>';
+  openModal(h);
+}
+
+/* ===== ADD CUSTOM / PLAYER TOKEN ===== */
+function openTokenEditor(existingId){
+  var t=existingId?tokenById(existingId):null;
+  var sideSel=["ally","enemy","neutral"].map(function(s){return '<option value="'+s+'"'+(t&&t.side===s?' selected':'')+'>'+s+'</option>';}).join("");
+  var h='<button class="modal-close" onclick="closeModal()">&times;</button><h3>'+(t?'Edit Token':'Add Token')+'</h3>';
+  h+='<div class="fld"><label>Name</label><input id="tk-name" value="'+(t?esc(t.name):"")+'"></div>';
+  h+='<div class="row3">'
+    +'<div class="fld"><label>Side</label><select id="tk-side">'+sideSel+'</select></div>'
+    +'<div class="fld"><label>Size (hexes)</label><input id="tk-size" type="number" value="'+(t?t.size:1)+'" min="1" max="6"></div>'
+    +'<div class="fld"><label>Init Mod</label><input id="tk-initmod" type="number" value="'+(t?(t.initMod||0):0)+'"></div>'
+  +'</div>';
+  h+='<div class="row3">'
+    +'<div class="fld"><label>EP Max</label><input id="tk-ep" type="number" value="'+(t?t.epMax:0)+'"></div>'
+    +'<div class="fld"><label>MP Max</label><input id="tk-mp" type="number" value="'+(t?t.mpMax:0)+'"></div>'
+    +'<div class="fld"><label>DL</label><input id="tk-dl" type="number" value="'+(t?t.dl:0)+'"></div>'
+  +'</div>';
+  h+='<div class="fld"><label>Token Image (optional)</label><input type="file" accept="image/*" onchange="tkImgPick(event)"><div id="tk-imgprev" style="margin-top:6px">'+(t&&t.img?'<img src="'+t.img+'" style="width:48px;height:48px;border-radius:50%;object-fit:cover">':'')+'</div></div>';
+  h+='<div class="fld"><label>Or Glyph (emoji/letter)</label><input id="tk-glyph" value="'+(t&&t.glyph?esc(t.glyph):"")+'" placeholder="e.g. 🛡 or A"></div>';
+  h+='<div class="fld"><label>Colour</label><div class="swatch" id="tk-swatch"></div></div>';
+  h+='<div style="display:flex;gap:8px;margin-top:8px"><button class="mb" onclick="saveTokenFromEditor('+(t?"'"+t.id+"'":"null")+')">'+(t?'Save':'Add to Map')+'</button><button class="mb ghost" onclick="closeModal()">Cancel</button></div>';
+  openModal(h);
+  TK_IMG=t&&t.img?t.img:null;TK_COLOR=t&&t.color?t.color:"#4a82b0";
+  var sw=["#4a82b0","#a83232","#b0902a","#5a9e5a","#9370b0","#c0843a","#5a8b8b","#d4a44a"];
+  $("tk-swatch").innerHTML=sw.map(function(c){return '<div class="sw'+(c===TK_COLOR?' on':'')+'" style="background:'+c+'" onclick="pickColor(\''+c+'\')"></div>';}).join("");
+}
+var TK_IMG=null,TK_COLOR="#4a82b0";
+function pickColor(c){TK_COLOR=c;document.querySelectorAll("#tk-swatch .sw").forEach(function(s){s.classList.toggle("on",s.style.background===c||rgbEq(s.style.background,c));});}
+function rgbEq(a,b){return false;}
+function tkImgPick(ev){var f=ev.target.files&&ev.target.files[0];if(!f)return;if(f.size>1500000){alert("Image too big (max ~1.5MB).");return;}
+  var rd=new FileReader();rd.onload=function(e){var img=new Image();img.onload=function(){var cv=document.createElement("canvas");var sz=96;cv.width=sz;cv.height=sz;var ctx=cv.getContext("2d");
+    var s=Math.min(img.width,img.height);ctx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,sz,sz);TK_IMG=cv.toDataURL("image/jpeg",.85);
+    $("tk-imgprev").innerHTML='<img src="'+TK_IMG+'" style="width:48px;height:48px;border-radius:50%;object-fit:cover">';};img.src=e.target.result;};rd.readAsDataURL(f);}
+function saveTokenFromEditor(id){
+  var name=($("tk-name").value||"").trim();if(!name){alert("Name?");return;}
+  var data={name:name,side:$("tk-side").value,size:parseInt($("tk-size").value)||1,
+    initMod:parseInt($("tk-initmod").value)||0,epMax:parseInt($("tk-ep").value)||0,
+    mpMax:parseInt($("tk-mp").value)||0,dl:parseInt($("tk-dl").value)||0,
+    img:TK_IMG,glyph:($("tk-glyph").value||"").trim()||null,color:TK_COLOR};
+  if(id){var t=tokenById(id);Object.assign(t,data);if(t.ep>t.epMax)t.ep=t.epMax;if(t.epMax&&t.ep==null)t.ep=t.epMax;t.mp=Math.min(t.mp||0,t.mpMax);}
+  else{data.ep=data.epMax;data.mp=data.mpMax;addToken(data);}
+  renderTokens();renderInit();saveScene();closeModal();
+}
+
+/* ===== MODAL ===== */
+function openModal(h){$("modal").innerHTML=h;$("ov").classList.add("open");}
+function closeModal(){$("ov").classList.remove("open");}
+
+/* ===== SCENE MGMT ===== */
+function newScene(){if(!confirm("Clear the board (map, tokens, fog)? This cannot be undone."))return;
+  S={map:null,mapW:0,mapH:0,grid:{size:64,on:true,offX:0,offY:0,color:"rgba(212,164,74,0.22)"},tokens:[],fog:null,fogOn:false,round:1,turnIdx:-1,view:{x:0,y:0,z:1}};
+  SEL=null;mapImg.style.display="none";fctx&&fctx.clearRect(0,0,fogCanvas.width,fogCanvas.height);
+  renderTokens();renderInit();$("emptyHint").style.display="flex";saveScene();}
+function exportScene(){saveScene();var blob=new Blob([JSON.stringify(S)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="arshmunnu_scene.json";a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},800);}
+function importScene(ev){var f=ev.target.files&&ev.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(e){try{S=JSON.parse(e.target.result);SEL=null;if(S.map)setMap(S.map);else{renderTokens();renderInit();}renderInit();saveScene();}catch(err){alert("Bad scene file: "+err.message);}};rd.readAsText(f);ev.target.value="";}
+function toggleGrid(){S.grid.on=!S.grid.on;drawGrid();$("gridBtn").classList.toggle("on",S.grid.on);saveScene();}
+function setGridSize(v){S.grid.size=Math.max(16,parseInt(v)||64);drawGrid();renderTokens();saveScene();}
+function toggleSide(){$("side").classList.toggle("collapsed");}
+
+/* ===== INPUT (pan/zoom/drag/fog/ping/measure) ===== */
+var drag=null; // {type:'pan'|'token', ...}
+var measureEl=null,measureLbl=null;
+function onDown(e){
+  var isTouch=e.type==="touchstart";var pt=isTouch?e.touches[0]:e;
+  var tokenEl=e.target.closest?e.target.closest(".token"):null;
+  if(TOOL==="select"&&tokenEl){
+    var id=tokenEl.dataset.id;selectToken(id);var t=tokenById(id);var w=screenToWorld(pt.clientX,pt.clientY);
+    drag={type:"token",id:id,dx:w.x-t.x,dy:w.y-t.y,moved:false};e.preventDefault();return;
+  }
+  if(TOOL==="fog"||TOOL==="erase"){var w=screenToWorld(pt.clientX,pt.clientY);paintFog(w.x,w.y,TOOL==="erase");drag={type:"fog",reveal:TOOL==="erase"};e.preventDefault();return;}
+  if(TOOL==="ping"){var w=screenToWorld(pt.clientX,pt.clientY);doPing(w.x,w.y);return;}
+  if(TOOL==="measure"){var w=screenToWorld(pt.clientX,pt.clientY);drag={type:"measure",x0:w.x,y0:w.y};startMeasure(w.x,w.y);e.preventDefault();return;}
+  // default: pan
+  drag={type:"pan",sx:pt.clientX,sy:pt.clientY,vx:S.view.x,vy:S.view.y};stage.classList.add("panning");
+}
+function onMove(e){
+  if(!drag)return;var isTouch=e.type==="touchmove";var pt=isTouch?e.touches[0]:e;
+  if(drag.type==="pan"){S.view.x=drag.vx+(pt.clientX-drag.sx);S.view.y=drag.vy+(pt.clientY-drag.sy);applyView();}
+  else if(drag.type==="token"){var w=screenToWorld(pt.clientX,pt.clientY);var t=tokenById(drag.id);t.x=w.x-drag.dx;t.y=w.y-drag.dy;drag.moved=true;renderTokens();}
+  else if(drag.type==="fog"){var w=screenToWorld(pt.clientX,pt.clientY);paintFog(w.x,w.y,drag.reveal);}
+  else if(drag.type==="measure"){var w=screenToWorld(pt.clientX,pt.clientY);updateMeasure(drag.x0,drag.y0,w.x,w.y);}
+  if(e.cancelable)e.preventDefault();
+}
+function onUp(){
+  if(!drag){return;}
+  if(drag.type==="token"&&drag.moved){var t=tokenById(drag.id);if(S.grid.on){var sn=snapHex(t.x,t.y);t.x=sn.x;t.y=sn.y;}renderTokens();saveScene();}
+  if(drag.type==="fog"){saveScene();}
+  if(drag.type==="measure"){endMeasure();}
+  stage.classList.remove("panning");drag=null;
+}
+function doPing(x,y){var p=document.createElement("div");p.className="ping";p.style.left=x+"px";p.style.top=y+"px";tokensEl.appendChild(p);setTimeout(function(){p.remove();},1000);}
+function startMeasure(x,y){measureEl=document.createElement("div");measureEl.className="measure-line";tokensEl.appendChild(measureEl);
+  measureLbl=document.createElement("div");measureLbl.className="measure-label";tokensEl.appendChild(measureLbl);}
+function updateMeasure(x0,y0,x1,y1){if(!measureEl)return;var dx=x1-x0,dy=y1-y0;var len=Math.sqrt(dx*dx+dy*dy);var ang=Math.atan2(dy,dx)*180/Math.PI;
+  measureEl.style.left=x0+"px";measureEl.style.top=y0+"px";measureEl.style.width=len+"px";measureEl.style.transform="rotate("+ang+"deg)";
+  var hexes=hexDistancePx(x0,y0,x1,y1);measureLbl.style.left=(x0+x1)/2+"px";measureLbl.style.top=(y0+y1)/2+"px";measureLbl.textContent=hexes+" hex";}
+function endMeasure(){if(measureEl){measureEl.remove();measureEl=null;}if(measureLbl){setTimeout(function(){measureLbl&&measureLbl.remove();measureLbl=null;},900);}}
+
+function onWheel(e){e.preventDefault();var f=e.deltaY<0?1.12:0.89;zoomBy(f,e.clientX-stage.getBoundingClientRect().left,e.clientY-stage.getBoundingClientRect().top);saveScene();}
+// double-click token to edit
+function onDblClick(e){var tEl=e.target.closest&&e.target.closest(".token");if(tEl){openTokenEditor(tEl.dataset.id);}}
+
+/* map import */
+function mapImgPick(ev){var f=ev.target.files&&ev.target.files[0];if(!f)return;if(f.size>8000000){alert("Map too large (max ~8MB).");return;}
+  var rd=new FileReader();rd.onload=function(e){setMap(e.target.result);};rd.readAsDataURL(f);ev.target.value="";}
+
+/* keyboard */
+document.addEventListener("keydown",function(e){
+  if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;
+  if(e.key==="Escape")closeModal();
+  if(e.key==="Delete"&&SEL)removeToken(SEL);
+  if(e.key===" "){e.preventDefault();nextTurn();}
+  if(e.key==="g")toggleGrid();
+});
+
+/* ===== BOOT ===== */
+(async function(){
+  initDom();
+  await loadRoster();
+  var saved=await Store.get(VTT_KEY);
+  if(saved&&saved.tokens){S=saved;if(!S.view)S.view={x:0,y:0,z:1};}
+  // wire stage events
+  stage.addEventListener("mousedown",onDown);window.addEventListener("mousemove",onMove);window.addEventListener("mouseup",onUp);
+  stage.addEventListener("touchstart",onDown,{passive:false});window.addEventListener("touchmove",onMove,{passive:false});window.addEventListener("touchend",onUp);
+  stage.addEventListener("wheel",onWheel,{passive:false});
+  stage.addEventListener("dblclick",onDblClick);
+  if(S.map){setMap(S.map);} else {$("emptyHint").style.display="flex";}
+  applyView();renderTokens();renderInit();
+  window.addEventListener("resize",function(){ /* keep view */ });
+  await importPending();
+})();
+
+</script>
+</body>
+</html>

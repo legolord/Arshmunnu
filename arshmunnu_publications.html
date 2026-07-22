@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Arshmunnu — Books &amp; Publication Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0612; --bg2:#13101e;
+  --gold:#d4a44a; --goldL:#f0cc72; --goldD:#7c5a1f;
+  --border:rgba(212,164,74,.22); --border2:rgba(212,164,74,.5);
+  --ink:#e8dfc8; --ink2:rgba(232,223,200,.82); --muted:rgba(232,223,200,.55); --mute2:rgba(232,223,200,.35);
+  --bad:#f87171; --good:#86efac; --info:#60a5fa;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'EB Garamond',serif;background:radial-gradient(ellipse at top,#1a1428 0%,var(--bg) 60%,var(--bg2) 100%);color:var(--ink);min-height:100vh;padding:24px 18px 100px;line-height:1.55;}
+.head{max-width:1000px;margin:0 auto 28px;text-align:center;padding-bottom:22px;border-bottom:1px solid var(--border);position:relative;}
+.head::before{content:'';position:absolute;bottom:-1px;left:50%;width:240px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:translateX(-50%);}
+.head h1{font-family:'Cinzel Decorative',serif;color:var(--goldL);font-size:clamp(28px,5.5vw,42px);letter-spacing:.04em;text-shadow:0 2px 12px rgba(212,164,74,.18);}
+.head .sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:15px;margin-top:10px;max-width:560px;margin-left:auto;margin-right:auto;}
+.tabs{max-width:1000px;margin:0 auto 22px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+.tabs button{padding:9px 18px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:3px;cursor:pointer;transition:all .15s;}
+.tabs button.active{background:rgba(212,164,74,.16);color:var(--goldL);border-color:var(--gold);}
+.tabs button:hover{color:var(--ink);}
+.container{max-width:1000px;margin:0 auto;}
+.pane{display:none;}
+.pane.active{display:block;}
+.toolbar{display:none;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:18px;padding:10px 0;border-bottom:1px solid var(--border);}
+body.editing .toolbar{display:flex;}
+.toolbar h2{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--goldL);margin-right:auto;}
+.toolbar button{padding:7px 14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:rgba(212,164,74,.1);color:var(--goldL);border:1px solid var(--border2);border-radius:3px;cursor:pointer;}
+.toolbar button.primary{background:rgba(212,164,74,.25);}
+.toolbar button.bad{background:rgba(248,113,113,.1);color:var(--bad);border-color:rgba(248,113,113,.3);}
+.toolbar button:hover{filter:brightness(1.18);}
+body.editing .view-only{display:none!important;}
+.pub-intro{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:14px;text-align:center;margin-bottom:22px;max-width:680px;margin-left:auto;margin-right:auto;}
+.pub-list{display:flex;flex-direction:column;gap:6px;}
+.pubrow{display:grid;grid-template-columns:48px 1fr auto;gap:14px;align-items:center;padding:13px 18px;background:linear-gradient(90deg,rgba(212,164,74,.04),rgba(0,0,0,.18));border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:3px;transition:all .15s;}
+.pubrow:hover{border-left-color:var(--goldL);background:linear-gradient(90deg,rgba(212,164,74,.08),rgba(0,0,0,.18));}
+.pub-n{font-family:'Cinzel Decorative',serif;color:var(--gold);font-size:22px;text-align:center;}
+.pub-body{min-width:0;}
+.pub-title{font-family:'Cinzel',serif;color:var(--goldL);font-size:15px;letter-spacing:.05em;margin-bottom:2px;}
+.pub-when{font-family:'Cormorant Garamond',serif;color:var(--muted);font-size:13px;font-style:italic;}
+.pub-note{color:var(--ink2);font-size:12px;font-style:italic;margin-top:3px;display:none;}
+body.editing .pub-note{display:block;}
+.pub-actions{display:none;gap:4px;flex-shrink:0;}
+body.editing .pub-actions{display:flex;}
+.pub-actions button{padding:5px 9px;font-size:12px;background:rgba(212,164,74,.08);color:var(--goldL);border:1px solid var(--border);border-radius:2px;cursor:pointer;}
+.pub-actions button.bad{color:var(--bad);border-color:rgba(248,113,113,.3);}
+.pub-actions button:hover{background:rgba(212,164,74,.22);}
+.plan-divider{text-align:center;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.32em;color:var(--gold);text-transform:uppercase;margin:24px 0 12px;padding-top:14px;border-top:1px dashed var(--border);opacity:.7;}
+.plan-divider:first-of-type{border-top:none;padding-top:0;margin-top:6px;}
+.era{margin-bottom:30px;}
+.era-h{font-family:'Cinzel Decorative',serif;color:var(--goldL);font-size:22px;letter-spacing:.04em;margin-bottom:4px;text-align:center;}
+.era-tag{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:14px;text-align:center;margin-bottom:8px;}
+.era-desc{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink2);font-size:14px;text-align:center;margin:0 auto 18px;max-width:680px;line-height:1.6;}
+.era-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:18px auto;max-width:200px;opacity:.45;}
+.books{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
+.book{background:linear-gradient(180deg,rgba(212,164,74,.04),rgba(0,0,0,.22));border:1px solid var(--border);border-radius:4px;padding:14px 16px;position:relative;}
+.book-status-badge{position:absolute;top:10px;right:12px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;padding:3px 8px;border-radius:2px;}
+.book-status-badge[data-st="planned"]{background:rgba(212,164,74,.08);color:var(--muted);border:1px solid var(--border);}
+.book-status-badge[data-st="drafting"]{background:rgba(96,165,250,.12);color:var(--info);border:1px solid rgba(96,165,250,.3);}
+.book-status-badge[data-st="published"]{background:rgba(134,239,172,.12);color:var(--good);border:1px solid rgba(134,239,172,.3);}
+.book-title{font-family:'Cinzel',serif;color:var(--goldL);font-size:14px;letter-spacing:.04em;margin-bottom:3px;padding-right:60px;}
+.book-type{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:12px;margin-bottom:8px;}
+.book-syn{color:var(--ink2);font-size:13px;line-height:1.55;}
+.book-actions{display:none;gap:4px;margin-top:10px;flex-wrap:wrap;}
+body.editing .book-actions{display:flex;}
+.book-actions button{padding:4px 8px;font-size:10px;background:rgba(212,164,74,.08);color:var(--goldL);border:1px solid var(--border);border-radius:2px;cursor:pointer;font-family:'Cinzel',serif;letter-spacing:.06em;}
+.book-actions button.bad{background:rgba(248,113,113,.08);color:var(--bad);border-color:rgba(248,113,113,.3);}
+.book-actions button:hover{filter:brightness(1.2);}
+.add-book{display:none;margin:8px 0 0;padding:8px;background:transparent;color:var(--muted);border:1px dashed var(--border);border-radius:2px;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;width:100%;}
+body.editing .add-book{display:block;}
+.add-book:hover{background:rgba(212,164,74,.05);color:var(--goldL);}
+.era-edit-h{display:none;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
+body.editing .era-edit-h{display:flex;}
+input.tin,select.tin,textarea.tin{background:rgba(0,0,0,.35);border:1px solid var(--border);color:var(--ink);padding:6px 8px;border-radius:2px;font-family:'EB Garamond',serif;font-size:13px;width:100%;}
+input.tin:focus,select.tin:focus,textarea.tin:focus{outline:none;border-color:var(--gold);background:rgba(212,164,74,.06);}
+textarea.tin{min-height:60px;resize:vertical;line-height:1.5;}
+.fab{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--goldD));color:#1a1428;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(212,164,74,.4),inset 0 1px 0 rgba(255,255,255,.3);font-size:24px;display:flex;align-items:center;justify-content:center;z-index:50;transition:all .2s;}
+.fab:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(212,164,74,.55);}
+.fab:active{transform:scale(.95);}
+body.editing .fab{background:linear-gradient(135deg,var(--good),#3b9d68);}
+.fab .check{display:none;}
+body.editing .fab .pencil{display:none;}
+body.editing .fab .check{display:inline;}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:rgba(20,15,28,.95);border:1px solid var(--gold);color:var(--ink);padding:10px 20px;border-radius:4px;font-size:13px;z-index:100;display:none;}
+.toast.show{display:block;animation:fadeOut 2s ease-in forwards;}
+@keyframes fadeOut{0%,60%{opacity:1;}100%{opacity:0;}}
+</style>
+<style id="arsh-gate-base"></style>
+<script>
+/* ════ ARSH ADMIN GATE ════
+   Editing the Archive is reserved for the Keeper (Aelarion).
+   Readers see the pages in view-only form. This is an editing lock,
+   shared across pages via localStorage('arsh_admin'). */
+(function(){
+  var SEL='.fab,.ep-fab,.ep-sadd';
+  function admin(){try{return localStorage.getItem('arsh_admin')==='1';}catch(e){return false;}}
+  function mark(){
+    if(!document.body||document.getElementById('arsh-viewlock'))return;
+    var d=document.createElement('div');d.id='arsh-viewlock';d.textContent='\uD83D\uDD12 View only';
+    d.style.cssText='position:fixed;bottom:16px;right:16px;z-index:2147483000;font-family:Cinzel,Georgia,serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,164,74,.55);background:rgba(10,6,16,.72);border:1px solid rgba(212,164,74,.22);border-radius:20px;padding:6px 12px;pointer-events:none;';
+    document.body.appendChild(d);
+  }
+  function unmark(){var d=document.getElementById('arsh-viewlock');if(d)d.remove();}
+  function apply(){
+    var st=document.getElementById('arsh-gate-base'),on=admin();
+    document.documentElement.setAttribute('data-arsh-role',on?'keeper':'reader');
+    if(on){if(st)st.textContent='';unmark();return;}
+    if(st)st.textContent=SEL+'{display:none!important;}';
+    if(document.body)mark();else document.addEventListener('DOMContentLoaded',mark);
+  }
+  apply();
+  window.addEventListener('storage',function(e){if(e.key==='arsh_admin'||e.key===null)apply();});
+  document.addEventListener('DOMContentLoaded',apply);
+})();
+</script>
+</head>
+<body>
+<div class="head">
+  <h1>Books of Arshmunnu</h1>
+  <div class="sub">The Grand Chronicle, written across all the ages — and the order in which it shall be unveiled.</div>
+</div>
+<div class="tabs">
+  <button class="active" data-tab="plan">Publication Plan</button>
+  <button data-tab="chrono">Chronology of the World</button>
+</div>
+<div class="container">
+<div class="pane active" id="pane-plan">
+  <div class="toolbar">
+    <h2>Edit Publication Plan</h2>
+    <button onclick="addPubItem()">+ Add Entry</button>
+    <button onclick="exportData()">Export</button>
+    <button onclick="document.getElementById('imp').click()">Import</button>
+    <button class="bad" onclick="resetAll()">Reset</button>
+    <input type="file" id="imp" style="display:none" accept=".json" onchange="importData(event)">
+  </div>
+  <div class="pub-intro view-only">Strategic order: <em>Empire first, then After, then Before, then Compendiums</em>. Every volume is enumerated.</div>
+  <div id="pubList" class="pub-list"></div>
+</div>
+<div class="pane" id="pane-chrono">
+  <div class="toolbar">
+    <h2>Edit Chronology</h2>
+    <button onclick="addEra()">+ Add Era</button>
+  </div>
+  <div id="eraList"></div>
+</div>
+</div>
+<button class="fab" onclick="toggleEdit()" title="Toggle edit mode"><span class="pencil">&#9998;</span><span class="check">&#10003;</span></button>
+<div class="toast" id="toast"></div>
+<script>
+var KEY="arshmunnu_publications_v2",STATE=null,EDIT_MODE=false;
+var DEFAULT={
+  pub:[
+    {section:"empire", title:"The Empire Saga — Book 1: The Forging", when:"48 AU", note:"The first stones of empire through conquest and diplomacy."},
+    {section:"empire", title:"The Empire Saga — Book 2: The Crystal Years", when:"48 AU", note:"Consolidation. The first true imperial generation."},
+    {section:"empire", title:"The Empire Saga — Book 3: The Revolution", when:"48 AU", note:"The empire faces its first internal turning. Reform or rupture?"},
+    {section:"empire", title:"The Empire Saga — Book 4: Gilded Years", when:"Golden Age begins", note:"The zenith. Splendour visible to all, decay only to a few."},
+    {section:"empire", title:"The Empire Saga — Book 5: Vines and Marble", when:"Golden Age middle", note:"Glory in full bloom. Corruption in full root."},
+    {section:"empire", title:"The Empire Saga — Book 6: The Long Evening", when:"End of Golden Age", note:"The light has stopped rising."},
+    {section:"empire", title:"The Empire Saga — Book 7: The First Crack", when:"1679-1680", note:"The decline begins. Sets the War of Two Houses in motion."},
+    {section:"empire", title:"The Empire Saga — Book 8: The Last Lamp", when:"1699-1715", note:"The chronicle's conclusion. The price of greatness, paid in full."},
+    {section:"after", title:"The Fourth Millennium Saga — Book 1: Ashes and Roads", when:"4th Millennium AU", note:"A world grappling with the legacy of a fallen empire."},
+    {section:"after", title:"The Fourth Millennium Saga — Book 2: Successor States", when:"4th Millennium AU", note:"The new powers define themselves against the memory of empire."},
+    {section:"after", title:"The Fourth Millennium Saga — Book 3: Honour of Marquise", when:"4th Millennium AU", note:"Old houses, new agreements. The northern question."},
+    {section:"after", title:"The Fourth Millennium Saga — Book 4: The Maturing", when:"4th Millennium AU", note:"Fresh conflicts brew on settled ground."},
+    {section:"after", title:"The Fourth Millennium Saga — Book 5: Hinge of Years", when:"4th Millennium AU", note:"A hinge into the New Era."},
+    {section:"before", title:"Ethernexa — The First Holy Book", when:"Foundational myth", note:"The creation of the world, the birth of gods, the first stars."},
+    {section:"before", title:"Impernexa — The Second Holy Book", when:"Foundational myth", note:"The arrival of the first humans and the spiritual ordering of mortal life."},
+    {section:"new", title:"The New Era Saga — Book 1: Ancient Stirrings", when:"New Era", note:"The culmination begins. Old prophecies wake."},
+    {section:"new", title:"The New Era Saga — Book 2: Forgotten Truths", when:"New Era", note:"Forgotten truths surface; the human spirit is tested."},
+    {section:"new", title:"The New Era Saga — Book 3: Convergence", when:"New Era", note:"All threads of preceding history converge."},
+    {section:"new", title:"The New Era Saga — Book 4: The Echo", when:"New Era (optional)", note:"Optional. The age completing its turn."},
+    {section:"new", title:"The New Era Saga — Book 5: The Door", when:"New Era (optional)", note:"Optional. The threshold of what comes after."},
+    {section:"war", title:"The War of Two Houses — Book 1: Lines Drawn", when:"Between Empire 7 and 8", note:"The civil war begins. Families pick sides; ideologies harden."},
+    {section:"war", title:"The War of Two Houses — Book 2: First Blood", when:"Continues", note:"Old loyalties tested; new ones forged in blood."},
+    {section:"war", title:"The War of Two Houses — Book 3: The Long Front", when:"Continues", note:"The houses commit to lines they cannot uncross."},
+    {section:"war", title:"The War of Two Houses — Book 4: The White Bridge", when:"Continues", note:"The turning of the war. The shape of the future is decided."},
+    {section:"war", title:"The War of Two Houses — Book 5: Restitution", when:"Continues", note:"The aftermath. Reconciliations attempted, failures owned."},
+    {section:"war", title:"The War of Two Houses — Book 6: A Different Empire", when:"Concludes the hexalogy", note:"The empire before and after are no longer the same thing."},
+    {section:"early", title:"The Love of Ásturas and Karun", when:"Earliest human history — standalone", note:"A tragic love story entwined with the divine and the mortal."},
+    {section:"genocide", title:"The Genocide of the Centurs", when:"Age of Shadows — Book 1 of 2", note:"Humanity's brutal early struggles. Seeds of hatred and ambition."},
+    {section:"genocide", title:"The Genocide of the Chamalians", when:"Age of Shadows — Book 2 of 2", note:"The second of the duology, completing the dark account."},
+    {section:"frontier", title:"The Frontier Soldiers", when:"Age of Shadows — standalone", note:"Common soldiers forgotten by history. Gritty, grounded, human."},
+    {section:"coalition", title:"The Coalition War — Book 1: The Agreement", when:"Prelude to the Empire", note:"Alliances forged. The first shape of what would become empire."},
+    {section:"coalition", title:"The Coalition War — Book 2: The Betrayals", when:"Continues", note:"Old friends, new enemies. The cost of treaties."},
+    {section:"coalition", title:"The Coalition War — Book 3: The Birth", when:"Concludes the trilogy", note:"The second era begins. The empire is born from this fire."},
+    {section:"compendium", title:"The Legends of Arshmunnu", when:"Legend Compendium", note:"Myths, epic poems, folk tales from every era."},
+    {section:"compendium", title:"The Codex of Arshmunnu", when:"Worldbuilding Compendium & Atlas", note:"Maps, genealogies, cultures, languages, timelines."}
+  ],
+  eras:[
+    {name:"I. The Dawn of Creation", tag:"Mythic and Sacred Beginnings", desc:"Sacred, mythological — divine revelations shaping the spiritual foundations.", books:[
+      {title:"Ethernexa", type:"Holy Book — Vol I", status:"planned", syn:"The creation of the world, the birth of gods, the kindling of the first stars."},
+      {title:"Impernexa", type:"Holy Book — Vol II", status:"planned", syn:"The arrival of the first humans and the spiritual ordering of mortal life."},
+      {title:"The Love of Ásturas and Karun", type:"Standalone", status:"planned", syn:"A tragic love at the dawn of humanity, entwined with the divine and the mortal."}
+    ]},
+    {name:"II. The Age of Shadows", tag:"Before the Empire", desc:"Grim, reflective tales of brutal struggle, exploring moral complexity at the foundations of civilisation.", books:[
+      {title:"The Genocide of the Centurs", type:"Duology — Book 1 of 2", status:"planned", syn:"Dark tales of humanity's brutal early struggles."},
+      {title:"The Genocide of the Chamalians", type:"Duology — Book 2 of 2", status:"planned", syn:"The second volume, completing the dark account."},
+      {title:"The Frontier Soldiers", type:"Standalone", status:"planned", syn:"Survival, loyalty, and the human cost of conflict on the fringes."},
+      {title:"The Coalition War — Book 1: The Agreement", type:"Trilogy — Book 1", status:"planned", syn:"Alliances forged. The first shape of empire."},
+      {title:"The Coalition War — Book 2: The Betrayals", type:"Trilogy — Book 2", status:"planned", syn:"The cost of treaties paid in blood and cold winters."},
+      {title:"The Coalition War — Book 3: The Birth", type:"Trilogy — Book 3", status:"planned", syn:"The second era begins. The empire is born from this fire."}
+    ]},
+    {name:"III. The Rise of the Empire", tag:"The Birth of Power", desc:"Eight books charting empire from forging to zenith to inevitable decline.", books:[
+      {title:"The Empire Saga — Book 1: The Forging", type:"Empire Saga", status:"planned", syn:"The first stones laid through conquest and diplomacy."},
+      {title:"The Empire Saga — Book 2: The Crystal Years", type:"Empire Saga", status:"planned", syn:"Consolidation. The first true imperial generation comes of age."},
+      {title:"The Empire Saga — Book 3: The Revolution", type:"Empire Saga", status:"planned", syn:"The empire faces its first internal turning."},
+      {title:"The Empire Saga — Book 4: Gilded Years", type:"Empire Saga", status:"planned", syn:"The zenith. Splendour visible to all. Decay only to those who would look."},
+      {title:"The Empire Saga — Book 5: Vines and Marble", type:"Empire Saga", status:"planned", syn:"Glory in full bloom; corruption in full root."},
+      {title:"The Empire Saga — Book 6: The Long Evening", type:"Empire Saga", status:"planned", syn:"The light has stopped rising."},
+      {title:"The Empire Saga — Book 7: The First Crack", type:"Empire Saga", status:"planned", syn:"The decline begins. The War of Two Houses is set in motion."},
+      {title:"The Empire Saga — Book 8: The Last Lamp", type:"Empire Saga", status:"planned", syn:"The chronicle concludes. The price of greatness, paid in full."}
+    ]},
+    {name:"IV. The Fractured Crown", tag:"Civil War and Collapse", desc:"Set between Empire Saga Books 7 and 8. Tragic, intricate, intense.", books:[
+      {title:"The War of Two Houses — Book 1: Lines Drawn", type:"Hexalogy", status:"planned", syn:"The civil war begins. The empire trembles."},
+      {title:"The War of Two Houses — Book 2: First Blood", type:"Hexalogy", status:"planned", syn:"Old loyalties tested; new ones forged in blood."},
+      {title:"The War of Two Houses — Book 3: The Long Front", type:"Hexalogy", status:"planned", syn:"Houses commit to lines they cannot uncross."},
+      {title:"The War of Two Houses — Book 4: The White Bridge", type:"Hexalogy", status:"planned", syn:"The turning. A single afternoon decides the future."},
+      {title:"The War of Two Houses — Book 5: Restitution", type:"Hexalogy", status:"planned", syn:"Reconciliations attempted, failures owned."},
+      {title:"The War of Two Houses — Book 6: A Different Empire", type:"Hexalogy", status:"planned", syn:"The empire before and after are no longer the same thing."}
+    ]},
+    {name:"V. The Age of Fractures", tag:"After the Empire's Fall", desc:"Reflective, philosophical, yet filled with new conflicts.", books:[
+      {title:"The Fourth Millennium Saga — Book 1: Ashes and Roads", type:"Saga", status:"planned", syn:"A world grappling with the legacy of a fallen empire."},
+      {title:"The Fourth Millennium Saga — Book 2: Successor States", type:"Saga", status:"planned", syn:"The successor states define themselves against the memory of empire."},
+      {title:"The Fourth Millennium Saga — Book 3: Honour of Marquise", type:"Saga", status:"planned", syn:"Old houses, new agreements. The northern question."},
+      {title:"The Fourth Millennium Saga — Book 4: The Maturing", type:"Saga", status:"planned", syn:"The age of fractures matures."},
+      {title:"The Fourth Millennium Saga — Book 5: Hinge of Years", type:"Saga (optional)", status:"planned", syn:"A hinge volume into the New Era."}
+    ]},
+    {name:"VI. The Dawn of the New Era", tag:"Final Echoes", desc:"Epic, hopeful yet bittersweet, tying the threads of history together.", books:[
+      {title:"The New Era Saga — Book 1: Ancient Stirrings", type:"Saga", status:"planned", syn:"Old prophecies wake. Names long forgotten stir again."},
+      {title:"The New Era Saga — Book 2: Forgotten Truths", type:"Saga", status:"planned", syn:"The enduring spirit of humanity is tested."},
+      {title:"The New Era Saga — Book 3: Convergence", type:"Saga", status:"planned", syn:"All threads converge. The Grand Chronicle becomes one story."},
+      {title:"The New Era Saga — Book 4: The Echo", type:"Saga (optional)", status:"planned", syn:"The age completing its turn."},
+      {title:"The New Era Saga — Book 5: The Door", type:"Saga (optional)", status:"planned", syn:"The threshold of what comes after."}
+    ]},
+    {name:"VII. Timeless Companions", tag:"Across All Eras", desc:"Compendiums spanning the whole chronicle.", books:[
+      {title:"The Legends of Arshmunnu", type:"Legend Compendium", status:"planned", syn:"Myths, epic poems, folk tales from every era."},
+      {title:"The Codex of Arshmunnu", type:"Worldbuilding Compendium", status:"planned", syn:"Atlas, genealogies, cultures, languages, timelines."}
+    ]}
+  ]
+};
+var SECTION_LABELS={empire:"Stage I — Empire (the foundation)",after:"Stage II — After Empire",before:"Stage III — Before Empire (foundational myth)",new:"Stage IV — The New Era",war:"Stage V — The War of Two Houses",early:"Stage VI — Early Standalones",genocide:"Stage VII — The Genocides Duology",frontier:"Stage VIII — Frontier",coalition:"Stage IX — The Coalition War (prelude)",compendium:"Stage X — Compendiums"};
+function load(){try{var r=localStorage.getItem(KEY);if(r){STATE=JSON.parse(r);return;}}catch(e){}STATE=JSON.parse(JSON.stringify(DEFAULT));}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(STATE));}catch(e){toast("Save failed");}}
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
+function renderPub(){
+  var el=document.getElementById("pubList"),html="",prev=null;
+  for(var i=0;i<STATE.pub.length;i++){var p=STATE.pub[i];
+    if(p.section&&p.section!==prev&&SECTION_LABELS[p.section]&&!EDIT_MODE){html+='<div class="plan-divider">'+SECTION_LABELS[p.section]+'</div>';prev=p.section;}else if(EDIT_MODE){prev=p.section;}
+    html+='<div class="pubrow"><div class="pub-n">'+(i+1)+'</div><div class="pub-body">';
+    if(EDIT_MODE){
+      html+='<input class="tin" style="background:transparent;border:none;border-bottom:1px dashed var(--border);font-family:Cinzel,serif;color:var(--goldL);font-size:14px;padding:2px 0" value="'+esc(p.title)+'" oninput="updPub('+i+',\'title\',this.value)" placeholder="Title">';
+      html+='<input class="tin" style="background:transparent;border:none;border-bottom:1px dashed var(--border);font-style:italic;color:var(--muted);font-size:12px;padding:2px 0;margin-top:3px" value="'+esc(p.when)+'" oninput="updPub('+i+',\'when\',this.value)" placeholder="When / volume">';
+    } else {
+      html+='<div class="pub-title">'+esc(p.title)+'</div><div class="pub-when">'+esc(p.when||"—")+'</div>';
+    }
+    html+='<div class="pub-note">'+(EDIT_MODE?'<input class="tin" style="font-style:italic;font-size:12px;margin-top:4px" value="'+esc(p.note)+'" oninput="updPub('+i+',\'note\',this.value)" placeholder="Note">':esc(p.note))+'</div>';
+    html+='</div><div class="pub-actions"><button onclick="movePub('+i+',-1)">&uarr;</button><button onclick="movePub('+i+',1)">&darr;</button><button class="bad" onclick="delPub('+i+')">&times;</button></div></div>';
+  }
+  el.innerHTML=html;
+}
+function renderEras(){
+  var el=document.getElementById("eraList"),html="";
+  for(var e=0;e<STATE.eras.length;e++){var era=STATE.eras[e];
+    html+='<div class="era">';
+    if(EDIT_MODE){
+      html+='<div class="era-edit-h"><input class="tin" style="font-family:Cinzel,serif;color:var(--goldL);font-size:18px" value="'+esc(era.name)+'" oninput="updEra('+e+',\'name\',this.value)" placeholder="Era name">';
+      html+='<button class="bad" onclick="delEra('+e+')" style="padding:6px 10px;background:rgba(248,113,113,.08);color:var(--bad);border:1px solid rgba(248,113,113,.3);border-radius:2px;cursor:pointer;font-family:Cinzel,serif;font-size:10px;letter-spacing:.1em">Remove Era</button></div>';
+      html+='<input class="tin" style="font-style:italic;color:var(--muted);font-size:13px;margin-bottom:6px" value="'+esc(era.tag)+'" oninput="updEra('+e+',\'tag\',this.value)" placeholder="Subtitle">';
+      html+='<textarea class="tin" style="font-style:italic;color:var(--ink2);font-size:13px;margin-bottom:14px" oninput="updEra('+e+',\'desc\',this.value)" placeholder="Description">'+esc(era.desc)+'</textarea>';
+    } else {
+      html+='<div class="era-h">'+esc(era.name)+'</div><div class="era-tag">'+esc(era.tag)+'</div><div class="era-rule"></div>'+(era.desc?'<div class="era-desc">'+esc(era.desc)+'</div>':"");
+    }
+    html+='<div class="books">';
+    for(var b=0;b<era.books.length;b++){var bk=era.books[b];
+      html+='<div class="book"><div class="book-status-badge" data-st="'+(bk.status||"planned")+'">'+(bk.status||"planned")+'</div>';
+      if(EDIT_MODE){
+        html+='<input class="tin" style="font-family:Cinzel,serif;color:var(--goldL);font-size:13px;margin-bottom:4px" value="'+esc(bk.title)+'" oninput="updBook('+e+','+b+',\'title\',this.value)" placeholder="Title">';
+        html+='<input class="tin" style="font-style:italic;color:var(--gold);font-size:11px;margin-bottom:6px" value="'+esc(bk.type)+'" oninput="updBook('+e+','+b+',\'type\',this.value)" placeholder="Type">';
+        html+='<select class="tin" style="margin-bottom:6px" onchange="updBook('+e+','+b+',\'status\',this.value);renderEras()"><option value="planned"'+(bk.status==="planned"?" selected":"")+'>Planned</option><option value="drafting"'+(bk.status==="drafting"?" selected":"")+'>Drafting</option><option value="published"'+(bk.status==="published"?" selected":"")+'>Published</option></select>';
+        html+='<textarea class="tin" oninput="updBook('+e+','+b+',\'syn\',this.value)" placeholder="Synopsis">'+esc(bk.syn)+'</textarea>';
+      } else {
+        html+='<div class="book-title">'+esc(bk.title)+'</div>'+(bk.type?'<div class="book-type">'+esc(bk.type)+'</div>':"")+(bk.syn?'<div class="book-syn">'+esc(bk.syn)+'</div>':"");
+      }
+      html+='<div class="book-actions"><button onclick="moveBook('+e+','+b+',-1)">&uarr;</button><button onclick="moveBook('+e+','+b+',1)">&darr;</button><button class="bad" onclick="delBook('+e+','+b+')">Remove</button></div></div>';
+    }
+    html+='</div><button class="add-book" onclick="addBook('+e+')">+ Add Book</button></div>';
+  }
+  el.innerHTML=html;
+}
+function updPub(i,k,v){STATE.pub[i][k]=v;save();}
+function updEra(i,k,v){STATE.eras[i][k]=v;save();}
+function updBook(e,b,k,v){STATE.eras[e].books[b][k]=v;save();}
+function addPubItem(){STATE.pub.push({title:"New entry",when:"",note:"",section:""});save();renderPub();}
+function movePub(i,d){var nx=i+d;if(nx<0||nx>=STATE.pub.length)return;var t=STATE.pub[i];STATE.pub[i]=STATE.pub[nx];STATE.pub[nx]=t;save();renderPub();}
+function delPub(i){if(!confirm("Remove?"))return;STATE.pub.splice(i,1);save();renderPub();}
+function addEra(){STATE.eras.push({name:"New Era",tag:"",desc:"",books:[]});save();renderEras();}
+function delEra(e){if(!confirm("Remove era and all books?"))return;STATE.eras.splice(e,1);save();renderEras();}
+function addBook(e){STATE.eras[e].books.push({title:"New book",type:"",status:"planned",syn:""});save();renderEras();}
+function moveBook(e,b,d){var bs=STATE.eras[e].books,nx=b+d;if(nx<0||nx>=bs.length)return;var t=bs[b];bs[b]=bs[nx];bs[nx]=t;save();renderEras();}
+function delBook(e,b){if(!confirm("Remove book?"))return;STATE.eras[e].books.splice(b,1);save();renderEras();}
+function exportData(){var d=JSON.stringify(STATE,null,2),bl=new Blob([d],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="arshmunnu_publications.json";a.click();toast("Exported.");}
+function importData(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){try{var d=JSON.parse(e.target.result);if(!d.pub||!d.eras)throw new Error();STATE=d;save();renderPub();renderEras();toast("Imported.");}catch(err){toast("Import failed");}};r.readAsText(f);ev.target.value="";}
+function resetAll(){if(!confirm("Reset?"))return;localStorage.removeItem(KEY);load();renderPub();renderEras();toast("Reset.");}
+function toggleEdit(){EDIT_MODE=!EDIT_MODE;document.body.classList.toggle("editing",EDIT_MODE);renderPub();renderEras();toast(EDIT_MODE?"Edit mode on":"Edit mode off");}
+var toastTm;function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.remove("show");void t.offsetWidth;t.classList.add("show");if(toastTm)clearTimeout(toastTm);toastTm=setTimeout(function(){t.classList.remove("show");},2200);}
+document.querySelectorAll(".tabs button").forEach(function(b){b.addEventListener("click",function(){document.querySelectorAll(".tabs button").forEach(function(x){x.classList.toggle("active",x===b);});document.querySelectorAll(".pane").forEach(function(p){p.classList.toggle("active",p.id==="pane-"+b.dataset.tab);});});});
+load();renderPub();renderEras();
+</script>
+</body>
+</html>

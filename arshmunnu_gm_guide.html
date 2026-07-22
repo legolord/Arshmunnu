@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arshmunnu — Explanadium for Game Masters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a080f;--panel:rgba(16,12,28,.9);--text:#d4c8a8;--gold:#c9a84c;--goldD:#7a5e1a;--goldL:#e8d080;--coalition:#a32a2a;--accent:#8b7355;--muted:#6b6b7b;--border:rgba(201,168,76,0.2);--red:#8B3A3A;--blue:#4A6B8B;--green:#4A7B4A;--purple:#6B4A8B;--orange:#B87333;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'EB Garamond',serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:48px;background:rgba(6,4,12,0.95);border-bottom:1px solid var(--border);flex-shrink:0;z-index:100;position:sticky;top:0}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-title{font-family:'Cinzel',serif;font-size:16px;color:var(--goldL);letter-spacing:2px}
+.topbar-sub{font-size:11px;color:var(--muted);font-style:italic}
+.topbar a{color:var(--gold);text-decoration:none;font-family:'Cinzel',serif;font-size:12px;transition:.2s}
+.topbar a:hover{color:var(--goldL)}
+.layout{display:flex;flex:1}
+.sidebar{width:280px;background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;position:fixed;top:48px;bottom:0;left:0;z-index:50;padding:15px 0;transition:transform .3s}
+.sidebar.hidden{transform:translateX(-100%)}
+.sidebar-section{padding:6px 20px;font-family:'Cinzel',serif;font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-top:12px;border-bottom:1px solid var(--border);padding-bottom:4px}
+.sidebar-item{padding:6px 20px 6px 30px;font-size:13px;color:var(--text);cursor:pointer;transition:.15s;border-left:2px solid transparent}
+.sidebar-item:hover{background:rgba(201,168,76,0.08);color:var(--goldL);border-left-color:var(--goldD)}
+.sidebar-item.active{background:rgba(201,168,76,0.12);color:var(--goldL);border-left-color:var(--gold)}
+.sidebar-toggle{display:none;position:fixed;top:60px;left:10px;z-index:60;width:36px;height:36px;background:var(--panel);border:1px solid var(--border);border-radius:50%;color:var(--gold);font-size:16px;align-items:center;justify-content:center;cursor:pointer}
+.content{flex:1;margin-left:280px;padding:30px 40px;max-width:900px}
+.content h1{font-family:'Cinzel',serif;font-size:28px;color:var(--goldL);margin:30px 0 15px;letter-spacing:1px;border-bottom:2px solid var(--border);padding-bottom:8px}
+.content h1:first-child{margin-top:0}
+.content h2{font-family:'Cinzel',serif;font-size:20px;color:var(--gold);margin:25px 0 10px;letter-spacing:1px}
+.content h3{font-family:'Cinzel',serif;font-size:16px;color:var(--accent);margin:18px 0 8px}
+.content h4{font-family:'Cinzel',serif;font-size:13px;color:var(--goldD);margin:12px 0 6px;text-transform:uppercase;letter-spacing:1px}
+.content p{font-size:15px;line-height:1.75;margin-bottom:12px;color:var(--text)}
+.content ul,.content ol{margin:8px 0 12px 25px;font-size:14px;line-height:1.7}
+.content li{margin-bottom:4px}
+.content strong{color:var(--goldL)}
+.content em{font-style:italic;color:#b8a880}
+.content table{width:100%;border-collapse:collapse;margin:15px 0;font-size:13px}
+.content th{background:rgba(201,168,76,0.15);border:1px solid var(--border);padding:8px 12px;font-family:'Cinzel',serif;font-size:11px;color:var(--goldL);text-align:left;text-transform:uppercase;letter-spacing:1px}
+.content td{border:1px solid var(--border);padding:8px 12px;color:var(--text)}
+.content tr:nth-child(even){background:rgba(255,255,255,0.03)}
+.content tr:hover{background:rgba(201,168,76,0.05)}
+.stat-block{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:15px 20px;margin:15px 0}
+.stat-block-title{font-family:'Cinzel',serif;font-size:14px;color:var(--goldL);margin-bottom:8px}
+.stat-block-line{font-size:13px;color:var(--text);margin:3px 0}
+.stat-block-line strong{color:var(--gold)}
+.callout{background:rgba(201,168,76,0.08);border:1px solid var(--border);border-left:3px solid var(--orange);padding:12px 15px;margin:12px 0;font-size:14px;line-height:1.6}
+.callout-title{font-family:'Cinzel',serif;font-size:12px;color:var(--orange);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px}
+.content hr{border:none;border-top:1px solid var(--border);margin:25px 0}
+
+/* ===== DICE & INITIATIVE WIDGET ===== */
+.dice-fab{position:fixed;bottom:22px;right:22px;z-index:800;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#1a0d04,#240808);border:1px solid rgba(212,164,74,.55);box-shadow:0 4px 20px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:22px;transition:all .22s;color:#d4a44a;font-family:'Cinzel',serif}
+.dice-fab:hover{transform:scale(1.12);box-shadow:0 6px 24px rgba(0,0,0,.6),0 0 0 6px rgba(212,164,74,.12)}
+.dice-fab.active{background:linear-gradient(135deg,#d4a44a,#b8893b);color:#1a0800;border-color:#f0cc72}
+.dice-ov{position:fixed;inset:0;z-index:900;background:rgba(3,1,8,.97);backdrop-filter:blur(12px);display:none;flex-direction:column;overflow:hidden}
+.dice-ov.open{display:flex}
+.dice-tb{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:rgba(6,4,12,.95);flex-shrink:0}
+.dice-tb-title{font-family:'Cinzel',serif;font-size:16px;color:var(--goldL);letter-spacing:1px}
+.dice-tabs{display:flex;gap:8px}
+.dice-tab{background:rgba(212,164,74,.08);border:1px solid var(--border);color:var(--text);padding:6px 14px;font-family:'Cinzel',serif;font-size:11px;cursor:pointer;border-radius:4px;transition:.2s}
+.dice-tab:hover{background:rgba(212,164,74,.2)}
+.dice-tab.active{background:rgba(212,164,74,.3);color:var(--goldL);border-color:var(--goldD)}
+.dice-close{background:none;border:none;color:var(--gold);font-size:20px;cursor:pointer;width:auto;padding:4px 8px;margin:0}
+.dice-close:hover{color:var(--goldL)}
+.dice-body{flex:1;overflow-y:auto;padding:20px;max-width:600px;margin:0 auto;width:100%}
+
+/* Dice Roller */
+.dice-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.dice-btn{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:15px 10px;text-align:center;cursor:pointer;transition:.2s;color:var(--text)}
+.dice-btn:hover{background:rgba(201,168,76,.15);border-color:var(--goldD);transform:translateY(-2px)}
+.dice-btn-die{font-family:'Cinzel',serif;font-size:22px;color:var(--goldL);display:block}
+.dice-btn-label{font-size:10px;color:var(--muted);margin-top:4px}
+.dice-modifier{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:12px;background:rgba(0,0,0,.2);border-radius:6px;border:1px solid var(--border)}
+.dice-modifier label{font-family:'Cinzel',serif;font-size:12px;color:var(--gold)}
+.dice-modifier input{width:60px;background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--text);padding:6px 10px;font-family:'EB Garamond',serif;font-size:14px;border-radius:4px;text-align:center}
+.dice-result{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;padding:20px;text-align:center;margin-bottom:15px;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dice-result-total{font-family:'Cinzel',serif;font-size:42px;color:var(--goldL);text-shadow:0 0 20px rgba(212,164,74,.3)}
+.dice-result-breakdown{font-size:13px;color:var(--muted);margin-top:6px}
+.dice-history-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);margin-bottom:8px;letter-spacing:1px}
+.dice-history{max-height:150px;overflow-y:auto;font-size:12px;color:var(--muted)}
+.dice-history-entry{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+
+/* Initiative Tracker */
+.init-header{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap}
+.init-header input{background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:'EB Garamond',serif;font-size:14px;border-radius:4px}
+.init-header input.name-input{flex:1;min-width:120px}
+.init-header input.num-input{width:70px}
+.init-add{background:rgba(201,168,76,.2);border:1px solid var(--goldD);color:var(--goldL);padding:8px 16px;font-family:'Cinzel',serif;font-size:12px;cursor:pointer;border-radius:4px;transition:.2s}
+.init-add:hover{background:rgba(201,168,76,.35)}
+.init-list{display:flex;flex-direction:column;gap:6px}
+.init-row{display:grid;grid-template-columns:40px 1fr 70px 80px 36px;gap:8px;align-items:center;padding:8px 12px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;transition:.2s}
+.init-row.active-turn{border-color:var(--gold);background:rgba(201,168,76,.1);box-shadow:0 0 10px rgba(212,164,74,.1)}
+.init-row .init-score{font-family:'Cinzel',serif;font-size:16px;color:var(--goldL);text-align:center}
+.init-row .init-name{font-size:14px;color:var(--text)}
+.init-row .init-ep input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:4px 6px;font-size:12px;border-radius:3px;text-align:center}
+.init-row .init-del{background:none;border:none;color:var(--coalition);font-size:16px;cursor:pointer;padding:0;text-align:center;width:auto}
+.init-row .init-del:hover{color:#ff4444}
+.init-controls{display:flex;gap:8px;margin-top:15px;justify-content:center}
+.init-controls button{background:rgba(201,168,76,.1);border:1px solid var(--border);color:var(--text);padding:8px 16px;font-family:'Cinzel',serif;font-size:11px;cursor:pointer;border-radius:4px;transition:.2s}
+.init-controls button:hover{background:rgba(201,168,76,.25);color:var(--goldL)}
+.init-section-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:1px;margin:15px 0 8px}
+
+@media(max-width:768px){
+  .dice-grid{grid-template-columns:repeat(3,1fr)}
+  .init-row{grid-template-columns:35px 1fr 60px 60px 30px}
+  .dice-fab{bottom:15px;right:15px;width:44px;height:44px;font-size:18px}
+}
+
+@media(max-width:768px){.sidebar{width:260px}.content{margin-left:0;padding:20px}.sidebar-toggle{display:flex}.topbar-sub{display:none}}
+@media(max-width:600px){
+.content{padding:14px}
+h1{font-size:24px}h2{font-size:18px}h3{font-size:15px}
+table{font-size:12px}th,td{padding:6px 8px}
+.topbar{height:auto;padding:8px 14px}
+.brand{font-size:11px}
+.nav a{font-size:7px;padding:3px 6px}
+.dice-panel{width:100%;max-width:none;border-radius:0}
+.dice-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">Explanadium for Game Masters</span>
+    <span class="topbar-sub">Arshmunnu RPG — Running the Game</span>
+  </div>
+  <a href="index.html">&larr; Archive Hub</a>
+</div>
+
+<div class="layout">
+  <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('hidden')">&#9776;</button>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-section">Running the Game</div>
+    <div class="sidebar-item active" onclick="scrollToId('philosophy')">GM Philosophy</div>
+    <div class="sidebar-item" onclick="scrollToId('agenda')">The GM Agenda</div>
+    <div class="sidebar-item" onclick="scrollToId('prep')">Session Prep</div>
+    <div class="sidebar-item" onclick="scrollToId('encounters')">Encounters</div>
+    <div class="sidebar-item" onclick="scrollToId('clocks')">Scene Clocks</div>
+
+    <div class="sidebar-section">Combat</div>
+    <div class="sidebar-item" onclick="scrollToId('morale')">Morale System</div>
+    <div class="sidebar-item" onclick="scrollToId('mass-combat')">Mass Combat</div>
+    <div class="sidebar-item" onclick="scrollToId('siege')">Siege Rules</div>
+
+    <div class="sidebar-section">World Building</div>
+    <div class="sidebar-item" onclick="scrollToId('dungeon')">Dungeon Building</div>
+    <div class="sidebar-item" onclick="scrollToId('factions')">Faction Webs</div>
+    <div class="sidebar-item" onclick="scrollToId('plots')">Plot Structures</div>
+    <div class="sidebar-item" onclick="scrollToId('npcs')">NPC Quick-Build</div>
+
+    <div class="sidebar-section">Advanced</div>
+    <div class="sidebar-item" onclick="scrollToId('improvisation')">Improvisation</div>
+    <div class="sidebar-item" onclick="scrollToId('death')">Death & Consequences</div>
+    <div class="sidebar-item" onclick="scrollToId('corruption')">Void Corruption</div>
+    <div class="sidebar-item" onclick="scrollToId('troubleshooting')">Troubleshooting</div>
+  </div>
+
+  <div class="content" id="content">
+
+<h1 id="philosophy">GM Philosophy</h1>
+<p>Arshmunnu is not a simulation to be beaten. It is a world to be inhabited. Your job as Game Master is threefold:</p>
+
+<ol>
+<li><strong>Portray a living world.</strong> Arshmunnu breathes — empires rise and fall, seasons turn, factions scheme. Show the players a world that exists beyond their characters.</li>
+<li><strong>Be a fair arbiter.</strong> The dice are your ally, not your weapon. Roll in the open. Let consequences land where they fall.</li>
+<li><strong>Make every session memorable.</strong> Whether through horror, wonder, politics, or combat — give them something to talk about.</li>
+</ol>
+
+<h1 id="agenda">The GM Agenda</h1>
+<h3>The Five Principles</h3>
+
+<div class="stat-block">
+<div class="stat-block-title">1. Consequence is King</div>
+<div class="stat-block-line">Every meaningful action produces a meaningful reaction. If the players burn a bridge, make sure they hear the timber crack for sessions to come.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">2. Information is Power</div>
+<div class="stat-block-line">Never hide plot-critical information behind a single roll. If they search the room, they find clues. Rolls determine <em>quality</em> of information, not existence.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">3. The World Does Not Wait</div>
+<div class="stat-block-line">If the players ignore the cult summoning, the cult <em>succeeds</em>. Factions have their own clocks. The world moves regardless of PC attention.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">4. Describe, Don't Dictate</div>
+<div class="stat-block-line">Tell them what they see, hear, and smell. Let them decide what it means. Never tell a player how their character feels — show them why they might feel it.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">5. Failure is Interesting</div>
+<div class="stat-block-line">A failed roll is never "nothing happens." It is "something different happens." The lockpick breaks. The guard arrives. The informant lies.</div>
+</div>
+
+<h1 id="prep">Session Prep</h1>
+<h3>The 30-Minute Prep Method</h3>
+<ol>
+<li><strong>Review last session</strong> (5 min) — What happened? What threads are loose?</li>
+<li><strong>Advance faction clocks</strong> (5 min) — What did NPCs accomplish?</li>
+<li><strong>Prepare 3 scenes</strong> (10 min) — A combat, a social, and a mystery/exploration scene</li>
+<li><strong>Prepare 2 complications</strong> (5 min) — What could go wrong in each scene?</li>
+<li><strong>Prepare 1 hook</strong> (5 min) — What pulls them toward next session?</li>
+</ol>
+
+<h3>Scene Types</h3>
+<table>
+<tr><th>Type</th><th>Function</th><th>Key Question</th></tr>
+<tr><td><strong>Combat</strong></td><td>Test resources and courage</td><td>What do they risk, and what do they stand to lose?</td></tr>
+<tr><td><strong>Social</strong></td><td>Test allegiances and wit</td><td>Who wants what, and what are they willing to trade?</td></tr>
+<tr><td><strong>Exploration</strong></td><td>Test preparation and perception</td><td>What is hidden here, and what is watching?</td></tr>
+<tr><td><strong>Mystery</strong></td><td>Test deduction and patience</td><td>What really happened, and who benefits from the lie?</td></tr>
+</table>
+
+<h1 id="encounters">Building Encounters</h1>
+<h3>Threat Points (TP) System</h3>
+<p>Use TP to balance encounters. Calculate your budget based on party size and tier:</p>
+
+<table>
+<tr><th>Difficulty</th><th>TP Formula</th><th>Feel</th></tr>
+<tr><td>Standard</td><td>Party Size &times; Tier Value</td><td>Warm-up, resource drain</td></tr>
+<tr><td>Hard</td><td>TP &times; 1.25</td><td>Serious danger, someone might go down</td></tr>
+<tr><td>Deadly</td><td>TP &times; 1.6</td><td>Multiple characters at risk of death</td></tr>
+<tr><td>Boss Scene</td><td>TP &times; 2.0</td><td>Multi-phase, arena-shifting, story-critical</td></tr>
+</table>
+
+<h3>Tier Values by Level</h3>
+<table>
+<tr><th>Level</th><th>1-3</th><th>4-6</th><th>7-9</th><th>10-12</th><th>13-15</th><th>16-18</th><th>19-20</th></tr>
+<tr><td>Tier Value</td><td>1.0</td><td>1.25</td><td>1.5</td><td>1.75</td><td>2.0</td><td>2.25</td><td>2.5</td></tr>
+</table>
+
+<h3>Spending TP</h3>
+<table>
+<tr><th>Enemy Type</th><th>TP Cost</th><th>Role</th></tr>
+<tr><td>Minion</td><td>0.5</td><td>Cannon fodder, swarm, distraction</td></tr>
+<tr><td>Standard</td><td>1.0</td><td>Frontline soldier, competent threat</td></tr>
+<tr><td>Elite</td><td>2.0</td><td>Champion, lieutenant, named enemy</td></tr>
+<tr><td>Boss</td><td>3-5</td><td>Villain, monster lord, mythic foe</td></tr>
+</table>
+
+<h3>Role Composition</h3>
+<p>A good encounter needs roles. Aim for:</p>
+<ul>
+<li>1-2 <strong>Frontliners</strong> (line/brute — hold position, absorb damage)</li>
+<li>1-2 <strong>Damage dealers</strong> (striker/artillery — kill things fast)</li>
+<li>0-1 <strong>Controller</strong> (manipulate battlefield, disable PCs)</li>
+<li>0-1 <strong>Support/Leader</strong> (buff allies, heal, command)</li>
+</ul>
+
+<h1 id="clocks">Scene Clocks</h1>
+<p>Clocks are progress trackers that build tension. Divide a circle into segments (usually 4-8). When conditions are met, fill a segment. When full, something happens.</p>
+
+<h3>Types of Clocks</h3>
+
+<div class="stat-block">
+<div class="stat-block-title">Tension Clock</div>
+<div class="stat-block-line">6 segments. Fills when: players take loud actions, fail stealth, or waste time. When full: reinforcements arrive, the alarm sounds, or the ritual completes.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">Escape Clock</div>
+<div class="stat-block-line">4 segments. Fills when: the villain takes damage, uses an ability, or a round passes. When full: the villain escapes, seals the exit, or transforms.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">Discovery Clock</div>
+<div class="stat-block-line">8 segments. Fills when: players investigate, find clues, or talk to NPCs. When full: the truth is revealed — for better or worse.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">Faction Clock</div>
+<div class="stat-block-line">6 segments. Fills between sessions. When full: the faction accomplishes a major goal. Use multiple faction clocks to show the world moving.</div>
+</div>
+
+<h1 id="morale">Morale System</h1>
+<p>Not every creature fights to the death. Morale makes combat more realistic and gives players tactical options beyond "kill everything."</p>
+
+<h3>Morale Check</h3>
+<p>Enemies test morale when:</p>
+<ul>
+<li>Their leader falls</li>
+<li>They lose half their number</li>
+<li>A particularly frightening PC ability is used</li>
+<li>An environmental hazard threatens them</li>
+<li>They are offered a credible way out</li>
+</ul>
+
+<p><strong>Roll:</strong> d20 + leader's WIL modifier (or their own WIL if leaderless)</p>
+<table>
+<tr><th>Result</th><th>Outcome</th></tr>
+<tr><td>15+</td><td>Hold firm</td></tr>
+<tr><td>10-14</td><td>Hesitate — lose next turn's first AP</td></tr>
+<tr><td>5-9</td><td>Retreat in good order — withdraw toward exit</td></tr>
+<tr><td>Below 5</td><td>Rout — drop weapons, flee chaotically</td></tr>
+</table>
+
+<h3>Breaking Morale</h3>
+<p>Players can deliberately try to break morale:</p>
+<ul>
+<li><strong>Intimidate:</strong> Bearing + WIL vs enemy WIL</li>
+<li><strong>Show of force:</strong> Drop the biggest enemy dramatically</li>
+<li><strong>Negotiate:</strong> Offer terms that are better than fighting</li>
+<li><strong>Environmental:</strong> Collapse a structure, start a fire, create chaos</li>
+</ul>
+
+<h1 id="mass-combat">Mass Combat</h1>
+<p>When armies clash, shift to unit-level resolution. PCs command, fight as heroes, or both.</p>
+
+<h3>Unit Stats</h3>
+<table>
+<tr><th>Trait</th><th>Description</th></tr>
+<tr><td><strong>Size</strong></td><td>100 (company), 500 (battalion), 2000 (regiment)</td></tr>
+<tr><td><strong>Quality</strong></td><td>Green, Trained, Veteran, Elite, Legendary</td></tr>
+<tr><td><strong>Morale</strong></td><td>Current state: Steady, Shaken, Breaking, Routed</td></tr>
+<tr><td><strong>EP</strong></td><td>Unit health — when 0, unit dissolves</td></tr>
+</table>
+
+<h3>Hero Actions in Mass Combat</h3>
+<p>Each round, a PC can take one <strong>Hero Action</strong>:</p>
+<ul>
+<li><strong>Lead the Charge:</strong> +2 to unit's next attack roll</li>
+<li><strong>Hold the Line:</strong> +2 to unit's DL until next turn</li>
+<li><strong>Assassinate:</strong> Attempt to kill an enemy commander</li>
+<li><strong>Rally:</strong> Restore a morale level to a shaken unit</li>
+<li><strong>Scout:</strong> Reveal enemy disposition and hidden units</li>
+</ul>
+
+<h1 id="siege">Siege Rules</h1>
+<h3>The Siege Clock</h3>
+<p>A siege is a contest of patience and resources. Use a 12-segment clock divided into phases:</p>
+
+<table>
+<tr><th>Phase</th><th>Segments</th><th>Events</th></tr>
+<tr><td><strong>Investment</strong></td><td>1-3</td><td>Surrounding the walls, cutting supplies, building siege works</td></tr>
+<tr><td><strong>Bombardment</strong></td><td>4-6</td><td>Siege engines, sapping tunnels, psychological warfare</td></tr>
+<tr><td><strong>Assault</strong></td><td>7-9</td><td>Ladders, towers, breaches — desperate fighting at the walls</td></tr>
+<tr><td><strong>Resolution</strong></td><td>10-12</td><td>Surrender, storm, relief, or starvation</td></tr>
+</table>
+
+<h3>Siege Engines</h3>
+<table>
+<tr><th>Engine</th><th>Effect</th><th>Build Time</th></tr>
+<tr><td>Battering Ram</td><td>+2d6 damage to gates per round</td><td>1 day</td></tr>
+<tr><td>Siege Tower</td><td>Allows troops to bypass walls</td><td>3 days</td></tr>
+<tr><td>Trebuchet</td><td>2d10 damage to walls/buildings, range 200m</td><td>2 days</td></tr>
+<tr><td>Mantlet</td><td>+2 DL for sappers approaching walls</td><td>4 hours</td></tr>
+<tr><td>Sap Tunnel</td><td>Undermine walls — collapse on success</td><td>3-5 days</td></tr>
+</table>
+
+<h1 id="dungeon">Dungeon Building</h1>
+<h3>The ARP Dungeon Method</h3>
+<p>A dungeon is not a series of rooms with monsters. It is a <strong>place with a purpose</strong>. Ask these questions before drawing a single room:</p>
+
+<ol>
+<li><strong>Who built this?</strong> — The architecture tells a story</li>
+<li><strong>Why was it built?</strong> — Purpose shapes layout and hazards</li>
+<li><strong>Who lives here now?</strong> — Current inhabitants change everything</li>
+<li><strong>What do they want?</strong> — Motivation drives encounter design</li>
+<li><strong>What secret does it hold?</strong> — Every dungeon has something hidden</li>
+</ol>
+
+<h3>Dungeon Types & Tropes</h3>
+<table>
+<tr><th>Type</th><th>Architecture</th><th>Hazards</th><th>Loot Theme</th></tr>
+<tr><td>Ancient Tomb</td><td>Stone corridors, traps, burial chambers</td><td>Traps, curses, undead</td><td>Relics, gold, forbidden knowledge</td></tr>
+<tr><td>Ruined City</td><td>Collapsed buildings, hidden passages</td><td>Structural collapse, lingering magic</td><td>Artifacts, historical records</td></tr>
+<tr><td>Mine / Cave</td><td>Natural tunnels, worked shafts</td><td>Cave-ins, gas, underground beasts</td><td>Ore, gems, ancient deposits</td></tr>
+<tr><td>Sewer / Undercity</td><td>Wet tunnels, grates, hidden docks</td><td>Disease, cults, monstrous vermin</td><td>Contraband, evidence, lost items</td></tr>
+<tr><td>Fortress</td><td>Military design, chokepoints, barracks</td><td>Soldiers, alarms, siege weapons</td><td>Weapons, military intelligence</td></tr>
+<tr><td>Sacred Site</td><td>Temple architecture, holy symbols</td><td>Divine wards, zealots, tests of faith</td><td>Holy relics, divine blessings</td></tr>
+</table>
+
+<h3>Trap Design</h3>
+<p>Every trap should have:</p>
+<ul>
+<li><strong>A tell</strong> — something observant players can notice</li>
+<li><strong>A trigger</strong> — what sets it off</li>
+<li><strong>An effect</strong> — what happens</li>
+<li><strong>A bypass</strong> — how clever players avoid it</li>
+</ul>
+
+<h1 id="factions">Faction Webs</h1>
+<p>Factions are the beating heart of Arshmunnu politics. Track their relationships, goals, and clocks.</p>
+
+<h3>Major Factions of Arshmunnu</h3>
+<table>
+<tr><th>Faction</th><th>Goal</th><th>Method</th><th>PC Relationship</th></tr>
+<tr><td>Imperial Legions</td><td>Maintain order, expand borders</td><td>Conquest, law, infrastructure</td><td>Employers or enemies</td></tr>
+<tr><td>Free Coalition</td><td>Resist imperial rule</td><td>Insurgency, diplomacy, trade</td><td>Allies or complication</td></tr>
+<tr><td>Rammalia Papacy</td><td>Spiritual dominion over all</td><td>Inquisition, diplomacy, miracles</td><td>Patron or persecutor</td></tr>
+<tr><td>The White Tower</td><td>Preserve and advance magic</td><td>Research, education, intervention</td><td>Resource or threat</td></tr>
+<tr><td>Old God Cults</td><td>Restore ancient worship</td><td>Sabotage, prophecy, terror</td><td>Dark allies or villains</td></tr>
+<tr><td>Merchant Guilds</td><td>Profit above all</td><td>Trade, smuggling, bribery</td><td>Suppliers or exploiters</td></tr>
+<tr><td>Noble Houses</td><td>Power, prestige, legacy</td><td>Intrigue, marriage, war</td><td>Patrons, rivals, kin</td></tr>
+<tr><td>Void Cults</td><td>Embrace the outer dark</td><td>Corruption, summoning, madness</td><td>Ultimate enemy</td></tr>
+</table>
+
+<h1 id="plots">Plot Structures</h1>
+<h3>The Five Plot Engines</h3>
+
+<div class="stat-block">
+<div class="stat-block-title">1. The Mystery</div>
+<div class="stat-block-line"><strong>Hook:</strong> Something is wrong and no one knows why.</div>
+<div class="stat-block-line"><strong>Structure:</strong> Clue → Red Herring → Revelation → Consequence</div>
+<div class="stat-block-line"><strong>Example:</strong> A town's children are drawing the same symbol. No one taught it to them.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">2. The Heist</div>
+<div class="stat-block-line"><strong>Hook:</strong> Something valuable is protected by something dangerous.</div>
+<div class="stat-block-line"><strong>Structure:</strong> Planning → Infiltration → Complication → Escape → Fallout</div>
+<div class="stat-block-line"><strong>Example:</strong> Steal the Pontiff's private correspondence from the Rammalia vaults.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">3. The Chase</div>
+<div class="stat-block-line"><strong>Hook:</strong> Something is moving and must be caught or stopped.</div>
+<div class="stat-block-line"><strong>Structure:</strong> Pursuit → Obstacle → Choice → Confrontation → Resolution</div>
+<div class="stat-block-line"><strong>Example:</strong> A rogue mage carries a void-tome toward the Imperial capital.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">4. The Siege</div>
+<div class="stat-block-line"><strong>Hook:</strong> A place must be held against overwhelming force.</div>
+<div class="stat-block-line"><strong>Structure:</strong> Preparation → Assault → Turning Point → Resolution</div>
+<div class="stat-block-line"><strong>Example:</strong> Defend a border fortress against a Gothian host.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">5. The Conspiracy</div>
+<div class="stat-block-line"><strong>Hook:</strong> Powerful people are lying about something important.</div>
+<div class="stat-block-line"><strong>Structure:</strong> Suspicion → Investigation → Danger → Truth → Reckoning</div>
+<div class="stat-block-line"><strong>Example:</strong> The Emperor's heir is an imposter — and the real heir is still alive.</div>
+</div>
+
+<h1 id="npcs">NPC Quick-Build</h1>
+<h3>The 60-Second NPC</h3>
+<p>Roll or choose one from each column:</p>
+
+<table>
+<tr><th>Appearance</th><th>Demeanour</th><th>Secret</th><th>Want</th><th>Fear</th></tr>
+<tr><td>Scarred veteran</td><td>Gruff but fair</td><td>Owes money to criminals</td><td>Redemption</td><td>Being forgotten</td></tr>
+<tr><td>Perfumed noble</td><td>Charming, predatory</td><td>Spying for a rival house</td><td>Power</td><td>Public scandal</td></tr>
+<tr><td>Twitchy scholar</td><td>Nervous, eager</td><td>Stole a forbidden text</td><td>Knowledge</td><td>The truth</td></tr>
+<tr><td>Weathered sailor</td><td>Jovial, fatalistic</td><td>Survived a void encounter</td><td>One last voyage</td><td>The deep water</td></tr>
+<tr><td>Hooded priest</td><td>Calm, judging</td><td>Heretical beliefs</td><td>Faith validated</td><td>Doubt</td></tr>
+<tr><td>Burly smith</td><td>Blunt, loyal</td><td>Killed a man in anger</td><td>Peace</td><td>Losing control</td></tr>
+<tr><td>Gaunt mage</td><td>Distracted, intense</td><td>First signs of corruption</td><td>Perfection</td><td>Going mad</td></tr>
+<tr><td>Young soldier</td><td>Eager, naive</td><td>Deserted once before</td><td>Glory</td><td>Cowardice</td></tr>
+</table>
+
+<h1 id="improvisation">Improvisation</h1>
+<h3>The "Yes, And..." / "No, But..." Framework</h3>
+<table>
+<tr><th>Player asks...</th><th>Response</th><th>Why</th></tr>
+<tr><td>Something reasonable</td><td>"Yes, and..."</td><td>Reward creativity and engagement</td></tr>
+<tr><td>Something difficult</td><td>"Yes, but..."</td><td>Allow it with a cost or complication</td></tr>
+<tr><td>Something impossible</td><td>"No, but..."</td><td>Deny the specific but offer an alternative</td></tr>
+<tr><td>Something that breaks the world</td><td>"Not here, but..."</td><td>Preserve consistency while validating the idea</td></tr>
+</table>
+
+<h3>The 5-Room Dungeon (Improvised)</h3>
+<p>When you need a dungeon NOW:</p>
+<ol>
+<li><strong>Entrance with Guardian</strong> — Something that tests whether they belong here</li>
+<li><strong>Puzzle or Roleplaying Challenge</strong> — Something that makes them think or talk</li>
+<li><strong>Trick or Setback</strong> — Something that subverts expectations</li>
+<li><strong>Climax or Big Battle</strong> — The main event</li>
+<li><strong>Reward or Revelation</strong> — Why they came, and what it means</li>
+</ol>
+
+<h1 id="death">Death & Consequences</h1>
+<h3>Making Death Matter</h3>
+<p>In Arshmunnu, death is not a revolving door. When a character dies:</p>
+
+<ol>
+<li><strong>The body stays.</strong> Unless retrieved, it becomes part of the environment.</li>
+<li><strong>Allies mourn.</strong> NPCs who knew the PC react — some seek vengeance, some lose hope.</li>
+<li><strong>O debts remain.</strong> Unfinished business becomes plot hooks for the surviving party.</li>
+<li><strong>Replacement characters enter at a cost.</strong> They start with fewer resources and must earn trust.</li>
+</ol>
+
+<h3>Consequences Beyond Death</h3>
+<p>Sometimes living is worse than dying:</p>
+<ul>
+<li><strong>Captivity:</strong> Imprisoned, interrogated, broken out later</li>
+<li><strong>Disfigurement:</strong> Visible scars affect social encounters</li>
+<li><strong>Corruption:</strong> Void-touched — gain power, lose humanity</li>
+<li><strong>Betrayal:</strong> Forced to choose between allies</li>
+<li><strong>Oath-breaking:</strong> Reputation shattered, standing reduced to 0</li>
+</ul>
+
+<h1 id="corruption">Void Corruption</h1>
+<p>The Void does not simply destroy — it <em>changes</em>. Those who traffic with void magic risk permanent transformation.</p>
+
+<h3>Corruption Track</h3>
+<table>
+<tr><th>Stage</th><th>Name</th><th>Effect</th></tr>
+<tr><td>0</td><td>Untouched</td><td>Normal</td></tr>
+<tr><td>1</td><td>Touched</td><td>Occasional nightmares, -1 to WIL saves vs fear</td></tr>
+<tr><td>2</td><td>Marked</td><td>Physical mark (glowing veins, shadow wrongness), spells cost 1 less mana</td></tr>
+<tr><td>3</td><td>Tainted</td><td>Animals fear you, +1d6 void damage on spells, -2 to all social rolls</td></tr>
+<tr><td>4</td><td>Transformed</td><td>Unnatural senses, cannot enter holy ground, +2 to void spells, -4 social</td></tr>
+<tr><td>5</td><td>Lost</td><td>Become an NPC — the Void has consumed the soul</td></tr>
+</table>
+
+<h3>Reducing Corruption</h3>
+<ul>
+<li><strong>Purification ritual</strong> at a major temple (costly, dangerous)</li>
+<li><strong>Long rest in sanctified ground</strong> (reduces by 1 stage over a month)</li>
+<li><strong>Sacrifice of a valued possession</strong> (DM discretion)</li>
+<li><strong>Complete abstinence from void magic</strong> for an extended period</li>
+</ul>
+
+<h1 id="troubleshooting">Troubleshooting</h1>
+<h3>Common Problems & Solutions</h3>
+
+<div class="callout">
+<div class="callout-title">"My players are too cautious"</div>
+<p>Add time pressure — a clock, a threat, a consequence for delay. Make inaction expensive. If they still won't act, ask them directly: "What does your character want to do?"</p>
+</div>
+
+<div class="callout">
+<div class="callout-title">"My players are too reckless"</div>
+<p>Let them face the consequences of recklessness — not as punishment, but as story. Capture, not death. Debt, not destruction. Make them <em>feel</em> the cost of carelessness.</p>
+</div>
+
+<div class="callout">
+<div class="callout-title">"One player dominates"</div>
+<p>Address it in-game: their character becomes notorious, drawing attention. Address it out-of-game: "I want everyone to have a moment this session." Give spotlight questions to quieter players.</p>
+</div>
+
+<div class="callout">
+<div class="callout-title">"Players killed my main villain early"</div>
+<p>Congratulations — they just changed the story. The villain's death has consequences. Their organisation fractures. A worse villain rises. The power vacuum creates new problems. Adapt.</p>
+</div>
+
+<div class="callout">
+<div class="callout-title">"I have no idea what happens next"</div>
+<p>Ask the players. "What do you want to pursue?" Their answer is your next session. Alternatively: advance your faction clocks and see what happens when the world moves.</p>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">The GM's Oath</div>
+<div class="stat-block-line">I will be fair, not merciless.</div>
+<div class="stat-block-line">I will let the world breathe and surprise even me.</div>
+<div class="stat-block-line">I will give every player their moment in the firelight.</div>
+</div>
+
+  </div>
+</div>
+
+<script>
+function scrollToId(id){
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+
+
+// ===== DICE ROLLER =====
+let diceHistory = [];
+function diceToggle(){
+  document.getElementById('diceOv').classList.toggle('open');
+  document.getElementById('diceFab').classList.toggle('active');
+}
+function diceShowTab(tab){
+  document.getElementById('pane-dice').style.display = tab==='dice'?'block':'none';
+  document.getElementById('pane-init').style.display = tab==='init'?'block':'none';
+  document.querySelectorAll('.dice-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+function rollDie(sides){
+  const mod = parseInt(document.getElementById('diceMod').value)||0;
+  const count = parseInt(document.getElementById('diceCount').value)||1;
+  let rolls = [];
+  for(let i=0;i<count;i++) rolls.push(Math.floor(Math.random()*sides)+1);
+  const sum = rolls.reduce((a,b)=>a+b,0) + mod;
+  const sign = mod>=0?'+':'';
+  const breakdown = count>1 ? rolls.join(' + ') + ' = ' + rolls.reduce((a,b)=>a+b,0) + ' ' + sign + mod : rolls[0] + ' ' + sign + mod;
+  diceHistory.unshift({roll: sum, break: breakdown, sides: 'd'+sides});
+  if(diceHistory.length>20) diceHistory.pop();
+  updateDiceDisplay(sum, breakdown);
+  updateDiceHistory();
+  // Sound
+  try{playSound('ranged');}catch(e){}
+}
+function rollAdvantage(){
+  const mod = parseInt(document.getElementById('diceMod').value)||0;
+  const r1 = Math.floor(Math.random()*20)+1;
+  const r2 = Math.floor(Math.random()*20)+1;
+  const high = Math.max(r1,r2);
+  const sum = high + mod;
+  const sign = mod>=0?'+':'';
+  const breakdown = '(' + r1 + ', ' + r2 + ') &rarr; ' + high + ' ' + sign + mod;
+  diceHistory.unshift({roll: sum, break: breakdown, sides: 'Adv'});
+  if(diceHistory.length>20) diceHistory.pop();
+  updateDiceDisplay(sum, breakdown);
+  updateDiceHistory();
+  try{playSound('ranged');}catch(e){}
+}
+function updateDiceDisplay(total, breakdown){
+  document.getElementById('diceResult').innerHTML = '<div class="dice-result-total">' + total + '</div><div class="dice-result-breakdown">' + breakdown + '</div>';
+}
+function updateDiceHistory(){
+  const el = document.getElementById('diceHistory');
+  el.innerHTML = diceHistory.map(h=>'<div class="dice-history-entry"><strong style="color:var(--goldL)">' + h.roll + '</strong> &mdash; ' + h.sides + ' (' + h.break + ')</div>').join('');
+}
+
+// ===== INITIATIVE TRACKER =====
+let combatants = [];
+let currentTurn = 0;
+function initAdd(){
+  const name = document.getElementById('initName').value.trim();
+  const bonus = parseInt(document.getElementById('initBonus').value)||0;
+  const ep = parseInt(document.getElementById('initEP').value)||20;
+  if(!name) return;
+  combatants.push({name, bonus, ep, maxEp: ep, score: null, id: Date.now()+Math.random()});
+  document.getElementById('initName').value = '';
+  renderInitList();
+}
+function initRemove(id){
+  combatants = combatants.filter(c=>c.id!==id);
+  renderInitList();
+}
+function initRollAll(){
+  combatants.forEach(c=>{ c.score = Math.floor(Math.random()*20)+1 + c.bonus; });
+  initSort();
+  currentTurn = 0;
+  renderInitList();
+  try{playSound('promote');}catch(e){}
+}
+function initSort(){
+  combatants.sort((a,b)=>(b.score||0)-(a.score||0));
+  currentTurn = 0;
+  renderInitList();
+}
+function initNextTurn(){
+  if(combatants.length===0) return;
+  currentTurn = (currentTurn + 1) % combatants.length;
+  renderInitList();
+}
+function initClear(){
+  combatants = []; currentTurn = 0; renderInitList();
+}
+function initUpdateEP(id, val){
+  const c = combatants.find(x=>x.id===id);
+  if(c) c.ep = parseInt(val)||0;
+}
+function renderInitList(){
+  const el = document.getElementById('initList');
+  if(combatants.length===0){ el.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px;font-style:italic">No combatants yet. Add some above.</div>'; return; }
+  el.innerHTML = combatants.map((c,i)=>{
+    const isActive = i===currentTurn;
+    return '<div class="init-row ' + (isActive?'active-turn':'') + '">' +
+      '<div class="init-score">' + (c.score!==null?c.score:'&mdash;') + '</div>' +
+      '<div class="init-name">' + c.name + (c.bonus!==0?' <span style="color:var(--muted);font-size:11px">(' + (c.bonus>=0?'+':'') + c.bonus + ')</span>':'') + '</div>' +
+      '<div class="init-ep"><input type="number" value="' + c.ep + '" onchange="initUpdateEP(' + c.id + ',this.value)" min="0" max="999"></div>' +
+      '<div style="font-size:11px;color:var(--muted)">/' + c.maxEp + '</div>' +
+      '<button class="init-del" onclick="initRemove(' + c.id + ')">&times;</button>' +
+    '</div>';
+  }).join('');
+}
+// Keyboard shortcut: press 'd' to toggle dice
+ document.addEventListener('keydown',function(e){
+   if(e.key==='d' && e.target.tagName!=='INPUT' && e.target.tagName!=='TEXTAREA'){
+     diceToggle();
+   }
+ });
+renderInitList();
+
+
+</script>
+
+
+<!-- DICE & INITIATIVE WIDGET -->
+<div class="dice-fab" id="diceFab" title="Dice Roller &amp; Initiative" onclick="diceToggle()">&#9858;</div>
+<div class="dice-ov" id="diceOv">
+  <div class="dice-tb">
+    <span class="dice-tb-title">&#9858; Arshmunnu Dice &amp; Initiative</span>
+    <div class="dice-tabs">
+      <button class="dice-tab active" onclick="diceShowTab('dice')" id="tab-dice">Dice</button>
+      <button class="dice-tab" onclick="diceShowTab('init')" id="tab-init">Initiative</button>
+    </div>
+    <button class="dice-close" onclick="diceToggle()">&#10005;</button>
+  </div>
+  <div class="dice-body">
+    <!-- DICE TAB -->
+    <div id="pane-dice">
+      <div class="dice-grid">
+        <div class="dice-btn" onclick="rollDie(4)"><span class="dice-btn-die">d4</span><span class="dice-btn-label">Calamity</span></div>
+        <div class="dice-btn" onclick="rollDie(6)"><span class="dice-btn-die">d6</span><span class="dice-btn-label">Standard</span></div>
+        <div class="dice-btn" onclick="rollDie(8)"><span class="dice-btn-die">d8</span><span class="dice-btn-label">Skill</span></div>
+        <div class="dice-btn" onclick="rollDie(10)"><span class="dice-btn-die">d10</span><span class="dice-btn-label">Percent</span></div>
+        <div class="dice-btn" onclick="rollDie(12)"><span class="dice-btn-die">d12</span><span class="dice-btn-label">Mighty</span></div>
+        <div class="dice-btn" onclick="rollDie(20)"><span class="dice-btn-die">d20</span><span class="dice-btn-label">Fate</span></div>
+        <div class="dice-btn" onclick="rollDie(100)"><span class="dice-btn-die">d100</span><span class="dice-btn-label">Fortune</span></div>
+        <div class="dice-btn" onclick="rollAdvantage()" style="border-color:rgba(201,168,76,.3)"><span class="dice-btn-die" style="font-size:16px">Adv</span><span class="dice-btn-label">d20 Advantage</span></div>
+      </div>
+      <div class="dice-modifier">
+        <label>Modifier:</label>
+        <input type="number" id="diceMod" value="0" min="-20" max="20">
+        <label style="margin-left:10px">Count:</label>
+        <input type="number" id="diceCount" value="1" min="1" max="20" style="width:50px">
+      </div>
+      <div class="dice-result" id="diceResult">
+        <div style="color:var(--muted);font-style:italic">Click a die to roll...</div>
+      </div>
+      <div class="dice-history-title">Roll History</div>
+      <div class="dice-history" id="diceHistory"></div>
+    </div>
+    <!-- INITIATIVE TAB -->
+    <div id="pane-init" style="display:none">
+      <div class="init-header">
+        <input type="text" class="name-input" id="initName" placeholder="Name (e.g. Tharok)">
+        <input type="number" class="num-input" id="initBonus" placeholder="AGI mod" value="0">
+        <input type="number" class="num-input" id="initEP" placeholder="EP" value="20">
+        <button class="init-add" onclick="initAdd()">Add</button>
+      </div>
+      <div class="init-section-title">Combatants</div>
+      <div class="init-list" id="initList"></div>
+      <div class="init-controls">
+        <button onclick="initRollAll()">&#9858; Roll All</button>
+        <button onclick="initSort()">&#8693; Sort</button>
+        <button onclick="initNextTurn()">&#10148; Next Turn</button>
+        <button onclick="initClear()" style="color:var(--coalition)">Clear All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<h1 id="callings-roster">Running the v2 Callings</h1>
+<p>The Player's Guide v2 adds fifteen new Callings to the original ten. Each has Level Features at 1/3/6/9/12/15/18 instead of "paths" — Specialities are taken as the character grows. From the GM's chair, the practical changes are:</p>
+<ul>
+<li><strong>Calling Features are baseline.</strong> A Legionary's Shield Doctrine always works; the player doesn't trade for it. Build encounters expecting these to be in play.</li>
+<li><strong>Specialities are choosing-moments.</strong> When a player gains a Speciality, ask them to pick Advantage <em>or</em> +4. They cannot have both. Specialities never stack.</li>
+<li><strong>Multicalling caps at Lv 6 of the Secondary.</strong> Don't let players "buy" the Lv 18 capstone of two Callings. The hard limit is two Callings, never more.</li>
+</ul>
+<p>Social and Magical Callings express Pressure rather than damage. They make encounters <em>shorter</em> rather than <em>easier</em> — enemies hesitate, miss turns, surrender, or break composure before they break their bones.</p>
+
+<h1 id="magic-running">Running the Five Magic Systems</h1>
+<p>Each tradition has a distinct economy. Treat them as a system of trade-offs, not flavour reskins.</p>
+
+<h2>Mana — Predictable, Recoverable, Limited</h2>
+<p>Mana magic is the easiest to balance: it has a pool, a cost, and known recovery curves. Build encounters around <strong>spell economy</strong>: how many T2-T3 spells can the Arcanist afford before they're empty?</p>
+<p><strong>Backlash matters.</strong> When a player rolls Dire Failure on a Mana cast, choose <em>or</em> roll d6: Burn (1d6 EP, unreduced), Sear (Overstrained), Rift-Sense (glowing, sparking — Stealth ruined for the scene), Slip (lose 1 AP, Off-Balance), Fray (Drained — MP max -10% until Long Rest), or Wrong Attention (omen, watcher, complication). The last one is your gift — use it. A failed casting is a hook.</p>
+<p><strong>Overcasting</strong> is for legends and corpses. Allow it, but ensure consequences (EP burn cannot be reduced; failed Mana Save means Backlash; Dire Failure on overcast = worse Backlash and possibly Corruption check).</p>
+
+<h2>Blood — Honest, Visible, Punishing</h2>
+<p>Blood magic spends EP and accepts conditions. It's powerful because <em>it always works</em> — there's no fizzle on a failed casting, only consequence. Lean into this:</p>
+<ul>
+<li>Blood-healing is the best healing in the game. It is also the most costly. A Hemomancer keeping a party alive should be visibly hurting.</li>
+<li>Civilised settings react. -2 Standing for visible blood casting is automatic. Watchmen take note. Temples disapprove. Don't let the player forget.</li>
+<li>External blood is the gateway to Corruption. Save Will saves vs DC 12+Tier. Track Marks separately from Soul Taint or Void Corruption — same word, different meters.</li>
+</ul>
+
+<h2>Divine — Conditional, Social, Theological</h2>
+<p>Divine magic does not misfire. It <em>refuses</em>. A player who breaks Oaths loses access, full stop. Be a fair judge — Minor Oath -1 Favour temporarily, Major Oath -2 and require atonement, Sacred Oath immediate Forsaken state.</p>
+<p><strong>Atonement is a session, not a sentence.</strong> Confession, restitution, rite, sacrifice — any of these. Make atonement a quest, not a check-box. The player should feel the cost narratively.</p>
+<p>Favour above +3 is generous — let it happen, but reward gods accordingly. Chosen vessels (Favour +5-6) should attract divine notice <em>and</em> divine enemies.</p>
+
+<h2>Soul — Surgical, Permanent, Quiet</h2>
+<p>Soul magic is hardest to adjudicate because the costs are non-numeric. Use Soul Integrity as your anchor — SI loss is permanent unless treated, so a Soulbinder who burns SI casually will visibly degrade.</p>
+<p><strong>Soul Echoes</strong> are roleplay hooks. When a player gains one, ask them: "Whose voice do you hear?" "What memory is not yours?" Let it inform future scenes. An Echo that doesn't matter is a missed opportunity.</p>
+<p>Bound souls are a legal and moral crisis. If a player carries a soul token, the world should notice — soul-wardens, priests, exorcists. Soul magic is restricted precisely because it works.</p>
+
+<h2>Void — Campaign-Level, Always Costly</h2>
+<p>Void magic is not for spam. The Absolute Rule (one Void working per scene, or accept Dire Failure) exists to keep this true. Enforce it.</p>
+<p><strong>Track Attention as a GM resource.</strong> Each Void working raises it. At thresholds <em>you choose</em>, things happen: dreams worsen, anomalies appear, entities observe, an avatar arrives. Don't show the meter to players. They should feel it building.</p>
+<p>Open Void use is a campaign event. Faction reaction is automatic — Standing collapses, Oaths invalidate, divine hostility, soul-warden contracts. If a player uses Void in public, half a session of consequences is the minimum.</p>
+
+<h1 id="pressure-adjudicating">Running Pressure in Combat</h1>
+<p>Pressure (Social) and Arcane Pressure (Magical) are how non-damage Callings stay relevant in a fight. They impose Suppressed / Shaken / Frightened on enemies who fail Will saves. The system is reliable; the question is when to let it apply.</p>
+
+<h2>Who is Affected?</h2>
+<ul>
+<li><strong>Always affected:</strong> trained soldiers, guards, citizens, structured enemies that recognise authority.</li>
+<li><strong>Sometimes affected:</strong> bandits, mercenaries — they may resist if the social Calling has no Standing leverage over them.</li>
+<li><strong>Usually immune:</strong> beasts, mindless undead, demons. The body still hesitates (Suppressed), but Shaken and Frightened often do not stick.</li>
+<li><strong>Inverted:</strong> cultists and zealots. Divine Pressure from a heretic may <em>energise</em> them. Be ready to invert effects narratively.</li>
+</ul>
+
+<h2>Calling-Specific Notes</h2>
+<p><strong>Envoy / Magistrate.</strong> Pressure scales with Standing in the local jurisdiction. A Magistrate in their own city is terrifying; in foreign lands they're just a person with paperwork.</p>
+<p><strong>Spymaster.</strong> Pressure works best in private. In public spotlight, the false face costs them their edge.</p>
+<p><strong>Arcanist.</strong> Substitutes Wit for Corruption contribution. They pressure by certainty, not rot.</p>
+<p><strong>Hemomancer.</strong> APrV +1 while Wounded. Blood smell. Visible suffering as authority.</p>
+<p><strong>Ordained.</strong> Imposes Disadvantage on corrupted, undead, and profane saves. Use this. Run undead encounters with Ordained PCs as <em>fast</em> — the divine should feel real.</p>
+<p><strong>Soulbinder.</strong> Disadvantage on possessing spirits. They are the answer to demon-haunted dungeons.</p>
+<p><strong>Void-Touched.</strong> Partial Success or worse always introduces a minor complication. Reality reacts to them constantly. Lean in: scenery, dreams, animal behaviour. The world is uncomfortable.</p>
+
+<h2>Pacing Pressure</h2>
+<p>Pressure is checked <strong>once per turn</strong>, not stacked across multiple sources in the same round. If two PCs both project Pressure, pick the higher PV and apply only that check. Otherwise initiative grinds to a halt.</p>
+<p>Each social character may cause only <strong>three major Social Effects per scene</strong> (Rally, Expose, Command, Demand Surrender). Pressure aura does not count toward this limit. This keeps social dominance powerful without becoming oppressive.</p>
+
+<h1 id="standing-reputation">Adjudicating Standing &amp; Reputation</h1>
+<p>Standing (-2 to +6) and Reputation (-5 to +5 per faction) are the two social meters. From the GM's side:</p>
+
+<h2>When Standing Applies</h2>
+<p><strong>Yes:</strong> if the scene is about authority — courts, guards, customs, audiences, official transactions. Add Standing to the roll. Composure = 10 + Bearing/Will + Standing.</p>
+<p><strong>No:</strong> if the scene is about friendship, intimacy, family, or trust. A high-Standing noble has no inherent advantage in winning a friend's affection.</p>
+
+<h2>When Reputation Applies</h2>
+<p>Reputation modifies social rolls <em>with the faction that knows you</em>. d20 + Ability + Training + Reputation. A character with +3 Reputation with the Phoenix Agency gains +3 on rolls dealing with their operatives, archives, or safehouses — and only then.</p>
+
+<h2>Shifting Reputation</h2>
+<ul>
+<li>Minor deed: ±1</li>
+<li>Notable deed: ±2</li>
+<li>Great deed: ±3</li>
+<li>Legendary deed: ±4 or more (rare)</li>
+</ul>
+<p>Shifts may be delayed until news travels. A great deed in a distant province may take a season to register with central factions. This is a narrative resource — use it.</p>
+
+<h2>Disgraced</h2>
+<p>A character becomes Disgraced when publicly shamed, convicted, or proven an oath-breaker. -2 Standing in that realm and -2 on Bearing-based rolls with anyone who knows. Removal requires pardon, restitution, heroic deed, or sacred absolution. <strong>Disgraced is a story state.</strong> Treat its removal as worth a session of effort, minimum.</p>
+
+<h1 id="inter-calling-balance">Inter-Calling Balance Law</h1>
+<p>The synergy actions are powerful by design. If a single combo (Pin → Finish forever, Shield &amp; Spear every round) becomes the default loop, two responses:</p>
+<ol>
+<li><strong>Increase enemy counterplay.</strong> Shields, smoke, mass, terrain that breaks line of sight, multiple targets, ranged threat that punishes positioning.</li>
+<li><strong>Limit the combo.</strong> Cap to once per round or once per scene. This is a legitimate ruling.</li>
+</ol>
+<p>The principle: if a rule stops creating decisions, it stops being a rule and starts being a habit. Break habits.</p>
+
+</body>
+</html>

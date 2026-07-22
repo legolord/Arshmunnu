@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arshmunnu — Guide for Players</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a080f;--panel:rgba(16,12,28,.9);--text:#d4c8a8;--gold:#c9a84c;--goldD:#7a5e1a;--goldL:#e8d080;--coalition:#a32a2a;--imperial:#c9a84c;--accent:#8b7355;--muted:#6b6b7b;--border:rgba(201,168,76,0.2);--red:#8B3A3A;--blue:#4A6B8B;--green:#4A7B4A;--purple:#6B4A8B;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'EB Garamond',serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:48px;background:rgba(6,4,12,0.95);border-bottom:1px solid var(--border);flex-shrink:0;z-index:100;position:sticky;top:0}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-title{font-family:'Cinzel',serif;font-size:16px;color:var(--goldL);letter-spacing:2px}
+.topbar-sub{font-size:11px;color:var(--muted);font-style:italic}
+.topbar a{color:var(--gold);text-decoration:none;font-family:'Cinzel',serif;font-size:12px;transition:.2s}
+.topbar a:hover{color:var(--goldL)}
+
+/* Layout */
+.layout{display:flex;flex:1}
+.sidebar{width:280px;background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;position:fixed;top:48px;bottom:0;left:0;z-index:50;padding:15px 0;transition:transform .3s}
+.sidebar.hidden{transform:translateX(-100%)}
+.sidebar-section{padding:6px 20px;font-family:'Cinzel',serif;font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-top:12px;border-bottom:1px solid var(--border);padding-bottom:4px}
+.sidebar-item{padding:6px 20px 6px 30px;font-size:13px;color:var(--text);cursor:pointer;transition:.15s;border-left:2px solid transparent}
+.sidebar-item:hover{background:rgba(201,168,76,0.08);color:var(--goldL);border-left-color:var(--goldD)}
+.sidebar-item.active{background:rgba(201,168,76,0.12);color:var(--goldL);border-left-color:var(--gold)}
+.sidebar-toggle{display:none;position:fixed;top:60px;left:10px;z-index:60;width:36px;height:36px;background:var(--panel);border:1px solid var(--border);border-radius:50%;color:var(--gold);font-size:16px;align-items:center;justify-content:center;cursor:pointer}
+
+/* Content */
+.content{flex:1;margin-left:280px;padding:30px 40px;max-width:900px}
+.content h1{font-family:'Cinzel',serif;font-size:28px;color:var(--goldL);margin:30px 0 15px;letter-spacing:1px;border-bottom:2px solid var(--border);padding-bottom:8px}
+.content h1:first-child{margin-top:0}
+.content h2{font-family:'Cinzel',serif;font-size:20px;color:var(--gold);margin:25px 0 10px;letter-spacing:1px}
+.content h3{font-family:'Cinzel',serif;font-size:16px;color:var(--accent);margin:18px 0 8px}
+.content h4{font-family:'Cinzel',serif;font-size:13px;color:var(--goldD);margin:12px 0 6px;text-transform:uppercase;letter-spacing:1px}
+.content p{font-size:15px;line-height:1.75;margin-bottom:12px;color:var(--text)}
+.content ul,.content ol{margin:8px 0 12px 25px;font-size:14px;line-height:1.7}
+.content li{margin-bottom:4px}
+.content strong{color:var(--goldL)}
+.content em{font-style:italic;color:#b8a880}
+
+/* Tables */
+.content table{width:100%;border-collapse:collapse;margin:15px 0;font-size:13px}
+.content th{background:rgba(201,168,76,0.15);border:1px solid var(--border);padding:8px 12px;font-family:'Cinzel',serif;font-size:11px;color:var(--goldL);text-align:left;text-transform:uppercase;letter-spacing:1px}
+.content td{border:1px solid var(--border);padding:8px 12px;color:var(--text)}
+.content tr:nth-child(even){background:rgba(255,255,255,0.03)}
+.content tr:hover{background:rgba(201,168,76,0.05)}
+
+/* Stat blocks */
+.stat-block{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:15px 20px;margin:15px 0}
+.stat-block-title{font-family:'Cinzel',serif;font-size:14px;color:var(--goldL);margin-bottom:8px}
+.stat-block-line{font-size:13px;color:var(--text);margin:3px 0}
+.stat-block-line strong{color:var(--gold)}
+
+/* Ability block */
+.ability{background:rgba(0,0,0,0.25);border:1px solid rgba(201,168,76,0.15);border-radius:6px;padding:12px 15px;margin:10px 0}
+.ability-name{font-family:'Cinzel',serif;font-size:13px;color:var(--goldL);margin-bottom:4px}
+.ability-cost{font-size:11px;color:var(--goldD);margin-bottom:4px;font-style:italic}
+.ability-desc{font-size:13px;line-height:1.6;color:var(--text)}
+
+/* Divider */
+.content hr{border:none;border-top:1px solid var(--border);margin:25px 0}
+
+/* Responsive */
+
+/* ===== DICE & INITIATIVE WIDGET ===== */
+.dice-fab{position:fixed;bottom:22px;right:22px;z-index:800;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#1a0d04,#240808);border:1px solid rgba(212,164,74,.55);box-shadow:0 4px 20px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:22px;transition:all .22s;color:#d4a44a;font-family:'Cinzel',serif}
+.dice-fab:hover{transform:scale(1.12);box-shadow:0 6px 24px rgba(0,0,0,.6),0 0 0 6px rgba(212,164,74,.12)}
+.dice-fab.active{background:linear-gradient(135deg,#d4a44a,#b8893b);color:#1a0800;border-color:#f0cc72}
+.dice-ov{position:fixed;inset:0;z-index:900;background:rgba(3,1,8,.97);backdrop-filter:blur(12px);display:none;flex-direction:column;overflow:hidden}
+.dice-ov.open{display:flex}
+.dice-tb{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:rgba(6,4,12,.95);flex-shrink:0}
+.dice-tb-title{font-family:'Cinzel',serif;font-size:16px;color:var(--goldL);letter-spacing:1px}
+.dice-tabs{display:flex;gap:8px}
+.dice-tab{background:rgba(212,164,74,.08);border:1px solid var(--border);color:var(--text);padding:6px 14px;font-family:'Cinzel',serif;font-size:11px;cursor:pointer;border-radius:4px;transition:.2s}
+.dice-tab:hover{background:rgba(212,164,74,.2)}
+.dice-tab.active{background:rgba(212,164,74,.3);color:var(--goldL);border-color:var(--goldD)}
+.dice-close{background:none;border:none;color:var(--gold);font-size:20px;cursor:pointer;width:auto;padding:4px 8px;margin:0}
+.dice-close:hover{color:var(--goldL)}
+.dice-body{flex:1;overflow-y:auto;padding:20px;max-width:600px;margin:0 auto;width:100%}
+
+/* Dice Roller */
+.dice-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.dice-btn{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:15px 10px;text-align:center;cursor:pointer;transition:.2s;color:var(--text)}
+.dice-btn:hover{background:rgba(201,168,76,.15);border-color:var(--goldD);transform:translateY(-2px)}
+.dice-btn-die{font-family:'Cinzel',serif;font-size:22px;color:var(--goldL);display:block}
+.dice-btn-label{font-size:10px;color:var(--muted);margin-top:4px}
+.dice-modifier{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:12px;background:rgba(0,0,0,.2);border-radius:6px;border:1px solid var(--border)}
+.dice-modifier label{font-family:'Cinzel',serif;font-size:12px;color:var(--gold)}
+.dice-modifier input{width:60px;background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--text);padding:6px 10px;font-family:'EB Garamond',serif;font-size:14px;border-radius:4px;text-align:center}
+.dice-result{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;padding:20px;text-align:center;margin-bottom:15px;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dice-result-total{font-family:'Cinzel',serif;font-size:42px;color:var(--goldL);text-shadow:0 0 20px rgba(212,164,74,.3)}
+.dice-result-breakdown{font-size:13px;color:var(--muted);margin-top:6px}
+.dice-history-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);margin-bottom:8px;letter-spacing:1px}
+.dice-history{max-height:150px;overflow-y:auto;font-size:12px;color:var(--muted)}
+.dice-history-entry{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+
+/* Initiative Tracker */
+.init-header{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap}
+.init-header input{background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:'EB Garamond',serif;font-size:14px;border-radius:4px}
+.init-header input.name-input{flex:1;min-width:120px}
+.init-header input.num-input{width:70px}
+.init-add{background:rgba(201,168,76,.2);border:1px solid var(--goldD);color:var(--goldL);padding:8px 16px;font-family:'Cinzel',serif;font-size:12px;cursor:pointer;border-radius:4px;transition:.2s}
+.init-add:hover{background:rgba(201,168,76,.35)}
+.init-list{display:flex;flex-direction:column;gap:6px}
+.init-row{display:grid;grid-template-columns:40px 1fr 70px 80px 36px;gap:8px;align-items:center;padding:8px 12px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;transition:.2s}
+.init-row.active-turn{border-color:var(--gold);background:rgba(201,168,76,.1);box-shadow:0 0 10px rgba(212,164,74,.1)}
+.init-row .init-score{font-family:'Cinzel',serif;font-size:16px;color:var(--goldL);text-align:center}
+.init-row .init-name{font-size:14px;color:var(--text)}
+.init-row .init-ep input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:4px 6px;font-size:12px;border-radius:3px;text-align:center}
+.init-row .init-del{background:none;border:none;color:var(--coalition);font-size:16px;cursor:pointer;padding:0;text-align:center;width:auto}
+.init-row .init-del:hover{color:#ff4444}
+.init-controls{display:flex;gap:8px;margin-top:15px;justify-content:center}
+.init-controls button{background:rgba(201,168,76,.1);border:1px solid var(--border);color:var(--text);padding:8px 16px;font-family:'Cinzel',serif;font-size:11px;cursor:pointer;border-radius:4px;transition:.2s}
+.init-controls button:hover{background:rgba(201,168,76,.25);color:var(--goldL)}
+.init-section-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:1px;margin:15px 0 8px}
+
+@media(max-width:768px){
+  .dice-grid{grid-template-columns:repeat(3,1fr)}
+  .init-row{grid-template-columns:35px 1fr 60px 60px 30px}
+  .dice-fab{bottom:15px;right:15px;width:44px;height:44px;font-size:18px}
+}
+
+@media(max-width:768px){.sidebar{width:260px}.content{margin-left:0;padding:20px}.sidebar-toggle{display:flex}.topbar-sub{display:none}}
+@media(max-width:600px){
+.content{padding:14px}
+h1{font-size:24px}
+h2{font-size:18px}
+h3{font-size:15px}
+table{font-size:12px}
+th,td{padding:6px 8px}
+.topbar{height:auto;padding:8px 14px}
+.brand{font-size:11px}
+.nav a{font-size:7px;padding:3px 6px}
+.dice-body{padding:14px}
+}
+
+/* Item reference table */
+.item-tbl{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0 20px 0;}
+.item-tbl th{background:rgba(201,168,76,.12);color:var(--goldL);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-align:left;padding:8px 10px;border-bottom:2px solid var(--border);}
+.item-tbl td{padding:7px 10px;border-bottom:1px dashed var(--border);vertical-align:top;}
+.item-tbl tr:nth-child(even) td{background:rgba(0,0,0,.18);}
+.item-tbl tr:hover td{background:rgba(201,168,76,.06);}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">Guide for Players</span>
+    <span class="topbar-sub">Arshmunnu Role-Playing Game</span>
+  </div>
+  <a href="index.html">&larr; Archive Hub</a>
+</div>
+
+<div class="layout">
+  <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('hidden')">&#9776;</button>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-section">Fundamentals</div>
+    <div class="sidebar-item active" onclick="scrollToId('intro')">Introduction</div>
+    <div class="sidebar-item" onclick="scrollToId('attributes')">Attributes</div>
+    <div class="sidebar-item" onclick="scrollToId('abilities')">Abilities</div>
+    <div class="sidebar-item" onclick="scrollToId('skills')">Trainings</div>
+    <div class="sidebar-item" onclick="scrollToId('training')">Training Caps</div>
+
+    <div class="sidebar-section">Combat</div>
+    <div class="sidebar-item" onclick="scrollToId('combat')">Combat Basics</div>
+    <div class="sidebar-item" onclick="scrollToId('actions')">Actions</div>
+    <div class="sidebar-item" onclick="scrollToId('weapons')">Weapons</div>
+    <div class="sidebar-item" onclick="scrollToId('armour')">Armour & Shields</div>
+    <div class="sidebar-item" onclick="scrollToId('conditions')">Conditions</div>
+    <div class="sidebar-item" onclick="scrollToId('dual-wielding')">Dual Wielding</div>
+    <div class="sidebar-item" onclick="scrollToId('shield-rules')">Shield Rules</div>
+    <div class="sidebar-item" onclick="scrollToId('multiclass')">Multiclassing</div>
+
+    <div class="sidebar-section">Character</div>
+    <div class="sidebar-item" onclick="scrollToId('creation')">Character Creation</div>
+    <div class="sidebar-item" onclick="scrollToId('feats')">Feats & Talents</div>
+    <div class="sidebar-item" onclick="scrollToId('items')">Equipment</div>
+
+    <div class="sidebar-section">Magic</div>
+    <div class="sidebar-item" onclick="scrollToId('casting')">Spellcasting</div>
+    <div class="sidebar-item" onclick="scrollToId('mana')">Mana & Costs</div>
+    <div class="sidebar-item" onclick="scrollToId('spell-list')">Spell List</div>
+
+    <div class="sidebar-section">Life</div>
+    <div class="sidebar-item" onclick="scrollToId('social')">Social Encounters</div>
+    <div class="sidebar-item" onclick="scrollToId('rest')">Resting</div>
+    <div class="sidebar-item" onclick="scrollToId('death')">Death & Recovery</div>
+  </div>
+
+  <div class="content" id="content">
+
+<h1 id="intro">Introduction</h1>
+<p>Arshmunnu is a late Bronze Age to early Iron Age setting — a world of empires and wilderness, of divine politics and mortal ambition. This guide contains everything you need to play.</p>
+
+<p><strong>What kind of game this is:</strong></p>
+<ul>
+<li><strong>Danger is earnest.</strong> Wounds matter, fear mattereth, and a poor choice may follow thee longer than a scar.</li>
+<li><strong>Politics is not garnish, but bread.</strong> Oaths, seals, reputation, and station are weapons as sharp as steel.</li>
+<li><strong>Mythic weirdness is real, but not tame.</strong> Wonders exist, yet they come with price, attention, and aftermath.</li>
+<li><strong>Victory is broader than slaughter.</strong> Many triumphs are roads opened, trusts earned, and foes not made.</li>
+</ul>
+
+<h1 id="attributes">Attributes</h1>
+<p>Your character has <strong>seven</strong> core attributes rated from <strong>4 (average)</strong> to <strong>10 (legendary)</strong>. All attributes start at 4 and are adjusted by species bonuses and point allocation during character creation.</p>
+
+<table>
+<tr><th>Attribute</th><th>Abbreviation</th><th>Measures</th></tr>
+<tr><td><strong>Might</strong></td><td>MIG</td><td>Physical power — melee damage, carrying capacity, grappling, breaking objects</td></tr>
+<tr><td><strong>Agility</strong></td><td>AGI</td><td>Speed, reflexes, dodging, ranged attacks, acrobatics</td></tr>
+<tr><td><strong>Fortitude</strong></td><td>FOR</td><td>Toughness, stamina, resisting disease and poison, enduring hardship</td></tr>
+<tr><td><strong>Wit</strong></td><td>WIT</td><td>Intelligence, memory, tactical thinking, investigation, crafting</td></tr>
+<tr><td><strong>Will</strong></td><td>WIL</td><td>Mental resilience, resisting fear and charm, attunement, focus</td></tr>
+<tr><td><strong>Bearing</strong></td><td>BRG</td><td>Charisma, leadership, social influence, command, deception</td></tr>
+<tr><td><strong>Mana</strong></td><td>MAN</td><td>Magical aptitude, spell power, arcane knowledge</td></tr>
+</table>
+
+<h3>Attribute Modifiers</h3>
+<table>
+<tr><th>Score</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr>
+<tr><td><strong>Modifier</strong></td><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>+1</td><td>+2</td><td>+3</td></tr>
+</table>
+
+<h1 id="abilities">Abilities</h1>
+<p>Your character has <strong>Action Points (AP)</strong> which determine how much you can do on your turn. Base AP starts at 4.</p>
+
+<h3>Action Point Costs</h3>
+<table>
+<tr><th>Action</th><th>AP Cost</th><th>Description</th></tr>
+<tr><td>Move</td><td>1 AP</td><td>Move up to your Speed in metres</td></tr>
+<tr><td>Strike</td><td>2 AP</td><td>Make a melee or ranged attack</td></tr>
+<tr><td>Quick Strike</td><td>1 AP</td><td>Attack at -3 To-Hit</td></tr>
+<tr><td>Guard</td><td>1 AP</td><td>+2 DL until next turn (+3 with shield)</td></tr>
+<tr><td>Use Item</td><td>1 AP</td><td>Drink potion, throw grenade, etc.</td></tr>
+<tr><td>Cast Spell</td><td>2-4 AP</td><td>Varies by spell</td></tr>
+<tr><td>Dash</td><td>2 AP</td><td>Move double your Speed</td></tr>
+<tr><td>Defend Other</td><td>2 AP</td><td>Impose disadvantage on attacks against ally</td></tr>
+<tr><td>Aid</td><td>1 AP</td><td>Grant ally +2 to next roll</td></tr>
+<tr><td>Shove / Trip</td><td>1 AP</td><td>Contested MIG vs FOR</td></tr>
+<tr><td>Disarm</td><td>2 AP</td><td>Contested MIG vs MIG</td></tr>
+<tr><td>Intimidate</td><td>2 AP</td><td>Bearing + WIL vs target's WIL</td></tr>
+</table>
+
+<h1 id="skills">Trainings</h1>
+<p>Every training is tied to an attribute. Roll <strong>d20 + attribute modifier + training tier bonus</strong> against a Difficulty Class (DC) set by the GM.</p>
+
+<h3>Training Tiers</h3>
+<table>
+<tr><th>Tier</th><th>Bonus</th><th>Description</th></tr>
+<tr><td>Untrained</td><td>+0</td><td>No formal training — raw attribute only</td></tr>
+<tr><td>Initiate</td><td>+1</td><td>Basic knowledge — apprentice level</td></tr>
+<tr><td>Trained</td><td>+3</td><td>Professional competence — can earn a living</td></tr>
+<tr><td>Skilled</td><td>+5</td><td>Expert mastery — respected in the field</td></tr>
+<tr><td>Expert</td><td>+7</td><td>Peak human capability — legendary renown</td></tr>
+</table>
+
+<h3>Training List</h3>
+<table>
+<tr><th>Training</th><th>Attribute</th><th>Typical Uses</th></tr>
+<tr><td><strong>Athletics</strong></td><td>MIG</td><td>Climb, jump, swim, grapple, break objects, forced march</td></tr>
+<tr><td><strong>Acrobatics</strong></td><td>AGI</td><td>Balance, tumble, dodge, perform feats of agility</td></tr>
+<tr><td><strong>Stealth</strong></td><td>AGI</td><td>Hide, move silently, pick pockets, disguise, sleight of hand</td></tr>
+<tr><td><strong>Survival</strong></td><td>WIT</td><td>Forage, navigate, build shelter, hunt, track, weather prediction</td></tr>
+<tr><td><strong>Perception</strong></td><td>WIT</td><td>Spot hidden things, listen, search, sense danger, tracking</td></tr>
+<tr><td><strong>Investigation</strong></td><td>WIT</td><td>Analyse clues, deduce patterns, solve mysteries, research</td></tr>
+<tr><td><strong>Lore</strong></td><td>WIT</td><td>Recall facts, identify artefacts, know history, ancient languages</td></tr>
+<tr><td><strong>Craft</strong></td><td>WIT</td><td>Make and repair items, evaluate workmanship, engineering</td></tr>
+<tr><td><strong>Persuasion</strong></td><td>BRG</td><td>Negotiate, charm, inspire, command, diplomacy, haggling</td></tr>
+<tr><td><strong>Deception</strong></td><td>BRG</td><td>Lie convincingly, forge documents, disguise, misdirect</td></tr>
+<tr><td><strong>Intimidation</strong></td><td>MIG</td><td>Threaten, interrogate, assert dominance, composure under pressure</td></tr>
+<tr><td><strong>Command</strong></td><td>BRG</td><td>Lead troops, direct allies, inspire in battle, maintain morale</td></tr>
+<tr><td><strong>Arcana</strong></td><td>MAN</td><td>Magic lore, identify spells, detect auras, understand enchantments</td></tr>
+<tr><td><strong>Ritual</strong></td><td>MAN</td><td>Perform magical rituals and ceremonies, bind spirits, consecrate</td></tr>
+<tr><td><strong>Attunement</strong></td><td>WIL</td><td>Sense magic, commune with spirits, maintain focus, resist glamour</td></tr>
+</table>
+
+<h1 id="training">Training Caps</h1>
+<p>Defence Training caps at <strong>Skilled +5</strong>. All other trainings can reach <strong>Expert +7</strong>. Your Calling and technique paths determine which trainings you can advance most effectively.</p>
+
+<h1 id="combat">Combat Basics</h1>
+<h3>Combat Procedure</h3>
+<ol>
+<li><strong>Establish the scene</strong> — combatants, terrain, hazards, objectives</li>
+<li><strong>Surprise</strong> — if fitting, failed notice means a weak first turn</li>
+<li><strong>Initiative</strong> — d20 + Agility + training; break ties cleanly</li>
+<li><strong>Run turns by AP</strong> — keep it brisk</li>
+</ol>
+
+<h3>Defence Level (DL)</h3>
+<p>DL is the target number to hit you. It replaces Armour Class from other systems.</p>
+<p><strong>Base DL = 10 + Agility modifier + Fortitude modifier + shield bonus + armour bonus</strong></p>
+<p>Both Agility and Fortitude contribute to your DL — being nimble AND tough makes you harder to strike effectively.</p>
+
+<h3>To-Hit Roll</h3>
+<p><strong>d20 + attribute modifier + training bonus</strong> vs target's DL</p>
+
+<h3>Multi-Strike Penalty</h3>
+<p>Each additional strike on your turn suffers a cumulative <strong>-3 penalty</strong>. This prevents "blender turns" and makes tactical choices matter.</p>
+
+<h3>Guard Action</h3>
+<p>Spending 1 AP to Guard gives <strong>+2 DL</strong> until your next turn. With a shield, this becomes <strong>+3 DL</strong>. Defence is an action, not a prayer.</p>
+
+<h1 id="actions">Actions</h1>
+<h3>Movement in Combat</h3>
+<p>Moving twice is risky. If you Dash (move twice in a turn), you cannot Guard on that turn. This teaches that positioning matters — fights become tactical instead of chaotic.</p>
+
+<h3>Damage</h3>
+<p>Damage = <strong>Weapon die + attribute modifier</strong>. Two-handed weapons deal more damage but cost more AP for certain manoeuvres.</p>
+
+<h1 id="weapons">Weapons</h1>
+<table>
+<tr><th>Weapon Type</th><th>Damage</th><th>AP Cost</th><th>Properties</th></tr>
+<tr><td>Light Melee (dagger, shortsword)</td><td>1d6 + MIG</td><td>2 AP</td><td>Finesse, can use AGI, easy conceal</td></tr>
+<tr><td>Standard Melee (longsword, axe, spear)</td><td>1d8 + MIG</td><td>2 AP</td><td>Versatile — 1d10 if wielded two-handed</td></tr>
+<tr><td>Heavy Melee (greatsword, halberd, maul)</td><td>1d10 + MIG</td><td>2 AP</td><td>Two-handed only, reach on some</td></tr>
+<tr><td>Polearm (spear, glaive, pike)</td><td>1d8 + MIG</td><td>2 AP</td><td>Reach +1m, brace vs charge</td></tr>
+<tr><td>Light Ranged (shortbow, sling)</td><td>1d6 + AGI</td><td>2 AP</td><td>Range 30/90m, move-and-shoot</td></tr>
+<tr><td>Standard Ranged (longbow, crossbow)</td><td>1d8 + AGI</td><td>2 AP</td><td>Range 60/180m, crossbow ignores half cover</td></tr>
+<tr><td>Thrown (javelin, throwing axe)</td><td>1d6 + MIG</td><td>2 AP</td><td>Range 15/45m, uses MIG</td></tr>
+</table>
+
+<h1 id="armour">Armour & Shields</h1>
+<table>
+<tr><th>Armour Type</th><th>DL Bonus</th><th>Movement</th><th>Stealth</th></tr>
+<tr><td>Unarmoured</td><td>+0</td><td>Full</td><td>No penalty</td></tr>
+<tr><td>Light (leather, padded)</td><td>+1</td><td>Full</td><td>No penalty</td></tr>
+<tr><td>Medium (chain, scale)</td><td>+2</td><td>-1m</td><td>Disadvantage</td></tr>
+<tr><td>Heavy (plate, brigandine)</td><td>+3</td><td>-2m</td><td>Disadvantage</td></tr>
+<tr><td>Shield (used with Guard)</td><td>+1 to +3</td><td>-</td><td>-</td></tr>
+</table>
+
+<h1 id="conditions">Conditions</h1>
+<table>
+<tr><th>Condition</th><th>Effect</th></tr>
+<tr><td><strong>Shaken</strong></td><td>-1 to all attacks and saves</td></tr>
+<tr><td><strong>Frightened</strong></td><td>Cannot move toward source of fear; -2 to all rolls while source is visible</td></tr>
+<tr><td><strong>Staggered</strong></td><td>Lose 1 AP next turn</td></tr>
+<tr><td><strong>Exhausted</strong></td><td>Half speed, -2 to all rolls</td></tr>
+<tr><td><strong>Wounded</strong></td><td>-1 to attacks and movement; stackable</td></tr>
+<tr><td><strong>Grievously Wounded</strong></td><td>Half speed, -3 to all rolls, cannot Guard effectively</td></tr>
+<tr><td><strong>Downed</strong></td><td>Cannot take normal actions; must make Death Saves</td></tr>
+<tr><td><strong>Poisoned</strong></td><td>-2 to all rolls; ongoing damage</td></tr>
+<tr><td><strong>Restrained</strong></td><td>Speed 0; attacks have advantage against you</td></tr>
+<tr><td><strong>Prone</strong></td><td>Movement costs double to stand; melee attacks have advantage, ranged have disadvantage</td></tr>
+<tr><td><strong>Suppressed</strong></td><td>Cannot take reactions; -2 to concentration</td></tr>
+<tr><td><strong>Demoralised</strong></td><td>-2 to Will saves; allies within 6m also test morale</td></tr>
+</table>
+
+<h1 id="dual-wielding">Dual Wielding</h1>
+<p>You may wield a light weapon in each hand. When you Strike with your main hand, you may make an additional attack with your off-hand for <strong>1 AP</strong> (not 2). The off-hand attack uses the weapon's damage die without adding your attribute modifier.</p>
+
+<h1 id="shield-rules">Shield Rules</h1>
+<p>Shields provide a bonus to DL when you take the Guard action:</p>
+<ul>
+<li><strong>Buckler:</strong> +1 DL, no movement penalty</li>
+<li><strong>Standard Shield:</strong> +2 DL, -1m movement if not Guarding</li>
+<li><strong>Tower Shield:</strong> +3 DL, -2m movement, cannot Dash while equipped</li>
+</ul>
+
+<h1 id="multiclass">Multiclassing</h1>
+<p>Arshmunnu allows free-form character development. When you gain a level, you may choose features from any Class available to you, provided you meet the prerequisites. You are not locked into a single path. Record your choices — your character sheet is a story of your training.</p>
+
+<h1 id="creation">Character Creation</h1>
+<h3>Step-by-Step</h3>
+<ol>
+<li><strong>Choose Concept</strong> — Who is your character? A disgraced knight? A void-touched outcast? A scholar of forbidden lore?</li>
+<li><strong>Choose Species</strong> — Select from the 15 peoples of Arshmunnu. Apply species attribute modifiers.</li>
+<li><strong>Choose Calling</strong> — Select your Calling (class) and Technique Path. This determines your EP, AP, MP, and core trainings.</li>
+<li><strong>Distribute Attributes</strong> — All attributes start at 4. You have 28 points to distribute (max 10, min 4 before species mods). Humans get +2 bonus points.</li>
+<li><strong>Assign Trainings</strong> — Set your training tiers based on your Calling. Core trainings start at Trained (+3). Defence caps at Skilled (+5).</li>
+<li><strong>Choose Equipment</strong> — Select a starting kit appropriate to your Calling.</li>
+<li><strong>Write Background</strong> — Name, origin region, alignment, faith, personal history, and driving goal.</li>
+</ol>
+
+<h3>Derived Stats</h3>
+<table>
+<tr><th>Stat</th><th>Calculation</th><th>Description</th></tr>
+<tr><td><strong>EP (Endurance Points)</strong></td><td>Calling HD + FOR modifier + species bonus</td><td>Your health and stamina. At 0 EP, you are Downed.</td></tr>
+<tr><td><strong>DL (Defence Level)</strong></td><td>10 + AGI mod + FOR mod + armour/shield</td><td>Target number to hit you in combat.</td></tr>
+<tr><td><strong>MP (Mana Points)</strong></td><td>Calling base + MAN modifier</td><td>Pool for casting spells and techniques.</td></tr>
+<tr><td><strong>AP (Action Points)</strong></td><td>Set by Calling (typically 5-7)</td><td>How much you can do per combat turn.</td></tr>
+</table>
+
+<h1 id="feats">Feats & Talents</h1>
+<p>Feats represent special training, natural gifts, or hard-won experience. You gain a new feat at levels 1, 3, 6, 9, 12, 15, and 18.</p>
+
+<div class="stat-block">
+<div class="stat-block-title">Combat Feats (sample)</div>
+<div class="stat-block-line"><strong>Focus Strike:</strong> Spend 1 extra AP on a Strike — if it hits, add +1d6 damage.</div>
+<div class="stat-block-line"><strong>Battle Frenzy:</strong> When you drop an enemy, gain 1 temporary AP this turn.</div>
+<div class="stat-block-line"><strong>Iron Guard:</strong> Guard action grants +1 additional DL.</div>
+<div class="stat-block-line"><strong>Swift Foot:</strong> Movement costs 0 AP on the first move of your turn.</div>
+<div class="stat-block-line"><strong>Precise Shot:</strong> Ignore 1 DL of cover with ranged attacks.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">Social Feats (sample)</div>
+<div class="stat-block-line"><strong>Silver Tongue:</strong> +2 to Persuasion and Bearing checks.</div>
+<div class="stat-block-line"><strong>Read the Room:</strong> Automatically detect the emotional state of any group within 10 seconds.</div>
+<div class="stat-block-line"><strong>Oathbound:</strong> When you swear a formal oath, allies who witness it gain +1 to all rolls for 1 hour.</div>
+</div>
+
+<div class="stat-block">
+<div class="stat-block-title">Exploration Feats (sample)</div>
+<div class="stat-block-line"><strong>Pathfinder:</strong> Cannot become lost in wilderness. Always find forage.</div>
+<div class="stat-block-line"><strong>Trap Sense:</strong> +4 to detect traps and hidden mechanisms.</div>
+<div class="stat-block-line"><strong>Sleepless:</strong> Need only 4 hours of rest. +2 to saves vs Exhaustion.</div>
+</div>
+
+<h1 id="items">Equipment</h1>
+<h3>Starting Gear Packages</h3>
+<table>
+<tr><th>Package</th><th>Contents</th></tr>
+<tr><td>Soldier</td><td>Medium armour, standard shield, longsword, shortbow, 20 arrows, bedroll, rations (5), 20gp</td></tr>
+<tr><td>Scout</td><td>Light armour, spear, shortbow, 20 arrows, climbing kit, trail rations (7), 15gp</td></tr>
+<tr><td>Scholar</td><td>Light armour, dagger, writing supplies, blank codex, lantern, oil (3), 30gp</td></tr>
+<tr><td>Mage</td><td>Light armour, staff, component pouch, 2 minor potions, bedroll, 25gp</td></tr>
+<tr><td>Rogue</td><td>Light armour, 2 daggers, thieves' tools, dark cloak, 10m rope, 20gp</td></tr>
+<tr><td>Priest</td><td>Medium armour, mace, holy symbol, medical kit, rations (5), 15gp</td></tr>
+</table>
+
+<h1 id="casting">Spellcasting</h1>
+<p>Spellcasting in Arshmunnu is deliberate and costly. Every spell drains <strong>Mana (MAN)</strong> from the caster's pool.</p>
+
+<h3>Casting a Spell</h3>
+<ol>
+<li><strong>Declare the spell</strong> and its target(s)</li>
+<li><strong>Spend the AP cost</strong> (typically 2-4 AP)</li>
+<li><strong>Pay the Mana cost</strong> from your Mana pool</li>
+<li><strong>Roll casting check</strong> (d20 + MAN modifier + training) vs spell DC if contested</li>
+<li><strong>Resolve the effect</strong></li>
+</ol>
+
+<h1 id="mana">Mana & Costs</h1>
+<h3>Mana Pool</h3>
+<p>Your Mana pool = <strong>Base + MAN modifier × 4</strong>. Mana regenerates slowly — 1 point per hour of rest, or fully after a Long Rest.</p>
+
+<h3>Spell Tiers & Costs</h3>
+<table>
+<tr><th>Tier</th><th>Mana Cost</th><th>AP Cost</th><th>Example</th></tr>
+<tr><td>Cantrip</td><td>0</td><td>1 AP</td><td>Light, Prestidigitation, Mending</td></tr>
+<tr><td>1st Circle</td><td>2</td><td>2 AP</td><td>Burning Hands, Shield, Healing Word</td></tr>
+<tr><td>2nd Circle</td><td>4</td><td>2 AP</td><td>Scorching Ray, Mirror Image, Hold Person</td></tr>
+<tr><td>3rd Circle</td><td>6</td><td>3 AP</td><td>Fireball, Counterspell, Fly</td></tr>
+<tr><td>4th Circle</td><td>8</td><td>3 AP</td><td>Polymorph, Wall of Fire, Banishment</td></tr>
+<tr><td>5th Circle</td><td>12</td><td>4 AP</td><td>Cone of Cold, Dominate Person, Teleport</td></tr>
+</table>
+
+<h1 id="spell-list">Spell List</h1>
+<h3>Sample Spells by Tradition</h3>
+
+<div class="ability">
+<div class="ability-name">Aethernum (Divine)</div>
+<div class="ability-cost">Circle varies | MAN | Varies</div>
+<div class="ability-desc">The sanctioned magic of the Aethernum faith. Healing, protection, and smiting. Taught only in Rammalia-approved temples. Unsanctioned casting is heresy.</div>
+</div>
+
+<div class="ability">
+<div class="ability-name">Alodic Arcana (Arcane)</div>
+<div class="ability-cost">Circle varies | MAN | Varies</div>
+<div class="ability-desc">The preserved magical traditions of the fallen Alodian Empire. Elemental forces, illusion, and transmutation. Sought after by the White Tower archmages.</div>
+</div>
+
+<div class="ability">
+<div class="ability-name">Void-Touched (Forbidden)</div>
+<div class="ability-cost">Circle varies | MAN + WIL | Varies</div>
+<div class="ability-desc">Magic drawn from the Void between stars. Reality-warping, entropy, and the manipulation of time and space. Each casting risks Corruption — a permanent mark upon the soul.</div>
+</div>
+
+<div class="ability">
+<div class="ability-name">Old Rites (Primal)</div>
+<div class="ability-cost">Circle varies | MAN + WIT | Varies</div>
+<div class="ability-desc">The ancient magic of the land itself. Beast communion, weather calling, and earth-shaping. Practiced by druids, shamans, and the Old God cults of the north.</div>
+</div>
+
+<h1 id="social">Social Encounters</h1>
+<p>Social encounters in Arshmunnu are contests of will and consequence, not "talk until bored."</p>
+
+<h3>Social Combat Structure</h3>
+<ol>
+<li><strong>Authority context:</strong> Does Standing apply here?</li>
+<li><strong>Audience:</strong> Witnesses change everything.</li>
+<li><strong>Leverage:</strong> What can each side offer or threaten?</li>
+<li><strong>Exit:</strong> Deal, compromise, refusal, humiliation, violence, or delay.</li>
+</ol>
+
+<h3>Standing</h3>
+<p>Your reputation and rank in society. Standing adds to social rolls where authority is recognised. It is earned through deeds, not bought:</p>
+<ul>
+<li><strong>0 — Unknown:</strong> No special weight</li>
+<li><strong>1 — Recognised:</strong> Known in your community</li>
+<li><strong>2 — Respected:</strong> Known across a region</li>
+<li><strong>3 — Renowned:</strong> Known across a kingdom</li>
+<li><strong>4 — Famous:</strong> Known across the world</li>
+</ul>
+
+<h3>Pressure & Bearing</h3>
+<p>Social pressure can impose conditions like Frightened or Demoralised without drawing steel. A successful <strong>Bearing</strong> check (BRG + Persuasion/Intimidation/Deception) can force a target to reconsider their position — or break their nerve entirely.</p>
+<p>Bearing is also used for command, leadership, and maintaining composure under pressure. A commander with high Bearing can rally troops, while a diplomat can avert war with the right words.</p>
+
+<h1 id="rest">Resting</h1>
+<h3>Short Rest (1 hour)</h3>
+<p>Recover EP equal to your Fortitude modifier + level. You may use Hit Dice (1d10 + FOR modifier) to recover additional EP. You can spend up to half your level in Hit Dice per Short Rest.</p>
+
+<h3>Long Rest (8 hours)</h3>
+<p>Fully recover EP and Mana. Remove one condition (Shaken, Exhausted, or Frightened). Recover all Hit Dice. If resting in dangerous conditions, you only recover half EP.</p>
+
+<h1 id="death">Death & Recovery</h1>
+<h3>Downed State</h3>
+<p>When EP reaches 0, you are <strong>Downed</strong>. You cannot take normal actions and immediately suffer one Wound.</p>
+
+<h3>Death Save</h3>
+<p>At the end of each round while Downed:</p>
+<ul>
+<li>Roll <strong>Fortitude save</strong></li>
+<li>Modifiers: -1 per existing Wound, -1 if bleeding/poisoned/neglected, +1 with medical aid</li>
+<li>Success: Stabilise (still unconscious)</li>
+<li>Partial: No change</li>
+<li>Failure: Gain one <strong>Death Mark</strong></li>
+<li>Dire Failure: Gain <strong>two</strong> Death Marks</li>
+</ul>
+
+<h3>Death Marks</h3>
+<p>At <strong>3 Death Marks</strong>, the character dies. Death Marks clear only through proper medical care, long rest in safety, or extraordinary means (magic, divine intervention).</p>
+
+<h3>Instant Death</h3>
+<p>Instant death only occurs from:</p>
+<ul>
+<li>Deliberate killing blow while Downed</li>
+<li>Catastrophic events (collapse, incineration, void exposure)</li>
+<li>Player choosing narrative death</li>
+</ul>
+
+<div class="stat-block">
+<div class="stat-block-title">The Player's Oath</div>
+<div class="stat-block-line">I will play boldly, yet bear consequence without bitterness.</div>
+<div class="stat-block-line">I will keep my oaths clear: if I swear, the world remembers.</div>
+<div class="stat-block-line">I will share the light and let each companion have their scene.</div>
+</div>
+
+  </div>
+</div>
+
+<script>
+function scrollToId(id){
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+
+
+// ===== DICE ROLLER =====
+let diceHistory = [];
+function diceToggle(){
+  document.getElementById('diceOv').classList.toggle('open');
+  document.getElementById('diceFab').classList.toggle('active');
+}
+function diceShowTab(tab){
+  document.getElementById('pane-dice').style.display = tab==='dice'?'block':'none';
+  document.getElementById('pane-init').style.display = tab==='init'?'block':'none';
+  document.querySelectorAll('.dice-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+function rollDie(sides){
+  const mod = parseInt(document.getElementById('diceMod').value)||0;
+  const count = parseInt(document.getElementById('diceCount').value)||1;
+  let rolls = [];
+  for(let i=0;i<count;i++) rolls.push(Math.floor(Math.random()*sides)+1);
+  const sum = rolls.reduce((a,b)=>a+b,0) + mod;
+  const sign = mod>=0?'+':'';
+  const breakdown = count>1 ? rolls.join(' + ') + ' = ' + rolls.reduce((a,b)=>a+b,0) + ' ' + sign + mod : rolls[0] + ' ' + sign + mod;
+  diceHistory.unshift({roll: sum, break: breakdown, sides: 'd'+sides});
+  if(diceHistory.length>20) diceHistory.pop();
+  updateDiceDisplay(sum, breakdown);
+  updateDiceHistory();
+  // Sound
+  try{playSound('ranged');}catch(e){}
+}
+function rollAdvantage(){
+  const mod = parseInt(document.getElementById('diceMod').value)||0;
+  const r1 = Math.floor(Math.random()*20)+1;
+  const r2 = Math.floor(Math.random()*20)+1;
+  const high = Math.max(r1,r2);
+  const sum = high + mod;
+  const sign = mod>=0?'+':'';
+  const breakdown = '(' + r1 + ', ' + r2 + ') &rarr; ' + high + ' ' + sign + mod;
+  diceHistory.unshift({roll: sum, break: breakdown, sides: 'Adv'});
+  if(diceHistory.length>20) diceHistory.pop();
+  updateDiceDisplay(sum, breakdown);
+  updateDiceHistory();
+  try{playSound('ranged');}catch(e){}
+}
+function updateDiceDisplay(total, breakdown){
+  document.getElementById('diceResult').innerHTML = '<div class="dice-result-total">' + total + '</div><div class="dice-result-breakdown">' + breakdown + '</div>';
+}
+function updateDiceHistory(){
+  const el = document.getElementById('diceHistory');
+  el.innerHTML = diceHistory.map(h=>'<div class="dice-history-entry"><strong style="color:var(--goldL)">' + h.roll + '</strong> &mdash; ' + h.sides + ' (' + h.break + ')</div>').join('');
+}
+
+// ===== INITIATIVE TRACKER =====
+let combatants = [];
+let currentTurn = 0;
+function initAdd(){
+  const name = document.getElementById('initName').value.trim();
+  const bonus = parseInt(document.getElementById('initBonus').value)||0;
+  const ep = parseInt(document.getElementById('initEP').value)||20;
+  if(!name) return;
+  combatants.push({name, bonus, ep, maxEp: ep, score: null, id: Date.now()+Math.random()});
+  document.getElementById('initName').value = '';
+  renderInitList();
+}
+function initRemove(id){
+  combatants = combatants.filter(c=>c.id!==id);
+  renderInitList();
+}
+function initRollAll(){
+  combatants.forEach(c=>{ c.score = Math.floor(Math.random()*20)+1 + c.bonus; });
+  initSort();
+  currentTurn = 0;
+  renderInitList();
+  try{playSound('promote');}catch(e){}
+}
+function initSort(){
+  combatants.sort((a,b)=>(b.score||0)-(a.score||0));
+  currentTurn = 0;
+  renderInitList();
+}
+function initNextTurn(){
+  if(combatants.length===0) return;
+  currentTurn = (currentTurn + 1) % combatants.length;
+  renderInitList();
+}
+function initClear(){
+  combatants = []; currentTurn = 0; renderInitList();
+}
+function initUpdateEP(id, val){
+  const c = combatants.find(x=>x.id===id);
+  if(c) c.ep = parseInt(val)||0;
+}
+function renderInitList(){
+  const el = document.getElementById('initList');
+  if(combatants.length===0){ el.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px;font-style:italic">No combatants yet. Add some above.</div>'; return; }
+  el.innerHTML = combatants.map((c,i)=>{
+    const isActive = i===currentTurn;
+    return '<div class="init-row ' + (isActive?'active-turn':'') + '">' +
+      '<div class="init-score">' + (c.score!==null?c.score:'&mdash;') + '</div>' +
+      '<div class="init-name">' + c.name + (c.bonus!==0?' <span style="color:var(--muted);font-size:11px">(' + (c.bonus>=0?'+':'') + c.bonus + ')</span>':'') + '</div>' +
+      '<div class="init-ep"><input type="number" value="' + c.ep + '" onchange="initUpdateEP(' + c.id + ',this.value)" min="0" max="999"></div>' +
+      '<div style="font-size:11px;color:var(--muted)">/' + c.maxEp + '</div>' +
+      '<button class="init-del" onclick="initRemove(' + c.id + ')">&times;</button>' +
+    '</div>';
+  }).join('');
+}
+// Keyboard shortcut: press 'd' to toggle dice
+ document.addEventListener('keydown',function(e){
+   if(e.key==='d' && e.target.tagName!=='INPUT' && e.target.tagName!=='TEXTAREA'){
+     diceToggle();
+   }
+ });
+renderInitList();
+
+
+</script>
+
+
+<!-- DICE & INITIATIVE WIDGET -->
+<div class="dice-fab" id="diceFab" title="Dice Roller &amp; Initiative" onclick="diceToggle()">&#9858;</div>
+<div class="dice-ov" id="diceOv">
+  <div class="dice-tb">
+    <span class="dice-tb-title">&#9858; Arshmunnu Dice &amp; Initiative</span>
+    <div class="dice-tabs">
+      <button class="dice-tab active" onclick="diceShowTab('dice')" id="tab-dice">Dice</button>
+      <button class="dice-tab" onclick="diceShowTab('init')" id="tab-init">Initiative</button>
+    </div>
+    <button class="dice-close" onclick="diceToggle()">&#10005;</button>
+  </div>
+  <div class="dice-body">
+    <!-- DICE TAB -->
+    <div id="pane-dice">
+      <div class="dice-grid">
+        <div class="dice-btn" onclick="rollDie(4)"><span class="dice-btn-die">d4</span><span class="dice-btn-label">Calamity</span></div>
+        <div class="dice-btn" onclick="rollDie(6)"><span class="dice-btn-die">d6</span><span class="dice-btn-label">Standard</span></div>
+        <div class="dice-btn" onclick="rollDie(8)"><span class="dice-btn-die">d8</span><span class="dice-btn-label">Skill</span></div>
+        <div class="dice-btn" onclick="rollDie(10)"><span class="dice-btn-die">d10</span><span class="dice-btn-label">Percent</span></div>
+        <div class="dice-btn" onclick="rollDie(12)"><span class="dice-btn-die">d12</span><span class="dice-btn-label">Mighty</span></div>
+        <div class="dice-btn" onclick="rollDie(20)"><span class="dice-btn-die">d20</span><span class="dice-btn-label">Fate</span></div>
+        <div class="dice-btn" onclick="rollDie(100)"><span class="dice-btn-die">d100</span><span class="dice-btn-label">Fortune</span></div>
+        <div class="dice-btn" onclick="rollAdvantage()" style="border-color:rgba(201,168,76,.3)"><span class="dice-btn-die" style="font-size:16px">Adv</span><span class="dice-btn-label">d20 Advantage</span></div>
+      </div>
+      <div class="dice-modifier">
+        <label>Modifier:</label>
+        <input type="number" id="diceMod" value="0" min="-20" max="20">
+        <label style="margin-left:10px">Count:</label>
+        <input type="number" id="diceCount" value="1" min="1" max="20" style="width:50px">
+      </div>
+      <div class="dice-result" id="diceResult">
+        <div style="color:var(--muted);font-style:italic">Click a die to roll...</div>
+      </div>
+      <div class="dice-history-title">Roll History</div>
+      <div class="dice-history" id="diceHistory"></div>
+    </div>
+    <!-- INITIATIVE TAB -->
+    <div id="pane-init" style="display:none">
+      <div class="init-header">
+        <input type="text" class="name-input" id="initName" placeholder="Name (e.g. Tharok)">
+        <input type="number" class="num-input" id="initBonus" placeholder="AGI mod" value="0">
+        <input type="number" class="num-input" id="initEP" placeholder="EP" value="20">
+        <button class="init-add" onclick="initAdd()">Add</button>
+      </div>
+      <div class="init-section-title">Combatants</div>
+      <div class="init-list" id="initList"></div>
+      <div class="init-controls">
+        <button onclick="initRollAll()">&#9858; Roll All</button>
+        <button onclick="initSort()">&#8693; Sort</button>
+        <button onclick="initNextTurn()">&#10148; Next Turn</button>
+        <button onclick="initClear()" style="color:var(--coalition)">Clear All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<h1 id="callings-v2">Callings (Player's Guide v2)</h1>
+<p>Beyond the original ten Callings, the present chapter introduces fifteen further Callings drawn directly from the Council of Hands' revised manuscript. They are organised into four families: Martial, Ranged, Social, and Magical. Each gains <strong>Level Features</strong> at 1, 3, 6, 9, 12, 15, and 18, plus four <strong>Specialities</strong> chosen as the character grows.</p>
+
+<h2>Martial Callings</h2>
+
+<h3>1) Legionary — Shield and Line</h3>
+<p><em>Disciplined frontline, formation fighter, protector.</em> Main Abilities: Might or Agility; Fortitude; Will. Starting trainings: Defence (Trained), Melee (Trained), Armour (Trained), two skills from Command/Athletics/Survival/Intimidation at Trained, one Save at Trained.</p>
+<p><strong>Lv 1 Shield Doctrine.</strong> +1 DL on Guard with shield (total +4); 1 AP reaction to impose -2 on an attack against an adjacent ally.<br>
+<strong>Lv 3 Hold the Line.</strong> If you did not move, foes entering reach suffer -2 to hit you until your next turn.<br>
+<strong>Lv 6 Formation Step.</strong> Adjacent shield-bearers may each spend 1 AP for +2 DL until next turn; movement becomes 0.<br>
+<strong>Lv 9 Relentless Advance.</strong> Once per round, ignore the -2 multi-strike penalty on your second strike.<br>
+<strong>Lv 12 Iron Discipline.</strong> On Will Save success, downgrade Frightened/Panicked by one step.<br>
+<strong>Lv 15 Veteran of Roads.</strong> Short Rest restores +10% max EP; auto-remove Tier I Exhaustion with food and water.<br>
+<strong>Lv 18 Wall of Men.</strong> Once per scene declare The Line: allies within 2 paces gain +2 DL vs melee for one round; cannot be forcibly moved unless they fail Might Save.</p>
+<p><em>Specialities:</em> Shield Wall Tactics; Command (Cohorts); Endurance Marching; Spear and Shield.</p>
+
+<h3>2) Duelist — Blade and Measure</h3>
+<p><em>Precision melee, focused strikes, counters.</em> Main Abilities: Agility (or Might); Wit; Bearing. Starting: Melee (Trained), Defence (Initiate), two skills at Trained, one Save at Trained.</p>
+<p><strong>Lv 1 Measure and Riposte.</strong> If a foe misses you by 5+, 1 AP to make a Swift Strike against them.<br>
+<strong>Lv 3 True Opening.</strong> First Focused Attack each round does not impose the -2 DL Overcommitment after.<br>
+<strong>Lv 6 Disarming Grace.</strong> On Great Success with a Focused Strike, choose Disarm without an opposed save (unless target is two sizes larger or braced).<br>
+<strong>Lv 9 Footwork of the Narrow Way.</strong> If you moved only once (1 AP), no -2 DL overextension.<br>
+<strong>Lv 12 Needle in the Gaps.</strong> Focused Attacks ignore +3 DL from armour/guard/cover (instead of +2). Shields still apply unless a tag allows.<br>
+<strong>Lv 15 Killing Calm.</strong> Wounded/Grievously Wounded penalties reduced by 1.<br>
+<strong>Lv 18 Master of the Bout.</strong> Once per scene declare a Duel: 3 rounds of +2 hit and +2 DL vs one foe, but cannot willingly leave their presence.</p>
+<p><em>Specialities:</em> Parrying Blades; Focused Strikes (Limbs); Acrobatics (Tumbling); Bearing (Court Duels).</p>
+
+<h3>3) Vanguard — Breaker of Gates</h3>
+<p><em>Heavy hitter, shock, forced movement, intimidation by steel.</em> Main Abilities: Might; Fortitude; Will. Starting: Melee (Trained), Armour (Initiate), Defence (Initiate), two skills at Trained, one Save at Trained.</p>
+<p><strong>Lv 1 Crushing Entry.</strong> Heavy Blow hits: save vs push/prone at -2.<br>
+<strong>Lv 3 Break the Shield.</strong> Heavy Blow / Shield-Breaker hit on a shield-bearer: their shield check at Disadvantage.<br>
+<strong>Lv 6 Unstoppable Step.</strong> Once per round, ignore forced movement or prone unless Dire Failure.<br>
+<strong>Lv 9 Shockwave.</strong> Heavy Blow Great Success: a second adjacent foe makes Fortitude Save or is Staggered.<br>
+<strong>Lv 12 Brutal Certainty.</strong> Heavy Blows deal +1 flat damage.<br>
+<strong>Lv 15 Stone-Blooded.</strong> Reduce Crushing damage by 1 always (stacks with shield).<br>
+<strong>Lv 18 Gatebreaker.</strong> Once per scene, 2 AP Might check to break a barrier or formation — an ally passes through without consequence.</p>
+<p><em>Specialities:</em> Athletics (Grappling); Intimidation (Battle Roar); Craft (Siege Tools); Heavy Weapons.</p>
+
+<h2>Ranged Callings</h2>
+
+<h3>4) Archer — Bow and Patience</h3>
+<p>Main Abilities: Agility or Wit; Will. Starting: Ranged (Trained), two skills at Trained.</p>
+<p><strong>Lv 1 Steady Breath</strong> — Aimed Shot +3 if you did not move. <strong>Lv 3 Thread the Gap</strong> — Aimed Shot ignores half cover, reduces concealment one step. <strong>Lv 6 Suppressing Fire</strong> — 2 AP, -2 to hit; on hit, target Suppressed and cannot Focused next turn unless Will Save. <strong>Lv 9 Hunter's Mark</strong> — once per scene, marked target takes +1 die step on Great Success. <strong>Lv 12 Long Sight</strong> — Distant range penalty -2. <strong>Lv 15 Calm Under Threat</strong> — engagement penalty -4 → -2. <strong>Lv 18 The Arrow That Ends a Charge</strong> — reaction shot at chargers; on hit, Pinned save.</p>
+<p><em>Specialities:</em> Perception (Hidden Threats); Ranged (Aimed Shots); Survival (Tracking); Stealth (Hide-and-Shoot).</p>
+
+<h3>5) Sling-Scout — Stone and Street</h3>
+<p>Main Abilities: Agility; Wit. Starting: Ranged (Trained), Defence (Initiate), two skills at Trained.</p>
+<p><strong>Lv 1 Runner's Shot</strong> — moved this turn? still Focused ranged, lose only the +2. <strong>Lv 3 Crowdwork</strong> — Advantage on Stealth/Deception in crowds. <strong>Lv 6 Whistling Stones</strong> — Great Success may impose Off-Balance even on minimal damage. <strong>Lv 9 Split the Band</strong> — Volley keeps damage die (still -2 to hit). <strong>Lv 12 Streetwise Aim</strong> — use Wit for quick-weapon ranged at 2 AP. <strong>Lv 15 Always Moving</strong> — two moves = -1 DL overextension (not -2). <strong>Lv 18 Scout's Escape</strong> — 2 AP to dodge and impose Disadvantage on an attack.</p>
+<p><em>Specialities:</em> Stealth (Urban Shadows); Acrobatics (Rooftops); Deception (False Faces); Ranged (Volley).</p>
+
+<h3>6) Crossbowman — Bolt and Brutality</h3>
+<p>Main Abilities: Wit; Agility; Might. Starting: Ranged (Trained), Craft or Investigation (Trained), one Save at Trained.</p>
+<p><strong>Lv 1 Braced Reload</strong> — Reload -1 AP (min 1). <strong>Lv 3 Killing Lane</strong> — stationary: +2 to hit foes crossing your line. <strong>Lv 6 Bolt Through Mail</strong> — Piercing ignores +3 DL (not +2). <strong>Lv 9 Pinning Shot</strong> — Aimed Shot may choose Pin without Great Success. <strong>Lv 12 Mechanist's Hand</strong> — repair Damaged ranged in Short Rest, no roll. <strong>Lv 15 Cold Loader</strong> — no Disadvantage from fear/suppression while reloading (unless Panicked). <strong>Lv 18 The Siege Bolt</strong> — once per scene, 2 AP, -2 to hit, +2 dice damage. Miss by 5+: weapon Damaged.</p>
+<p><em>Specialities:</em> Craft (Mechanisms); Ranged (Armour Targets); Perception (Lanes); Fortitude (Cold Calm).</p>
+
+<h2>Social Callings</h2>
+<p>Social Callings project <strong>Pressure</strong> (see below). They do not win battles by damage but by morale, authority, and disruption.</p>
+
+<h3>7) Envoy — Tongue and Treaty</h3>
+<p>Main Abilities: Bearing; Wit; Will. Starting: Persuasion (Trained), Command or Deception (Initiate), two skills at Trained.</p>
+<p><strong>Lv 1 Letters and Seals</strong> — proper papers grant +2 Standing for access. <strong>Lv 3 Calm the Blood</strong> — 1 AP Bearing roll vs Composure; remove Shaken from ally or downgrade Panicked → Frightened. <strong>Lv 6 The Better Offer</strong> — choose the shape of a Partial Success compromise. <strong>Lv 9 Public Weight</strong> — Great Success shifts Reputation by an additional +1. <strong>Lv 12 The Unbroken Face</strong> — ignore the first -2 from multiple social actions per round. <strong>Lv 15 Pact-Keeper</strong> — add Reputation as well as Standing on public Oaths. <strong>Lv 18 The Treaty That Stops a War</strong> — once per arc, force a parley.</p>
+<p><em>Specialities:</em> Persuasion (Treaties); Lore (Law); Command (Council Procedure); Deception (Polite Lies).</p>
+
+<h3>8) Magistrate — Law and Consequence</h3>
+<p>Main Abilities: Wit; Bearing; Will. Starting: Investigation (Trained), Command or Intimidation (Trained), Lore (Law) (Initiate), one Save at Trained.</p>
+<p><strong>Lv 1 Formal Authority</strong> — Standing applies even to hostile rolls under mandate. <strong>Lv 3 Read the Lie</strong> — once per scene, demand opposed roll; learn whether and what kind of lie. <strong>Lv 6 Writ of Seizure</strong> — legal acquisition without coin. <strong>Lv 9 Interrogator's Stillness</strong> — Will instead of Bearing for intimidation Composure. <strong>Lv 12 Chain of Custody</strong> — secured evidence -2 to discredit. <strong>Lv 15 Sentence</strong> — break Composure to 0 may impose Disgraced. <strong>Lv 18 The Long Arm</strong> — call on lesser officials as faction resource.</p>
+<p><em>Specialities:</em> Investigation (Forensics); Command (Guards); Lore (Imperial Law); Intimidation (Cold Authority).</p>
+
+<h3>9) Spymaster — Mask and Knife</h3>
+<p>Main Abilities: Wit; Bearing; Agility; Will. Starting: Deception (Trained), Stealth (Trained), two skills at Initiate.</p>
+<p><strong>Lv 1 False Face</strong> — cover identity passes casual scrutiny; formal opposed with +2 with props. <strong>Lv 3 Rumourcraft</strong> — shift a local faction's attitude by 1 step in downtime. <strong>Lv 6 Leverage</strong> — once per scene, Advantage with real leverage; Dire Failure burns it. <strong>Lv 9 Vanish in Motion</strong> — Stealth in semi-public after a social action. <strong>Lv 12 Knife in the Conversation</strong> — at 0 Composure, choose yield or resentful agreement. <strong>Lv 15 Network</strong> — small contact web; one info question per session. <strong>Lv 18 Black Seal</strong> — once per arc, collapse a minor power's standing.</p>
+<p><em>Specialities:</em> Deception (Impersonation); Stealth (Crowds); Investigation (Surveillance); Persuasion (Blackmail).</p>
+
+<h2>Magical Callings</h2>
+
+<h3>10) Chirurgeon — Hands and Herb</h3>
+<p>Healer / field medic / anti-condition support. Main Abilities: Wit; Fortitude; Will; Bearing. Starting: Medicine (Trained), two skills at Trained, one Save at Trained. Comes with a Healer's Satchel.</p>
+<p><strong>Lv 1 Field Doctrine</strong> — Stabilise / Staunch +2; Great Success also removes Shaken or Tier I Exhaustion. <strong>Lv 3 Triage Under Fire</strong> — once per round, 1 AP to drop an ally to 1 EP instead of 0. <strong>Lv 6 Clean Hands, Clean Wounds</strong> — two allies per Short Rest treatment. <strong>Lv 9 Pain Management</strong> — choose to remove Bleeding, downgrade Exhaustion 1 tier, or remove Overstrained. <strong>Lv 12 Surgeon's Authority</strong> — first Fortitude Save vs Bleeding/Poison/Disease/Shock/Stagger each scene at Advantage for allies within 2 paces. <strong>Lv 15 Recuperative Care</strong> — first Short Rest each day +10% EP; Long Rest under your care removes +1 Exhaustion tier. <strong>Lv 18 Refuse Death</strong> — once per scene, replace a failed Downed save with Partial Success.</p>
+<p><em>Specialities:</em> Medicine (Surgery); Herbalism (Field Remedies); Craft (Splints and Prosthetics); Bearing (Bedside Command).</p>
+
+<h3>11) Arcanist (v2) — Mana and Measure</h3>
+<p>Battlefield caster, ward-maker, counterwork. Main Abilities: Mana; Wit; Will. Starting: Arcana (Trained), Ritual or Investigation (Initiate), two skills at Trained, one Save at Trained.</p>
+<p><strong>Lv 1 Structured Casting</strong> — once per round ignore one casting penalty; Great Success on Mana cast regains +2 MP. <strong>Lv 3 Ward Reflex</strong> — 1 AP Counterwork (opposed Mana/Will) to reduce a spell. <strong>Lv 6 Geometer of Battle</strong> — control spell Great Success imposes one extra tactical condition. <strong>Lv 9 Efficient Channel</strong> — first Mana spell each scene -3 MP. <strong>Lv 12 Spell-Thread Precision</strong> — Focused casts ignore +2 DL/cover. <strong>Lv 15 Calm Mind</strong> — Will Save downgrades magic-induced Shaken/Frightened. <strong>Lv 18 Lattice of Denial</strong> — 2-pace Warded zone for one round.</p>
+<p><em>Specialities:</em> Arcana (Counterwork); Ritual (Wards); Lore (Imperial Arcana); Craft (Runes and Devices).</p>
+
+<h3>12) Hemomancer — Blood and Hunger</h3>
+<p>Self-buff striker, emergency healer. Main Abilities: Fortitude; Will; Might (or Mana). Starting: Attunement or Medicine (Trained), Melee or Arcana (Initiate), two skills at Trained, one Save at Trained.</p>
+<p><strong>Lv 1 Crimson Exchange</strong> — pay EP instead of MP; first time per scene -2 EP. <strong>Lv 3 Coagulate</strong> — 1 AP to end Bleeding on self auto, on ally with Medicine roll; Bleeding you inflict requires treatment/magic. <strong>Lv 6 Red Frenzy</strong> — Wounded grants +1 AP (non-cast) once per round; Grievously Wounded grants +2 damage on first hit instead. <strong>Lv 9 Blood Sutures</strong> — Short Rest, convert EP into ally healing. <strong>Lv 12 Scarred Resilience</strong> — Wounded penalty -1; Bleeding 1 EP/turn (unless Void/Divine). <strong>Lv 15 Predator's Recovery</strong> — dropping a foe regains 1d6 EP. <strong>Lv 18 Blood Sovereignty</strong> — once per scene, cannot drop below 1 EP for one round.</p>
+<p><em>Specialities:</em> Medicine (Battlefield Surgery); Intimidation (Terror Presence); Athletics (Grapple and Drain); Attunement (Blood Sensing).</p>
+
+<h3>13) Ordained — Divine and Oath</h3>
+<p>Protector, miracle support. Main Abilities: Bearing; Will; Mana; Fortitude. Starting: Ritual (Trained), Persuasion or Command (Trained), two skills at Initiate, one Save at Trained.</p>
+<p><strong>Lv 1 Sacred Authority</strong> — Sacred Oath with Advantage on a roll directly serving it once per scene. <strong>Lv 3 Grace Under Fire</strong> — healing does not open you up in melee; Great Success removes Shaken. <strong>Lv 6 Consecration</strong> — 2 AP, scene-long blessed area. <strong>Lv 9 Judgement</strong> — once per round, impose Frightened/Shaken on corrupted/undead/profane (Will resists). <strong>Lv 12 Shield of Faith</strong> — allies within 2 paces +2 vs fear/domination/taint. <strong>Lv 15 Unbroken Vow</strong> — Will Save downgrades sacred backlash. <strong>Lv 18 Miracle of Staying</strong> — once per scene, stabilise a dying ally at 0 EP; they awaken at 1 EP after the scene.</p>
+<p><em>Specialities:</em> Ritual (Consecrations); Command (Faithful); Bearing (Sermons); Lore (Doctrine).</p>
+
+<h3>14) Soulbinder — Soul and Anchor</h3>
+<p>Anti-possession, identity warfare, binding, exorcism. Main Abilities: Will; Bearing; Wit. Starting: Attunement (Trained), Ritual (Initiate), two skills at Trained, one Save at Trained.</p>
+<p><strong>Lv 1 Anchored Self</strong> — once per scene reduce SI loss by 1. <strong>Lv 3 Severance</strong> — Advantage on ending Dominated / possession; Great Success Disrupts the controller. <strong>Lv 6 Soul Echo</strong> — store an Echo per soul success (max 2); spend for Advantage. <strong>Lv 9 True Name Pressure</strong> — known true name imposes -2 on the target's resisting save. <strong>Lv 12 Exorcist's Hand</strong> — remove minor Corruption at SI cost. <strong>Lv 15 Borrowed Strength</strong> — bound soul grants +2 Will/Soul for a scene. <strong>Lv 18 Break the Chain</strong> — once per scene, end domination/possession without a roll.</p>
+<p><em>Specialities:</em> Attunement (Spirits); Ritual (Exorcism); Lore (True Names); Bearing (Dread Presence).</p>
+
+<h3>15) Void-Touched — Void and Absence (RESTRICTED)</h3>
+<p>Negation, scene-breaker, anti-magic terror. Main Abilities: Will; Mana. Starting: Mana Save (Trained), Attunement (Trained), two skills at Initiate. <strong>Begins with Corruption 1.</strong></p>
+<p><strong>Lv 1 Negation</strong> — once per scene declare a magical effect Unmade. <strong>Lv 3 Hollow Presence</strong> — immune to mundane fear. <strong>Lv 6 Unstable Reality</strong> — Void Partial Success always introduces a complication. <strong>Lv 9 Silence of the Pit</strong> — 2 AP, 2-pace zone where Tier 2+ spells fail unless Mana Save. <strong>Lv 12 Erasure Touch</strong> — Void attacks bypass armour and shields entirely. <strong>Lv 15 Marked</strong> — Advantage on Intimidation, Disadvantage on normal diplomacy. <strong>Lv 18 The End of a Working</strong> — once per arc, destroy a magical item / ward / ritual anchor permanently.</p>
+<p><em>Specialities:</em> Attunement (Void Sensing); Intimidation (Dread); Lore (Forbidden); Stealth (Disappear).</p>
+
+<h1 id="pressure">Pressure System</h1>
+<p>Some characters exert weight on a battlefield without striking a blow. The Pressure system models that weight: command, authority, dread, arcane presence. A pressure character does not deal damage so much as <em>cost the enemy actions</em>.</p>
+
+<h2>Pressure Value (PV)</h2>
+<p><strong>PV = Bearing modifier + Social Training tier + Standing</strong> (only when authority is recognised).</p>
+<p>Tiers: Initiate +1, Trained +3, Skilled +5, Expert +7, Master +9, Legendary +11. Standing applies only against structured enemies (soldiers, guards, citizens, civil servants), not against bandits or beasts.</p>
+<p><strong>Radius:</strong> 2 paces, or the same room/engagement. Target must perceive you.</p>
+
+<h2>Pressure Check (Start of Enemy Turn)</h2>
+<p>Each affected enemy makes a Will Save against DC = 10 + PV.</p>
+<ul>
+<li><strong>Success.</strong> No effect.</li>
+<li><strong>Partial Failure (miss by 1-2).</strong> Suppressed: -2 to attacks until end of turn.</li>
+<li><strong>Failure (miss by 5-9).</strong> Shaken: -1 to all rolls.</li>
+<li><strong>Dire Failure (miss by 10+).</strong> Frightened: cannot willingly move closer; -2 vs the source.</li>
+</ul>
+<p>Pressure is checked once per turn, not stacked repeatedly.</p>
+
+<h2>Arcane Pressure (APr)</h2>
+<p>Magical Callings project a sibling form of pressure. <strong>APrV = Mana modifier + Magic Training tier + Corruption (if applicable)</strong>. Creatures immune to fear may still suffer Suppressed — the body hesitates even when the mind does not.</p>
+<p>Calling tweaks: Arcanists may substitute Wit for Corruption; Hemomancers gain +1 APrV while Wounded; Ordained impose Disadvantage on the save of corrupted/undead/profane; Soulbinders impose Disadvantage on possessing spirits; Void-Touched force a minor complication on Partial Success or worse.</p>
+
+<h2>Social Actions in Structured Scenes</h2>
+<p>In tense scenes, AP applies as in combat. Common actions: <strong>Press</strong> (1 AP, direct argument), <strong>Reframe</strong> (1 AP, shift topic), <strong>Intimidate</strong> (2 AP, fear or threat), <strong>Charm</strong> (2 AP, rapport), <strong>Expose</strong> (2 AP, reveal contradiction), <strong>Withdraw</strong> (1 AP, stall).</p>
+<p><strong>Rally</strong> (1 AP) removes Shaken or ignores one Wounded penalty on an ally's next roll. <strong>Hold the Line</strong> (2 AP) grants two allies within 2 paces +1 DL until next turn. <strong>Command: Advance/Back/Kneel</strong> (2 AP) forces a Will Save vs 10+PV; on failure, lose 1 AP or reposition. <strong>Demand Surrender</strong ends a fight without slaughter where possible.</p>
+
+<h2>Limit</h2>
+<p>Each social character may cause only three major Social Effects per scene (Rally, Expose, Command, Demand Surrender). Pressure aura does not count toward this limit.</p>
+
+<h1 id="inter-calling">Inter-Calling Features</h1>
+<p>Some deeds are shared between Callings. These rules let players cooperate cleanly without "multi-class chaos".</p>
+
+<h2>Shared Actions (anyone may use)</h2>
+<p><strong>Aid (1 AP).</strong> Ally's next roll: Assist (+2) or Set Up (success vs DC 15 grants Advantage instead). Only one Aid per roll.<br>
+<strong>Coordinate (2 AP).</strong> You and one ally within 2 paces; Command check vs DC 15; on success both gain +1 AP this round (for Move/Guard/Press/Reframe/Reload only, not extra strikes).<br>
+<strong>Protect (1 AP, reaction).</strong> Impose -2 on the attack on an adjacent ally. If this turns hit → miss, you take half damage.<br>
+<strong>Covering Action (1 AP).</strong> Declare a lane. First enemy through it eats a reaction shot or strike (no multi-strike penalty).</p>
+
+<h2>Synergy Actions</h2>
+<p><strong>Shield &amp; Spear</strong> (Legionary + Melee, 2 AP) — Legionary Guards, striker gains +2 to hit; Great Success leaves target Exposed.<br>
+<strong>Pin &amp; Finish</strong> (Ranged + Melee, 2 AP) — Aimed Shot Pins, melee closes and Focused Strikes without overextension penalty.<br>
+<strong>Break &amp; Storm</strong> (Vanguard + ally, 3 AP) — Vanguard's Heavy Blow hits, ally moves and strikes ignoring engagement penalty; Great Success ignores Guard +2 DL.<br>
+<strong>The Public Trap</strong> (Spymaster + Envoy/Magistrate, 2 AP) — Expose then Press; both succeed: target -4 Composure; either fails: target +2 Composure.<br>
+<strong>Calm &amp; Cut</strong> (Envoy/Magistrate + Martial, 2 AP) — diplomat removes Shaken/Panicked; martial's next Strike ignores Wounded penalty.</p>
+
+<h2>Cross-Calling Training</h2>
+<p>At levels 6 and 12, instead of your normal Calling Feature, take one feature from another Calling (Level 1 only, or a Technique Package). You must be Trained (+3) in the relevant area. Borrowed features never scale unless they say so.</p>
+
+<h2>Multicalling</h2>
+<p>You may have a Primary Calling (full progression) and one Secondary. At levels 3, 9, 15, you may take a Secondary feature instead of a Primary one: Secondary Lv1 at 3, Secondary Lv3 at 9, Secondary Lv6 at 15. Secondary caps at Level 6 depth. Hard limit: two Callings, never more.</p>
+
+<h1 id="magic-systems">Magic Systems</h1>
+<p>Arshmunnu recognises five magical traditions. Each draws on a different cost and is bound by a different etiquette.</p>
+
+<h2>Mana Magic — Aether's Obedient Fire</h2>
+<p>Craft magic. Uses MP = (Mana × 5) + (Will × 3) + (Level × 4). Trainings: Arcana (battle), Ritual (slow), Attunement (sense). Spell tiers cost <strong>3 MP × Tier</strong> (Tier 1 = 3 MP, … Tier 5 = 15 MP).</p>
+<p>Three modes: Spell Attack (vs DL), Spell Save (vs target Save), Spell Test (vs DC). Excels at elemental shaping, wards, illusions, force, detection. Weak at healing flesh, resurrection, bloodline curses, fate-oaths.</p>
+<p><strong>Backlash</strong> on Dire Failure or failed Overcast Mana Save: 1d6 EP burn, Overstrained, Stealth ruined, lose 1 AP and Off-Balance, Drained, or wrong attention.</p>
+<p><strong>Recovery.</strong> Breather (10 min): Mana mod + Will mod, once per hour. Short Rest: 25% Max MP (two per day before diminishing returns). Long Rest: full MP unless Drained.</p>
+<p><strong>Concentration:</strong> hold one working at a time; Will Save (DC 10 or half damage) when struck or it ends. Sustain: 1 MP per round or per minute outside combat.</p>
+
+<h2>Blood Magic (Hemomancy) — Of Life Given and Taken</h2>
+<p>No MP. Uses <strong>Vital Cost (EP)</strong>: T1 3 EP, T2 6, T3 10, T4 15, T5 21. This damage ignores armour, shields, and resistances. Accepting a Condition (Bleeding, Wounded, Overstrained, Fatigued, Drained) reduces EP cost by half the spell tier (round up).</p>
+<p>External blood reduces cost by half and grants +2 to casting — and risks Corruption.</p>
+<p>Casting: d20 + Will or Mana + Hemomancy Training. Corruption Save (Will vs DC 12 + Tier) on Dire Failure or repeated misuse.</p>
+<p><strong>Healing:</strong> heal EP equal to double the EP spent; remove Bleeding or Wounded automatically; often inflicts Fatigued or Overstrained.</p>
+<p><strong>Corruption Marks.</strong> Each: -1 social with sensitive beings; reduced divine effect; occult detection. 3+: Blood magic +1, Mana -1. 6+: hunted as tainted; Void whispers.</p>
+
+<h2>Divine Magic — Authority, Judgement, and Grace</h2>
+<p>Uses <strong>Favour</strong> per deity (-3 to +6), not a pool. Favour gates spell access: -3 Forsaken, -1 Strained (T1 only), 0 Neutral (T1-2), +1-2 Accepted (T1-3), +3-4 Favoured (T1-4), +5-6 Chosen (T1-5).</p>
+<p>Invocation: 2 AP. Roll d20 + Bearing or Will + Theology/Rite Training. Standard DC = 10 + Tier; opposed: enemy Save vs 10 + Favour + Training.</p>
+<p>Bound by <strong>Oaths</strong> (Minor, Major, Sacred). Breaking — Minor: -1 Favour temp; Major: -2 Favour, atone; Sacred: immediate Forsaken. Atonement: confession, restitution, rite, sacrifice.</p>
+<p>Healing: restore Tier × 6 EP; remove Bleeding, Shaken, or Fatigued; requires target consent and good standing. Cannot heal severe Corruption without consequence.</p>
+
+<h2>Soul Magic — Essence, Identity, the Price That Does Not Fade</h2>
+<p>Uses <strong>Soul Integrity (SI) = 10 + Will mod + Level</strong>. Healthy 7+. Fractured 4-6 (-1 Will saves, echoes). Unmoored 1-3 (Disadvantage on Soul rolls, possession risk). 0: soul collapse.</p>
+<p>SI cost by tier: T1 1 SI, T2 2, T3 3, T4 5, T5 7. Cost ignores mitigation and is permanent unless treated. Bound souls (Soul Tokens) substitute, but require a Soul Save (DC 12 + Tier) or lose 1 SI anyway and gain Soul Taint.</p>
+<p>Casting: d20 + Will or Bearing + Soulcraft Training. Cannot be spammed; consequences are surgical and lasting. Excels at binding, severing possession, anchoring ghosts, identity work, soul healing. Weak at damage, area, repetition.</p>
+
+<h2>Void Magic — Absence, Unmaking, and Hunger</h2>
+<p>No pool. Costs <strong>Corruption</strong>, irreducible EP, AP loss, Void Marks, Reality Backlash, or memory. T1 +1 Corruption, T2 +2, T3 +3, T4 +5, T5 +7. Every working adds Corruption automatically — you only choose how fast it grows.</p>
+<p>Casting: d20 + Will or Mana + Voidcraft Training. Trainings include Voidcraft, Occult, Eschatology, Forbidden Rite. Excels at dispelling, severing divine connection, unbinding, ending. Weak at creation, healing, precision over time.</p>
+<p><strong>Absolute Rule:</strong> after any Void working, you may not cast Void magic again until the scene ends, unless you accept automatic Dire Failure. Void magic also draws GM-tracked Attention.</p>
+
+<h1 id="item-table">Item Reference Table</h1>
+<p>An at-a-glance index of the weapons, armour, shields, and gear of Arshmunnu. Damage type abbreviations: S=Slashing, P=Piercing, C=Crushing. Load (LD) and price (Au = aureus, d = denarius, a = as) are listed where defined.</p>
+
+<h2>Weapons — Sidearms & Close</h2>
+<table class="item-tbl">
+<thead><tr><th>Name</th><th>Hands</th><th>Damage</th><th>Tags</th><th>LD</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td>Knife</td><td>1H</td><td>d4 P</td><td>Light, Close-Quarters, Thrown (Near)</td><td>0.5</td><td>5a</td></tr>
+<tr><td>Seax / Utility Blade</td><td>1H</td><td>d4 S or P</td><td>Light, Close-Quarters</td><td>0.5</td><td>1d</td></tr>
+<tr><td>Fighting Dagger</td><td>1H</td><td>d6 P</td><td>Light, Close-Quarters</td><td>0.5</td><td>2d</td></tr>
+<tr><td>Cudgel / Club</td><td>1H</td><td>d6 C</td><td>—</td><td>1</td><td>3a</td></tr>
+<tr><td>Truncheon</td><td>1H</td><td>d4 C</td><td>Light, Non-Lethal</td><td>0.5</td><td>5a</td></tr>
+</tbody>
+</table>
+
+<h2>Weapons — Swords (Classical)</h2>
+<table class="item-tbl">
+<thead><tr><th>Name</th><th>Hands</th><th>Damage</th><th>Tags</th><th>LD</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td>Xiphos / Short Sword</td><td>1H</td><td>d6 P</td><td>Balanced, Parrying, Close-Quarters</td><td>1</td><td>1 Au</td></tr>
+<tr><td>Gladius</td><td>1H</td><td>d6 P</td><td>Balanced, Close-Quarters</td><td>1</td><td>1 Au</td></tr>
+<tr><td>Arming Sword</td><td>1H</td><td>d8 S</td><td>Parrying</td><td>1</td><td>2 Au</td></tr>
+<tr><td>Falchion</td><td>1H</td><td>d8 S</td><td>Cleave</td><td>1</td><td>2 Au</td></tr>
+</tbody>
+</table>
+
+<h2>Weapons — Spears, Pikes, Polearms</h2>
+<table class="item-tbl">
+<thead><tr><th>Name</th><th>Hands</th><th>Damage</th><th>Tags</th><th>LD</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td>Spear</td><td>1H/2H</td><td>d6 / d8 P</td><td>Reach, Brace, Thrown</td><td>1.5</td><td>5d</td></tr>
+<tr><td>Dory / Long Spear</td><td>2H</td><td>d8 P</td><td>Reach, Brace</td><td>2</td><td>1 Au</td></tr>
+<tr><td>Pike</td><td>2H</td><td>d10 P</td><td>Reach, Brace, Formation</td><td>3</td><td>1 Au</td></tr>
+<tr><td>Glaive</td><td>2H</td><td>d10 S</td><td>Reach, Hooked</td><td>2.5</td><td>2 Au</td></tr>
+<tr><td>Poleaxe</td><td>2H</td><td>d10 S or C</td><td>Reach, Hooked, Shield-Breaker</td><td>3</td><td>3 Au</td></tr>
+</tbody>
+</table>
+
+<h2>Weapons — Axes, Picks, Maces</h2>
+<table class="item-tbl">
+<thead><tr><th>Name</th><th>Hands</th><th>Damage</th><th>Tags</th><th>LD</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td>Hand Axe</td><td>1H</td><td>d6 S</td><td>Thrown (Near)</td><td>1</td><td>3d</td></tr>
+<tr><td>War Axe</td><td>1H</td><td>d8 S</td><td>Shield-Breaker</td><td>1.5</td><td>1 Au</td></tr>
+<tr><td>War Pick</td><td>1H</td><td>d8 P</td><td>Shield-Breaker</td><td>1.5</td><td>1 Au</td></tr>
+<tr><td>Hammer / Maullet</td><td>1H</td><td>d8 C</td><td>Brutal</td><td>1.5</td><td>1 Au</td></tr>
+<tr><td>Mace</td><td>1H</td><td>d8 C</td><td>Brutal</td><td>1.5</td><td>1 Au</td></tr>
+<tr><td>Flanged Mace</td><td>1H</td><td>d8 C</td><td>Brutal, Shield-Breaker</td><td>1.5</td><td>2 Au</td></tr>
+<tr><td>Warhammer (1H)</td><td>1H</td><td>d8 C</td><td>Brutal, Shield-Breaker</td><td>1.5</td><td>2 Au</td></tr>
+</tbody>
+</table>
+
+<h2>Weapons — Thrown & Ranged</h2>
+<table class="item-tbl">
+<thead><tr><th>Name</th><th>Hands</th><th>Damage</th><th>Tags</th><th>LD</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td>Javelin</td><td>1H</td><td>d6 P</td><td>Thrown (Near/Far)</td><td>1</td><td>2d</td></tr>
+<tr><td>Pilum / Heavy Javelin</td><td>1H</td><td>d8 P</td><td>Thrown (Far), Shield-Breaker, Brace</td><td>1.5</td><td>1 Au</td></tr>
+<tr><td>Throwing Knives (×3)</td><td>1H</td><td>d4 P</td><td>Light, Thrown (Near)</td><td>1</td><td>2d</td></tr>
+<tr><td>Sling</td><td>1H</td><td>d6 C</td><td>Quick</td><td>0.5</td><td>2a</td></tr>
+<tr><td>Short Bow</td><td>2H</td><td>d6 P</td><td>Quick</td><td>2</td><td>1 Au</td></tr>
+<tr><td>Composite Bow</td><td>2H</td><td>d8 P</td><td>Arc, Heavy Draw</td><td>2</td><td>3 Au</td></tr>
+<tr><td>Light Crossbow</td><td>2H</td><td>d8 P</td><td>Piercing (Ranged), Slow</td><td>2.5</td><td>2 Au</td></tr>
+<tr><td>Heavy Crossbow</td><td>2H</td><td>d10 P</td><td>Piercing (Ranged), Slow, Heavy</td><td>3</td><td>3 Au</td></tr>
+</tbody>
+</table>
+
+<h2>Shields</h2>
+<table class="item-tbl">
+<thead><tr><th>Name</th><th>DL</th><th>Notes</th><th>LD</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td>Buckler</td><td>+1</td><td>Light. Free to ready if worn.</td><td>1</td><td>5d</td></tr>
+<tr><td>Aspis / Hoplon</td><td>+2</td><td>Standard. Shield actions enabled.</td><td>2</td><td>1 Au</td></tr>
+<tr><td>Scutum</td><td>+2</td><td>Reduces Crushing damage by 1 while readied.</td><td>2</td><td>1 Au</td></tr>
+<tr><td>Great Shield</td><td>+3</td><td>Heavy. Best for Guard.</td><td>3</td><td>3 Au</td></tr>
+</tbody>
+</table>
+
+<h2>Armour</h2>
+<table class="item-tbl">
+<thead><tr><th>Name</th><th>DL</th><th>Category</th><th>Burden</th><th>Damage Interaction</th><th>LD</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td>Cloth / Travel Garb</td><td>+0</td><td>Unarmoured</td><td>None</td><td>None</td><td>1</td><td>1d</td></tr>
+<tr><td>Padded / Quilted Coat</td><td>+2</td><td>Light</td><td>Minor</td><td>—</td><td>1.5</td><td>1 Au 5d</td></tr>
+<tr><td>Hardened Leather / Hide</td><td>+2</td><td>Light</td><td>Minor</td><td>—</td><td>2</td><td>2 Au</td></tr>
+<tr><td>Scale Shirt</td><td>+4</td><td>Medium</td><td>Moderate</td><td>Slashing -1</td><td>3</td><td>5 Au</td></tr>
+<tr><td>Mail Shirt</td><td>+4</td><td>Medium</td><td>Moderate</td><td>Slashing -1</td><td>3</td><td>6 Au</td></tr>
+<tr><td>Lamellar</td><td>+6</td><td>Heavy</td><td>Heavy</td><td>S -2, P bypass only +1, C none</td><td>4</td><td>14 Au</td></tr>
+<tr><td>Full Panoply</td><td>+6</td><td>Heavy</td><td>Heavy</td><td>As Lamellar; covers limbs</td><td>5</td><td>25 Au</td></tr>
+<tr><td>Exceptional Armour (Rare)</td><td>+7</td><td>Heavy</td><td>Heavy</td><td>One interaction improves by +1</td><td>5</td><td>200 Au+</td></tr>
+</tbody>
+</table>
+
+<h2>Adventuring Gear (Load only)</h2>
+<table class="item-tbl">
+<thead><tr><th>Category</th><th>Items (LD)</th></tr></thead>
+<tbody>
+<tr><td>Clothing &amp; Personal</td><td>Heavy cloak (1), spare tunic (0.5), spare boots (1), belt pouch (0.5), signet ring/token (0), small idol/charm (0), blanket (1), bedroll (1)</td></tr>
+<tr><td>Light &amp; Fire</td><td>Torch (0.5 each), oil flask (0.5), tinder kit (0.5), hooded lantern (1), small lamp (0.5)</td></tr>
+<tr><td>Travel &amp; Camp</td><td>Waterskin (0.5), rations 1 week (1), cooking pot (1), cup &amp; eating knife (0.5), small tent (2), tarp (1), short spade (1.5), whetstone &amp; oil (0.5)</td></tr>
+<tr><td>Rope, Climbing, Field</td><td>Long rope (2), short rope (1), grappling hook (1), pitons (1), hammer/mallet (1), chalk (0.5), block &amp; tackle (2), crowbar (1.5)</td></tr>
+<tr><td>Medical</td><td>Healer's satchel (2), bandage roll (0.5), herb pouch (0.5), antiseptic spirits flask (0.5)</td></tr>
+<tr><td>Tools (each set 2 LD unless noted)</td><td>Smith's (3), carpenter's (3), mason's (3), leatherworker's (2), alchemist kit (2), thieves' tools (1), navigator's kit (1), ritual kit (2)</td></tr>
+<tr><td>Writing &amp; Authority</td><td>Wax tablet &amp; stylus (0.5), ink &amp; quills (0.5), parchment bundle (1), seals &amp; wax (0.5), letter case (1), tabard of office (1), writ/signed document (0)</td></tr>
+<tr><td>Restraints &amp; Utility</td><td>Manacles (1.5), short chain (2), hooks &amp; spikes (1), small mirror (0.5), soap &amp; care kit (0.5), whistle/horn (0.5)</td></tr>
+<tr><td>Containers</td><td>Backpack (holds 6 LD), satchel (4), sack (4), small chest (holds 8, itself 3), large crate (holds 12, itself 4)</td></tr>
+</tbody>
+</table>
+
+<h2>Ready-Made Packs</h2>
+<table class="item-tbl">
+<thead><tr><th>Pack</th><th>Contents</th><th>LD</th></tr></thead>
+<tbody>
+<tr><td>Traveller's Pack</td><td>Cloak, waterskin, rations, bedroll, tinder, 2 torches, short rope</td><td>6</td></tr>
+<tr><td>Scout Pack</td><td>Tarp, waterskin, rations, tinder, short rope, chalk, bandages, knife</td><td>5.5</td></tr>
+<tr><td>Legionary Pack</td><td>Cloak, bedroll, rations, waterskin, cooking pot, spare sandals, whetstone, 2 torches</td><td>7</td></tr>
+<tr><td>Scholar / Clerk Pack</td><td>Cloak, wax tablet, letter case, ink &amp; quill, parchment, tinder, waterskin, rations</td><td>6</td></tr>
+</tbody>
+</table>
+
+<h2>Load &amp; Encumbrance</h2>
+<p><strong>Load Limit</strong> = 10 + Might mod + Fortitude mod (minimum 8). <strong>Encumbered</strong> (over by 1-3 LD): -1 AP, -2 Agility, no Swift Strike. <strong>Heavily Encumbered</strong> (over by 4+): -2 AP, +1 AP per move, no Focused actions.</p>
+
+</body>
+</html>

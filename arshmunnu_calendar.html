@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Almanac — Calendar of Arshmunnu</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06040e;--text:#e6dfcf;--muted:#928c9e;--mute2:#5b566a;
+  --gold:#c9a84c;--goldL:#f0cc72;--goldD:#7c5a1f;
+  --border:rgba(201,168,76,.14);--border2:rgba(201,168,76,.3);
+  --spring:#6f9e5e;--summer:#e0a838;--autumn:#c0743a;--winter:#6f9fc4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;}
+body{font-family:'EB Garamond',serif;color:var(--text);min-height:100vh;position:relative;overflow-x:hidden;
+  background:
+    radial-gradient(1100px 520px at 78% -8%,rgba(111,158,94,.08),transparent 55%),
+    radial-gradient(900px 520px at 12% 4%,rgba(111,159,196,.08),transparent 55%),
+    radial-gradient(1000px 600px at 50% 122%,rgba(201,168,74,.06),transparent 55%),
+    var(--bg);}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.wrap{position:relative;z-index:2;max-width:1080px;margin:0 auto;padding:0 20px 120px;}
+
+/* HERO */
+.hero{padding:52px 0 14px;text-align:center;position:relative;}
+.hero .eyebrow{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--goldD);margin-bottom:16px;}
+.hero h1{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(36px,7.5vw,74px);line-height:.95;
+  background:linear-gradient(180deg,#f6dd9a,#d4a44a 52%,#7c5a1f);-webkit-background-clip:text;background-clip:text;color:transparent;
+  letter-spacing:.02em;filter:drop-shadow(0 2px 18px rgba(212,164,74,.2));}
+.hero .tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(16px,2.4vw,21px);color:var(--muted);margin-top:14px;}
+.home-link{position:absolute;top:20px;left:0;display:inline-flex;align-items:center;gap:8px;
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);cursor:pointer;
+  padding:8px 14px;border:1px solid var(--border);border-radius:3px;background:rgba(201,168,74,.04);transition:all .16s;}
+.home-link:hover{color:var(--goldL);border-color:var(--border2);}
+
+/* LAYOUT */
+.cal-top{display:grid;grid-template-columns:minmax(320px,1fr) minmax(280px,420px);gap:30px;align-items:start;margin-top:28px;}
+@media(max-width:820px){.cal-top{grid-template-columns:1fr;}}
+
+/* WHEEL */
+.wheel-card{position:relative;text-align:center;}
+.wheel{width:100%;max-width:440px;margin:0 auto;display:block;}
+.wheel .seg{cursor:pointer;transition:opacity .15s,filter .15s;}
+.wheel .seg:hover{filter:brightness(1.25);}
+.wheel .seg.active{filter:brightness(1.35) saturate(1.2);}
+.wheel-num{font-family:'Cinzel',serif;font-size:10px;fill:rgba(8,5,16,.8);pointer-events:none;font-weight:600;}
+.wheel-season{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;pointer-events:none;}
+.hub-now{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;text-transform:uppercase;fill:var(--goldD);}
+.hub-mon{font-family:'Cinzel Decorative',serif;font-weight:700;fill:var(--goldL);}
+.hub-sea{font-family:'Cormorant Garamond',serif;font-style:italic;fill:var(--muted);}
+.wheel-legend{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:14px;}
+.wheel-legend span{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:6px;}
+.wheel-legend i{width:9px;height:9px;border-radius:2px;display:inline-block;}
+
+/* MONTH PANEL */
+.month-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+.month-name{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:clamp(24px,4vw,36px);}
+.month-ord{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--goldD);}
+.season-badge{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;text-transform:uppercase;padding:3px 10px;border-radius:10px;border:1px solid;}
+.month-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--muted);margin-bottom:14px;}
+.month-nav{display:flex;gap:8px;margin-bottom:14px;}
+.mn-btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;padding:8px 13px;border-radius:4px;
+  border:1px solid var(--border);background:rgba(201,168,74,.04);color:var(--muted);transition:all .15s;}
+.mn-btn:hover{color:var(--goldL);border-color:var(--border2);}
+
+.daygrid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;}
+.dcell{position:relative;aspect-ratio:1;border:1px solid var(--border);border-radius:5px;background:rgba(201,168,74,.03);
+  display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:12px;color:var(--text);cursor:pointer;transition:all .13s;}
+.dcell:hover{border-color:var(--c,var(--gold));color:var(--goldL);background:color-mix(in srgb,var(--c,var(--gold)) 12%,transparent);}
+.dcell.deca{box-shadow:inset 0 2px 0 rgba(201,168,76,.22);}
+.dcell.today{border-color:var(--goldL);color:var(--goldL);background:rgba(240,204,114,.12);box-shadow:0 0 0 1px var(--goldL);}
+.dcell .ev{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--autumn);box-shadow:0 0 5px var(--autumn);}
+.daygrid-cap{display:flex;justify-content:space-between;margin-top:8px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute2);}
+
+/* PANELS */
+.panel{background:linear-gradient(160deg,rgba(22,18,30,.9),rgba(12,10,18,.82));border:1px solid var(--border);border-radius:10px;padding:18px;margin-top:22px;}
+.panel h2{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--goldL);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.panel h2 .ic{color:var(--gold);font-size:15px;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.f{display:flex;flex-direction:column;gap:5px;}
+.f label{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--goldD);}
+.f input,.f select{background:rgba(6,4,14,.7);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'EB Garamond',serif;font-size:14px;padding:8px 10px;}
+.f input:focus,.f select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,74,.12);}
+.f input{width:96px;}
+.btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;padding:9px 16px;border-radius:5px;
+  border:1px solid var(--border2);background:linear-gradient(180deg,rgba(201,168,74,.18),rgba(201,168,74,.05));color:var(--goldL);transition:all .15s;}
+.btn:hover{background:linear-gradient(180deg,rgba(201,168,74,.3),rgba(201,168,74,.1));box-shadow:0 0 16px rgba(201,168,74,.18);}
+.btn.ghost{border-color:var(--border);background:rgba(201,168,74,.04);color:var(--muted);}
+.btn.ghost:hover{color:var(--goldL);box-shadow:none;}
+.btn.sm{padding:6px 11px;font-size:9px;}
+.out{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);margin-top:12px;line-height:1.5;}
+.out b{font-style:normal;color:var(--goldL);font-family:'Cinzel',serif;font-size:14px;letter-spacing:.02em;}
+.note{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--mute2);margin-top:10px;line-height:1.45;}
+
+/* ERA list */
+.eras{display:flex;flex-direction:column;gap:10px;}
+.era{border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:rgba(201,168,74,.025);}
+.era .et{font-family:'Cinzel',serif;font-size:12px;color:var(--goldL);letter-spacing:.04em;display:flex;align-items:center;gap:9px;}
+.era .ek{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#06040e;background:var(--gold);border-radius:4px;padding:2px 7px;}
+.era .ed{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--muted);line-height:1.45;margin-top:6px;}
+
+/* DAY DETAIL / EVENTS */
+.dlg-bg{position:fixed;inset:0;background:rgba(4,2,12,.78);z-index:60;display:none;align-items:center;justify-content:center;padding:20px;}
+.dlg-bg.open{display:flex;}
+.dlg{width:min(520px,94vw);max-height:88vh;overflow-y:auto;background:linear-gradient(165deg,rgba(24,19,33,.98),rgba(11,8,18,.98));
+  border:1px solid var(--border2);border-radius:12px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.6);}
+.dlg-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:4px;}
+.dlg-title{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:22px;color:var(--goldL);}
+.dlg-close{cursor:pointer;color:var(--muted);font-size:20px;border:none;background:none;line-height:1;}
+.dlg-close:hover{color:var(--goldL);}
+.dlg-sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--muted);font-size:15px;margin-bottom:16px;}
+.evlist{display:flex;flex-direction:column;gap:9px;margin-bottom:16px;}
+.evitem{border:1px solid var(--border);border-left:3px solid var(--autumn);border-radius:6px;padding:11px 13px;background:rgba(201,168,74,.03);}
+.evitem .evt{font-family:'Cinzel',serif;font-size:13px;color:var(--goldL);display:flex;align-items:center;gap:8px;}
+.evitem .evtag{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);border-radius:7px;padding:1px 6px;}
+.evitem .evn{font-size:14.5px;color:#dcd4c2;line-height:1.55;margin-top:5px;}
+.evitem .evx{float:right;cursor:pointer;color:var(--mute2);font-size:12px;border:none;background:none;}
+.evitem .evx:hover{color:#d98a7a;}
+.fld{width:100%;background:rgba(6,4,14,.7);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'EB Garamond',serif;font-size:15px;padding:10px 12px;margin-bottom:9px;resize:vertical;}
+.fld:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,74,.12);}
+textarea.fld{min-height:72px;line-height:1.5;}
+.dlg-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.chk{display:inline-flex;align-items:center;gap:7px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--muted);cursor:pointer;}
+.empty{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--mute2);font-size:15px;padding:8px 0 16px;}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:90;opacity:0;pointer-events:none;
+  background:rgba(10,7,18,.96);border:1px solid var(--border2);border-radius:7px;padding:11px 20px;
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;color:var(--goldL);transition:all .25s;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:560px){.hero{padding:46px 0 12px;}.home-link{position:static;display:inline-flex;margin-bottom:20px;}.f input{width:80px;}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="wrap">
+  <div class="hero">
+    <div class="home-link" onclick="goHome()">&larrhk; The Grand Archive</div>
+    <div class="eyebrow">Calendar of Arshmunnu</div>
+    <h1>The Almanac</h1>
+    <div class="tagline">Sixteen months, four seasons, four hundred and eighty days — the wheel of the year, and the reckonings by which the world has kept it.</div>
+  </div>
+
+  <div class="cal-top">
+    <div class="wheel-card">
+      <svg class="wheel" id="wheel" viewBox="0 0 440 440" aria-label="The wheel of the year"></svg>
+      <div class="wheel-legend">
+        <span><i style="background:var(--spring)"></i>Spring</span>
+        <span><i style="background:var(--summer)"></i>Summer</span>
+        <span><i style="background:var(--autumn)"></i>Autumn</span>
+        <span><i style="background:var(--winter)"></i>Winter</span>
+      </div>
+    </div>
+
+    <div class="month-card">
+      <div class="month-head">
+        <span class="month-name" id="m-name">Amenium</span>
+        <span class="month-ord" id="m-ord">1st Month</span>
+        <span class="season-badge" id="m-season">Spring</span>
+      </div>
+      <div class="month-sub" id="m-sub"></div>
+      <div class="month-nav">
+        <button class="mn-btn" id="m-prev">&lsaquo; Prev</button>
+        <button class="mn-btn" id="m-today">Present day</button>
+        <button class="mn-btn" id="m-next">Next &rsaquo;</button>
+      </div>
+      <div class="daygrid" id="daygrid"></div>
+      <div class="daygrid-cap"><span>First decade</span><span>Second</span><span>Third</span></div>
+    </div>
+  </div>
+
+  <!-- DATE TOOLS -->
+  <div class="panel">
+    <h2><span class="ic">&#9737;</span> Reckon a date</h2>
+    <div class="row">
+      <div class="f"><label>Day of year</label><input id="doy" type="number" min="1" max="480" value="1"></div>
+      <button class="btn" id="doy-go">Place it</button>
+      <div class="f" style="margin-left:auto"><label>Set the present day</label></div>
+      <div class="f"><label>Year</label><input id="cur-y" type="number" value="1" style="width:84px"></div>
+      <div class="f"><label>Month</label><select id="cur-m"></select></div>
+      <div class="f"><label>Day</label><input id="cur-d" type="number" min="1" max="30" value="1" style="width:64px"></div>
+      <button class="btn ghost" id="cur-go">Mark it</button>
+    </div>
+    <div class="out" id="doy-out"></div>
+    <div class="note">The year runs 1&ndash;480 without interruption; every month holds exactly thirty days, grouped into three decades of ten. The present day you mark is kept on this device and shown on the wheel and grid.</div>
+  </div>
+
+  <!-- ERAS -->
+  <div class="panel">
+    <h2><span class="ic">&#10070;</span> The reckonings</h2>
+    <div class="eras" id="eras"></div>
+    <div class="row" style="margin-top:16px">
+      <div class="f"><label>Year</label><input id="cv-year" type="number" value="0" style="width:100px"></div>
+      <div class="f"><label>From system</label><select id="cv-from"></select></div>
+      <button class="btn" id="cv-go">Convert</button>
+    </div>
+    <div class="out" id="cv-out"></div>
+    <div class="note" id="cv-note"></div>
+  </div>
+</div>
+
+<!-- DAY DETAIL DIALOG -->
+<div class="dlg-bg" id="dlg-bg">
+  <div class="dlg">
+    <div class="dlg-h"><span class="dlg-title" id="dlg-title">Day</span><button class="dlg-close" id="dlg-close">&times;</button></div>
+    <div class="dlg-sub" id="dlg-sub"></div>
+    <div class="evlist" id="evlist"></div>
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+      <input class="fld" id="ev-title" maxlength="80" placeholder="A festival, a battle, a birthday…">
+      <textarea class="fld" id="ev-note" maxlength="2000" placeholder="What happens on this day?  Link canon with [[double brackets]] — e.g. [[Achilleus]]."></textarea>
+      <div class="dlg-row">
+        <label class="chk"><input type="checkbox" id="ev-yearly" checked> Every year</label>
+        <button class="btn" id="ev-add">Add to the day</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="arsh-xref.js"></script>
+<script>
+/* ════════════════════════════════════════════════
+   THE ALMANAC — the calendar of Arshmunnu.
+   16 months × 30 days = a 480-day year, in four seasons.
+   Festivals and the "present day" are kept locally (no server).
+════════════════════════════════════════════════ */
+(function(){
+  var STORE='arsh_almanac_v1';
+  var MONTHS=[
+    {n:1,name:'Amenium',season:'Spring'},{n:2,name:'Brivion',season:'Spring'},{n:3,name:'Dorell',season:'Spring'},{n:4,name:'Elaran',season:'Spring'},
+    {n:5,name:'Achilly',season:'Summer'},{n:6,name:'Birest',season:'Summer'},{n:7,name:'Crism',season:'Summer'},{n:8,name:'Solane',season:'Summer'},
+    {n:9,name:'Fylune',season:'Autumn'},{n:10,name:'Galvorn',season:'Autumn'},{n:11,name:'Halesta',season:'Autumn'},{n:12,name:'Irimatus',season:'Autumn'},
+    {n:13,name:'Jorund',season:'Winter'},{n:14,name:'Keldor',season:'Winter'},{n:15,name:'Lorian',season:'Winter'},{n:16,name:'Vesperis',season:'Winter'}
+  ];
+  var DPM=30, MPY=16, DPY=480;
+  var SEASON={Spring:'#6f9e5e',Summer:'#e0a838',Autumn:'#c0743a',Winter:'#6f9fc4'};
+  var ORD=['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','13th','14th','15th','16th'];
+
+  /* The reckonings, drawn from the Archive's record on dating systems.
+     Offsets are "the imperial (AU) year that equals year 0 of this system",
+     so the worldbuilder can pin the anchors as canon is decided. */
+  var ERAS=[
+    {key:'AU',name:'After Unification',anchorEditable:false,offsetAU:0,
+     desc:'The imperial reckoning set by [[Achilleus]] himself, counting from his ascension and the unification of the realms. The standard timeline of the empire.'},
+    {key:'BU',name:'Before Unification',anchorEditable:false,offsetAU:0,
+     desc:'The years before the Unification, counted backward toward Achilleus\u2019 ascension. 1 BU is the year before 1 AU.'},
+    {key:'FG',name:'Foundation of Gothia',anchorEditable:true,offsetAU:-1200,
+     desc:'The oldest reckoning, anchored to the earliest settlements of [[Gothia]]. Favoured in ancient times for the age of first unity and growth.'},
+    {key:'AF',name:'After the Fall',anchorEditable:true,offsetAU:-300,
+     desc:'The Calendar of the Fall, kept in [[Ethernexa]]: BF before the First Fall, AF after it \u2014 the loss of celestial favour and humanity\u2019s descent into a fragmented age.'},
+    {key:'MC',name:'Marian Reckoning',anchorEditable:true,offsetAU:-150,
+     desc:'Counted from the Coronation of [[Marian the Firm]] in [[Marianis]]; a western reckoning beside the imperial standard.'}
+  ];
+  var EMAP={}; ERAS.forEach(function(e){EMAP[e.key]=e;});
+
+  /* ---- storage ---- */
+  function load(){try{return JSON.parse(localStorage.getItem(STORE))||{};}catch(e){return {};}}
+  function save(){try{localStorage.setItem(STORE,JSON.stringify(DB));}catch(e){toast('Storage blocked — could not save.');}}
+  var DB=load();
+  if(!DB.events)DB.events=[];
+  if(!DB.current)DB.current={year:1,month:1,day:1};
+  if(!DB.offsets)DB.offsets={};                 // per-era AU offset overrides
+  if(!DB.seed){ seedFestivals(); DB.seed=1; save(); }
+
+  function offsetOf(key){var e=EMAP[key];if(!e)return 0;return (key in DB.offsets)?DB.offsets[key]:e.offsetAU;}
+
+  function seedFestivals(){
+    DB.events.push({id:eid(),month:1,day:1,yearly:true,title:'First of Amenium',note:'The turning of the year — the first dawn of Spring and the head of the calendar.'});
+    DB.events.push({id:eid(),month:5,day:1,yearly:true,title:'Unification Day',note:'The ascension of [[Achilleus]] and the start of the [[After Unification|AU]] reckoning, kept at the head of high summer.'});
+  }
+
+  /* ---- helpers ---- */
+  function eid(){return 'v'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function fmtNote(s){
+    var h=esc(s);
+    if(window.ArshXref&&ArshXref.format)h=ArshXref.format(h);   // resolve [[links]] to the Concordance
+    return h.replace(/\n/g,'<br>');
+  }
+  function monthOf(m){return MONTHS[m-1];}
+  function seasonColor(m){return SEASON[monthOf(m).season];}
+  function dayOfYear(m,d){return (m-1)*DPM+d;}                  // 1..480
+  function fromDOY(n){n=((n-1)%DPY+DPY)%DPY+1;var m=Math.floor((n-1)/DPM)+1,d=(n-1)%DPM+1;return {month:m,day:d};}
+  function eventsOn(m,d){return DB.events.filter(function(e){return e.month===m&&e.day===d;});}
+
+  /* ---- state ---- */
+  var focus=DB.current.month;   // focused month index 1..16
+  var selDay=null;
+
+  /* ════ WHEEL ════ */
+  function polar(cx,cy,r,deg){var a=(deg-90)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];}
+  function arc(cx,cy,rO,rI,a0,a1){
+    var p0=polar(cx,cy,rO,a0),p1=polar(cx,cy,rO,a1),p2=polar(cx,cy,rI,a1),p3=polar(cx,cy,rI,a0);
+    var large=(a1-a0)>180?1:0;
+    return 'M'+p0[0]+' '+p0[1]+' A'+rO+' '+rO+' 0 '+large+' 1 '+p1[0]+' '+p1[1]+' L'+p2[0]+' '+p2[1]+' A'+rI+' '+rI+' 0 '+large+' 0 '+p3[0]+' '+p3[1]+' Z';
+  }
+  function buildWheel(){
+    var cx=220,cy=220,rO=200,rI=132,svg='';
+    for(var i=0;i<MPY;i++){
+      var a0=i*22.5,a1=a0+22.5,mid=(a0+a1)/2,col=seasonColor(i+1);
+      svg+='<path class="seg'+(focus===i+1?' active':'')+'" data-m="'+(i+1)+'" d="'+arc(cx,cy,rO,rI,a0+0.6,a1-0.6)+'" fill="'+col+'" fill-opacity="'+(i%2?0.82:0.66)+'" stroke="rgba(6,4,14,.6)" stroke-width="1"/>';
+      var lp=polar(cx,cy,(rO+rI)/2,mid);
+      svg+='<text class="wheel-num" x="'+lp[0]+'" y="'+(lp[1]+3.5)+'" text-anchor="middle">'+(i+1)+'</text>';
+    }
+    var seasons=[['Spring',45],['Summer',135],['Autumn',225],['Winter',315]];
+    seasons.forEach(function(s){var lp=polar(cx,cy,rO+16,s[1]);
+      svg+='<text class="wheel-season" x="'+lp[0]+'" y="'+(lp[1]+3)+'" text-anchor="middle" fill="'+SEASON[s[0]]+'">'+s[0]+'</text>';});
+    var cur=DB.current, ang=((cur.month-1)*DPM+(cur.day-1))/DPY*360;
+    var mk=polar(cx,cy,rO+4,ang),mk2=polar(cx,cy,rO+15,ang-2),mk3=polar(cx,cy,rO+15,ang+2);
+    svg+='<polygon points="'+mk[0]+','+mk[1]+' '+mk2[0]+','+mk2[1]+' '+mk3[0]+','+mk3[1]+'" fill="#f0cc72"/>';
+    var fm=monthOf(focus);
+    svg+='<circle cx="220" cy="220" r="126" fill="rgba(8,5,16,.72)" stroke="rgba(201,168,76,.25)"/>';
+    svg+='<text class="hub-now" x="220" y="184" text-anchor="middle">Month '+focus+' of 16</text>';
+    svg+='<text class="hub-mon" x="220" y="222" text-anchor="middle" font-size="30">'+fm.name+'</text>';
+    svg+='<text class="hub-sea" x="220" y="248" text-anchor="middle" font-size="16">'+fm.season+'</text>';
+    svg+='<text class="hub-now" x="220" y="272" text-anchor="middle">Days '+(dayOfYear(focus,1))+'\u2013'+(dayOfYear(focus,30))+'</text>';
+    var w=document.getElementById('wheel'); w.innerHTML=svg;
+    w.querySelectorAll('.seg').forEach(function(p){p.addEventListener('click',function(){focus=+p.dataset.m;render();});});
+  }
+
+  /* ════ MONTH GRID ════ */
+  function renderMonth(){
+    var m=monthOf(focus),col=seasonColor(focus);
+    document.getElementById('m-name').textContent=m.name;
+    document.getElementById('m-ord').textContent=ORD[focus-1]+' Month';
+    var sb=document.getElementById('m-season');sb.textContent=m.season;sb.style.color=col;sb.style.borderColor=col;
+    document.getElementById('m-sub').textContent='Days '+dayOfYear(focus,1)+'\u2013'+dayOfYear(focus,30)+' of the year \u00b7 '+m.season;
+    var cur=DB.current,g='';
+    for(var d=1;d<=DPM;d++){
+      var isToday=(cur.month===focus&&cur.day===d);
+      var evs=eventsOn(focus,d);
+      g+='<div class="dcell'+(d%10===1?' deca':'')+(isToday?' today':'')+'" data-d="'+d+'" style="--c:'+col+'">'+d
+        +(evs.length?'<span class="ev"></span>':'')+'</div>';
+    }
+    var dg=document.getElementById('daygrid');dg.innerHTML=g;
+    dg.querySelectorAll('.dcell').forEach(function(c){c.addEventListener('click',function(){openDay(focus,+c.dataset.d);});});
+  }
+
+  /* ════ DAY DIALOG ════ */
+  var dlgBg=document.getElementById('dlg-bg');
+  function openDay(m,d){
+    selDay={m:m,d:d};
+    document.getElementById('dlg-title').textContent=d+' '+monthOf(m).name;
+    document.getElementById('dlg-sub').textContent=monthOf(m).season+' \u00b7 day '+dayOfYear(m,d)+' of the year';
+    renderDayEvents();
+    document.getElementById('ev-title').value='';document.getElementById('ev-note').value='';document.getElementById('ev-yearly').checked=true;
+    dlgBg.classList.add('open');
+  }
+  function renderDayEvents(){
+    var evs=eventsOn(selDay.m,selDay.d),host=document.getElementById('evlist');
+    if(!evs.length){host.innerHTML='<div class="empty">No entries yet for this day.</div>';return;}
+    host.innerHTML=evs.map(function(e){
+      return '<div class="evitem"><button class="evx" data-del="'+e.id+'">&#10005;</button>'
+        +'<div class="evt">'+esc(e.title)+(e.yearly?'<span class="evtag">every year</span>':'<span class="evtag">once</span>')+'</div>'
+        +(e.note?'<div class="evn">'+fmtNote(e.note)+'</div>':'')+'</div>';
+    }).join('');
+    if(window.ArshXref&&ArshXref.bind)ArshXref.bind(host);
+    host.querySelectorAll('[data-del]').forEach(function(b){b.addEventListener('click',function(){
+      DB.events=DB.events.filter(function(x){return x.id!==b.dataset.del;});save();renderDayEvents();render();toast('Entry removed.');});});
+  }
+  document.getElementById('ev-add').addEventListener('click',function(){
+    var t=document.getElementById('ev-title').value.trim();
+    if(!t){toast('Give the day an entry first.');return;}
+    DB.events.push({id:eid(),month:selDay.m,day:selDay.d,yearly:document.getElementById('ev-yearly').checked,
+      title:t,note:document.getElementById('ev-note').value.trim()});
+    save();document.getElementById('ev-title').value='';document.getElementById('ev-note').value='';
+    renderDayEvents();render();toast('Added to '+selDay.d+' '+monthOf(selDay.m).name+'.');
+  });
+  document.getElementById('dlg-close').addEventListener('click',function(){dlgBg.classList.remove('open');});
+  dlgBg.addEventListener('click',function(e){if(e.target===dlgBg)dlgBg.classList.remove('open');});
+
+  /* ════ DATE TOOLS ════ */
+  function fillMonthSelect(sel){sel.innerHTML=MONTHS.map(function(m){return '<option value="'+m.n+'">'+m.n+'. '+m.name+'</option>';}).join('');}
+  fillMonthSelect(document.getElementById('cur-m'));
+  document.getElementById('doy-go').addEventListener('click',function(){
+    var n=Math.max(1,Math.min(DPY,parseInt(document.getElementById('doy').value)||1));
+    var r=fromDOY(n),m=monthOf(r.month);
+    focus=r.month;render();
+    document.getElementById('doy-out').innerHTML='Day '+n+' falls on <b>'+r.day+' '+m.name+'</b> &mdash; the '+ORD[r.month-1].toLowerCase()+' month, in <b>'+m.season+'</b>.';
+  });
+  function syncCurInputs(){document.getElementById('cur-y').value=DB.current.year;document.getElementById('cur-m').value=DB.current.month;document.getElementById('cur-d').value=DB.current.day;}
+  document.getElementById('cur-go').addEventListener('click',function(){
+    var y=parseInt(document.getElementById('cur-y').value)||1;
+    var m=parseInt(document.getElementById('cur-m').value)||1;
+    var d=Math.max(1,Math.min(DPM,parseInt(document.getElementById('cur-d').value)||1));
+    DB.current={year:y,month:m,day:d};save();focus=m;render();
+    document.getElementById('doy-out').innerHTML='The present day stands at <b>'+d+' '+monthOf(m).name+', '+y+' AU</b> &mdash; day '+dayOfYear(m,d)+' of the year.';
+    toast('Present day marked.');
+  });
+  document.getElementById('m-prev').addEventListener('click',function(){focus=focus===1?MPY:focus-1;render();});
+  document.getElementById('m-next').addEventListener('click',function(){focus=focus===MPY?1:focus+1;render();});
+  document.getElementById('m-today').addEventListener('click',function(){focus=DB.current.month;render();});
+
+  /* ════ ERAS ════ */
+  function renderEras(){
+    var host=document.getElementById('eras');
+    host.innerHTML=ERAS.filter(function(e){return e.key!=='BU';}).map(function(e){
+      var off=offsetOf(e.key);
+      var anchor=e.key==='AU'?'Year 0 = the Unification.'
+        :'Year 0 \u2248 '+(off>=0?off+' AU':(-off)+' BU')+(e.anchorEditable?' (adjustable)':'');
+      return '<div class="era"><div class="et"><span class="ek">'+e.key+'</span>'+e.name
+        +(e.anchorEditable?' <button class="btn ghost sm" data-edit="'+e.key+'" style="margin-left:auto">set anchor</button>':'')+'</div>'
+        +'<div class="ed">'+fmtNote(e.desc)+'<br><span style="color:var(--mute2)">'+anchor+'</span></div></div>';
+    }).join('');
+    if(window.ArshXref&&ArshXref.bind)ArshXref.bind(host);
+    host.querySelectorAll('[data-edit]').forEach(function(b){b.addEventListener('click',function(){
+      var k=b.dataset.edit,e=EMAP[k];
+      var v=prompt('Anchor for '+e.name+' ('+k+').\nIn which imperial (AU) year does '+k+' year 0 fall?\nUse a negative number for a BU year.',String(offsetOf(k)));
+      if(v===null)return;var n=parseInt(v);if(isNaN(n)){toast('Enter a whole number.');return;}
+      DB.offsets[k]=n;save();renderEras();toast('Anchor set: '+k+' 0 = '+(n>=0?n+' AU':(-n)+' BU')+'.');
+    });});
+  }
+  function fillFrom(){document.getElementById('cv-from').innerHTML=ERAS.map(function(e){return '<option value="'+e.key+'">'+e.key+' — '+e.name+'</option>';}).join('');}
+  fillFrom();
+  function toAxis(year,key){
+    if(key==='AU')return year;
+    if(key==='BU')return -year;             // 1 BU = -1
+    return year+offsetOf(key);              // FG/AF/MC: year 0 sits at offsetOf AU
+  }
+  function fromAxis(axis,key){
+    if(key==='AU')return axis;
+    if(key==='BU')return -axis;
+    return axis-offsetOf(key);
+  }
+  function showAU(axis){return axis>=0?(axis+' AU'):((-axis)+' BU');}
+  document.getElementById('cv-go').addEventListener('click',function(){
+    var y=parseInt(document.getElementById('cv-year').value);if(isNaN(y)){toast('Enter a year.');return;}
+    var from=document.getElementById('cv-from').value,axis=toAxis(y,from);
+    var parts=ERAS.filter(function(e){return e.key!=='BU'&&e.key!==from;}).map(function(e){
+      var yv=Math.round(fromAxis(axis,e.key));
+      return '<b>'+(e.key==='AU'?showAU(yv):(yv+' '+e.key))+'</b>';
+    });
+    document.getElementById('cv-out').innerHTML=y+' '+from+' corresponds to '+parts.join(' &nbsp;\u00b7&nbsp; ')+'.';
+    document.getElementById('cv-note').textContent='Conversions use the anchors above. The lore holds that the unified framework was lost as societies splintered — so these anchors are yours to fix as canon; set them with “set anchor”.';
+  });
+
+  /* ════ render all ════ */
+  function render(){buildWheel();renderMonth();renderEras();syncCurInputs();}
+
+  window.goHome=function(){
+    try{ if(window.parent&&window.parent!==window&&typeof window.parent.openApp==='function'){window.parent.openApp('home');return;} }catch(e){}
+    window.location.href='index.html';
+  };
+
+  var toastEl=document.getElementById('toast'),tT=null;
+  function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(tT);tT=setTimeout(function(){toastEl.classList.remove('show');},2200);}
+
+  render();
+})();
+
+/* ambient starfield */
+(function(){
+  var c=document.getElementById('stars'),ctx=c.getContext('2d'),stars=[];
+  function size(){c.width=innerWidth;c.height=innerHeight;stars=[];var n=Math.min(120,Math.floor(innerWidth*innerHeight/14000));
+    for(var i=0;i<n;i++)stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.3+.2,a:Math.random()*6.28,s:Math.random()*.015+.004});}
+  function draw(){ctx.clearRect(0,0,c.width,c.height);stars.forEach(function(st){st.a+=st.s;ctx.globalAlpha=Math.abs(Math.sin(st.a))*.6+.1;ctx.fillStyle='#e8dfc8';ctx.beginPath();ctx.arc(st.x,st.y,st.r,0,6.28);ctx.fill();});ctx.globalAlpha=1;requestAnimationFrame(draw);}
+  addEventListener('resize',size);size();draw();
+})();
+</script>
+</body>
+</html>

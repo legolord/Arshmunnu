@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Divinity of Arshmunnu — The Sacred Pantheon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03010a;--text:#e8dfc8;--tdim:rgba(232,223,200,.52);
+  --gold:#d4a44a;--goldD:#7c5a1f;--goldL:#f0cc72;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;overflow-x:hidden}
+body{font-family:'EB Garamond',serif;background:var(--bg);color:var(--text);}
+canvas#cosmos{position:fixed;inset:0;pointer-events:none;z-index:0;}
+
+/* HEADER */
+.hdr{
+  position:relative;z-index:10;text-align:center;
+  padding:52px 24px 40px;
+  background:linear-gradient(180deg,rgba(3,1,10,.98) 0%,rgba(3,1,10,.7) 100%);
+  border-bottom:1px solid rgba(212,164,74,.2);
+}
+.hdr-seal{
+  width:80px;height:80px;border-radius:50%;margin:0 auto 18px;
+  background:radial-gradient(circle at 35% 30%,#f0cc72,#d4a44a 50%,#7c5a1f);
+  box-shadow:0 0 0 3px #03010a,0 0 0 4px #7c5a1f,0 0 50px rgba(212,164,74,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel Decorative',serif;font-weight:700;font-size:30px;color:#1a0800;
+  animation:sealGlow 4s ease-in-out infinite;
+}
+@keyframes sealGlow{0%,100%{box-shadow:0 0 0 3px #03010a,0 0 0 4px #7c5a1f,0 0 40px rgba(212,164,74,.35);}50%{box-shadow:0 0 0 3px #03010a,0 0 0 4px #7c5a1f,0 0 70px rgba(212,164,74,.6),0 0 120px rgba(212,164,74,.2);}}
+.hdr h1{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(22px,4.5vw,48px);color:var(--goldL);letter-spacing:.06em;line-height:1.1;text-shadow:0 0 60px rgba(212,164,74,.4);margin-bottom:10px;}
+.hdr p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(15px,2vw,20px);color:var(--tdim);max-width:580px;margin:0 auto 22px;line-height:1.6;}
+.hdr-div{display:flex;align-items:center;justify-content:center;gap:10px;max-width:360px;margin:0 auto;}
+.hdr-div .hl{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--goldD));}
+.hdr-div .hl.r{background:linear-gradient(90deg,var(--goldD),transparent);}
+.hdr-div span{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.4em;color:var(--goldD);}
+
+/* MAIN NAV */
+.mainnav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(3,1,10,.95);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(212,164,74,.15);
+  padding:0 20px;overflow-x:auto;scrollbar-width:none;
+}
+.mainnav::-webkit-scrollbar{display:none}
+.mainnav-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:center;}
+.nav-tab{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;padding:13px 18px;border:none;background:none;cursor:pointer;color:var(--tdim);border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-tab.active{color:var(--goldL);border-bottom-color:var(--gold);}
+.nav-tab:hover{color:var(--goldL);}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:32px 20px 80px;position:relative;z-index:2;}
+.tpane{display:none;}
+.tpane.active{display:block;}
+
+/* FILTERS */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px;align-items:center;}
+.fsearch{position:relative;}
+.fsearch svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--goldD);pointer-events:none;}
+.fsearch input{padding:8px 10px 8px 32px;background:rgba(232,223,200,.06);border:1px solid rgba(212,164,74,.28);border-radius:3px;color:var(--text);font-family:'EB Garamond',serif;font-size:15px;outline:none;width:200px;transition:all .18s;}
+.fsearch input:focus{background:rgba(232,223,200,.11);border-color:var(--gold);}
+.fsearch input::placeholder{color:rgba(232,223,200,.28);}
+.filter-btn{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:6px 12px;border:1px solid rgba(212,164,74,.22);border-radius:16px;background:transparent;color:rgba(212,164,74,.45);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.filter-btn.on{border-color:var(--gold);color:var(--goldL);background:rgba(212,164,74,.1);}
+.filter-btn:hover{border-color:rgba(212,164,74,.5);color:var(--goldL);}
+.filter-sep{width:1px;height:20px;background:rgba(212,164,74,.15);margin:0 4px;}
+.fcount{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:var(--goldD);margin-left:auto;}
+
+/* DEITY GRID */
+.deity-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+
+/* DEITY CARD */
+.dcard{
+  border:1px solid rgba(255,255,255,.06);border-radius:5px;
+  background:rgba(8,4,20,.75);
+  cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+}
+.dcard::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,var(--dc,rgba(212,164,74,.12)),transparent 65%);opacity:.5;transition:opacity .25s;}
+.dcard:hover{transform:translateY(-4px);border-color:var(--dc-color,rgba(212,164,74,.5));box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 0 1px var(--dc-color,rgba(212,164,74,.3)),0 0 30px var(--dc-glow,rgba(212,164,74,.12));}
+.dcard:hover::before{opacity:1;}
+.dcard-inner{padding:20px 18px 16px;position:relative;z-index:1;}
+.dcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.dcard-icon{
+  width:52px;height:52px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  border:2px solid var(--dc-color,rgba(212,164,74,.4));
+  background:radial-gradient(circle at 35% 30%,var(--dc-light,rgba(212,164,74,.3)),var(--dc,rgba(212,164,74,.12)));
+  box-shadow:0 0 16px var(--dc-glow,rgba(212,164,74,.2));
+  transition:all .25s;
+}
+.dcard:hover .dcard-icon{box-shadow:0 0 28px var(--dc-glow,rgba(212,164,74,.4));}
+.dcard-badges{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.tier-badge{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.25em;text-transform:uppercase;padding:2px 7px;border-radius:10px;border:1px solid;opacity:.7;}
+.align-badge{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.2em;text-transform:uppercase;padding:2px 7px;border-radius:10px;}
+.dcard-name{font-family:'Cinzel',serif;font-size:15px;font-weight:600;letter-spacing:.04em;color:var(--text);line-height:1.2;margin-bottom:4px;}
+.dcard-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--dc-color,var(--gold));margin-bottom:10px;}
+.dcard-domains{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;}
+.dom-tag{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.18em;text-transform:uppercase;padding:2px 7px;border-radius:2px;border:1px solid rgba(255,255,255,.1);color:rgba(232,223,200,.5);}
+.dcard-desc{font-size:13px;line-height:1.5;color:var(--tdim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.dcard-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);}
+.dcard-symbol{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:rgba(232,223,200,.35);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.dcard-more{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dc-color,var(--goldD));flex-shrink:0;margin-left:8px;}
+
+/* MODAL */
+.mov{position:fixed;inset:0;z-index:500;background:rgba(2,0,8,.88);backdrop-filter:blur(10px);display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;}
+.mov.open{display:flex;}
+.mod{
+  position:relative;width:100%;max-width:680px;margin:auto;
+  background:radial-gradient(circle at 20% 10%,rgba(12,6,30,.98),rgba(5,2,14,.98));
+  border:1px solid var(--md-color,rgba(212,164,74,.4));border-radius:6px;
+  box-shadow:0 40px 80px rgba(0,0,0,.9),0 0 60px var(--md-glow,rgba(212,164,74,.1));
+  padding:36px 32px 40px;animation:modIn .28s ease;
+}
+@keyframes modIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.mod-x{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;border:1px solid var(--md-color,rgba(212,164,74,.35));background:transparent;color:rgba(232,223,200,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .14s;}
+.mod-x:hover{background:rgba(212,164,74,.12);color:var(--goldL);}
+.mod-top{display:flex;align-items:flex-start;gap:18px;margin-bottom:20px;}
+.mod-icon{
+  width:68px;height:68px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+  border:2px solid var(--md-color,rgba(212,164,74,.4));
+  background:radial-gradient(circle at 35% 30%,var(--md-light,rgba(212,164,74,.3)),var(--md-bg,rgba(212,164,74,.1)));
+  box-shadow:0 0 30px var(--md-glow,rgba(212,164,74,.2));
+}
+.mod-header{flex:1;}
+.mod-name{font-family:'Cinzel',serif;font-size:clamp(18px,3vw,26px);font-weight:700;color:var(--md-color,var(--goldL));letter-spacing:.04em;margin-bottom:4px;}
+.mod-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--tdim);margin-bottom:10px;}
+.mod-badges{display:flex;gap:8px;flex-wrap:wrap;}
+.mod-badge{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.25em;text-transform:uppercase;padding:3px 10px;border-radius:2px;border:1px solid;opacity:.8;}
+.mod-div{height:1px;background:linear-gradient(90deg,transparent,var(--md-color,var(--goldD)),transparent);margin:18px 0;}
+.mod-section{margin-bottom:18px;}
+.mod-section h4{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--md-color,var(--goldD));margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.mod-section h4::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,currentColor,transparent);opacity:.4;}
+.mod-desc{font-size:16px;line-height:1.7;color:var(--text);opacity:.88;}
+.mod-desc p{margin-bottom:10px;}
+.mod-symbol-box{padding:10px 14px;border:1px solid rgba(255,255,255,.08);border-radius:3px;background:rgba(255,255,255,.03);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--tdim);}
+.mod-tenets{display:grid;gap:7px;}
+.mod-tenet{display:flex;gap:10px;font-size:15px;line-height:1.5;}
+.mod-tenet::before{content:"✦";color:var(--md-color,var(--goldD));font-size:11px;margin-top:4px;flex-shrink:0;}
+.mod-rels{display:flex;flex-wrap:wrap;gap:7px;}
+.mod-rel{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:4px 12px;border:1px solid rgba(212,164,74,.25);border-radius:2px;color:rgba(212,164,74,.65);cursor:pointer;transition:all .13s;}
+.mod-rel:hover{border-color:var(--gold);color:var(--goldL);background:rgba(212,164,74,.08);}
+.mod-dom-row{display:flex;flex-wrap:wrap;gap:6px;}
+.mod-dom{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:3px 10px;border-radius:2px;border:1px solid rgba(255,255,255,.12);color:rgba(232,223,200,.65);}
+
+/* MYTHOLOGY TAB */
+.myth-section{margin-bottom:36px;}
+.myth-section h2{font-family:'Cinzel',serif;font-size:clamp(16px,2.5vw,22px);font-weight:700;color:var(--goldL);letter-spacing:.06em;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(212,164,74,.15);}
+.myth-text{font-size:17px;line-height:1.75;color:var(--tdim);}
+.myth-text p{margin-bottom:14px;}
+.myth-text p:first-child::first-letter{font-family:'Cinzel',serif;font-size:50px;float:left;line-height:.82;padding:6px 10px 0 0;color:var(--goldD);font-weight:700;}
+.myth-text .quote{border-left:3px solid var(--goldD);padding:10px 16px;font-style:italic;font-size:16px;color:rgba(232,223,200,.75);background:rgba(124,90,31,.07);margin:16px 0;}
+.myth-text strong{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em;color:rgba(212,164,74,.85);font-weight:600;}
+.primordials{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin:24px 0;}
+.prim-card{padding:18px 16px;border:1px solid rgba(255,255,255,.08);border-radius:4px;background:rgba(8,4,20,.6);text-align:center;}
+.prim-icon{font-size:32px;margin-bottom:10px;}
+.prim-name{font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:.06em;margin-bottom:4px;}
+.prim-role{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--tdim);}
+
+/* GEHENNOM TAB */
+.geh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:20px;}
+.geh-card{padding:20px 18px;border:1px solid rgba(180,20,20,.3);border-radius:4px;background:radial-gradient(ellipse at 20% 20%,rgba(100,10,10,.4),rgba(5,2,14,.9));position:relative;overflow:hidden;}
+.geh-card::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 80% 80%,rgba(120,10,10,.3),transparent 60%);pointer-events:none;}
+.geh-seat{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:rgba(248,113,113,.5);margin-bottom:8px;}
+.geh-name{font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:#fca5a5;letter-spacing:.04em;margin-bottom:4px;}
+.geh-domain{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(248,113,113,.6);margin-bottom:10px;}
+.geh-desc{font-size:14px;line-height:1.55;color:rgba(232,223,200,.55);}
+.geh-symbol{margin-top:10px;padding-top:8px;border-top:1px solid rgba(180,20,20,.2);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(248,113,113,.4);}
+.geh-header{margin-bottom:24px;}
+.geh-header h2{font-family:'Cinzel',serif;font-size:clamp(16px,2.5vw,22px);color:#fca5a5;letter-spacing:.06em;margin-bottom:10px;}
+.geh-header p{font-size:16px;line-height:1.7;color:var(--tdim);}
+
+/* RELATIONS TAB */
+.rel-section{margin-bottom:30px;}
+.rel-section h3{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.35em;text-transform:uppercase;color:var(--goldD);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.rel-section h3::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--goldD),transparent);}
+.rel-grid{display:grid;gap:8px;}
+.rel-row{display:grid;grid-template-columns:160px 1fr;gap:12px;align-items:baseline;padding:8px 0;border-bottom:1px solid rgba(212,164,74,.07);}
+.rel-deity{font-family:'Cinzel',serif;font-size:11px;font-weight:500;color:var(--text);}
+.rel-desc{font-size:15px;line-height:1.5;color:var(--tdim);}
+
+/* EDITOR FAB (same pattern) */
+.ep-fab{position:fixed;bottom:22px;right:22px;z-index:800;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1a0d04,#240808);border:1px solid rgba(212,164,74,.5);box-shadow:0 4px 20px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .22s;color:#d4a44a;}
+.ep-fab:hover{transform:scale(1.12);}
+.ep-fab.active{background:linear-gradient(135deg,#d4a44a,#b8893b);color:#1a0800;}
+.ep-ov{position:fixed;inset:0;z-index:900;background:rgba(2,0,8,.97);backdrop-filter:blur(14px);display:none;flex-direction:column;overflow:hidden;}
+.ep-ov.open{display:flex;}
+.ep-tb{flex-shrink:0;height:52px;background:rgba(4,1,12,.98);border-bottom:1px solid rgba(212,164,74,.18);display:flex;align-items:center;gap:12px;padding:0 18px;}
+.ep-tb-title{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:#d4a44a;flex:1;}
+.ep-x{width:28px;height:28px;border-radius:50%;border:1px solid rgba(212,164,74,.35);background:transparent;color:rgba(212,164,74,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .14s;}
+.ep-x:hover{background:rgba(212,164,74,.14);color:#d4a44a;}
+.ep-body{flex:1;display:grid;grid-template-columns:280px 1fr;overflow:hidden;}
+.ep-lcol{display:flex;flex-direction:column;border-right:1px solid rgba(212,164,74,.12);overflow:hidden;}
+.ep-lhdr{flex-shrink:0;padding:10px 12px;border-bottom:1px solid rgba(212,164,74,.1);display:flex;gap:7px;}
+.ep-srch{flex:1;padding:6px 9px;background:rgba(232,223,200,.06);border:1px solid rgba(212,164,74,.22);border-radius:2px;color:#e8dfc8;font-family:'EB Garamond',serif;font-size:13px;outline:none;}
+.ep-srch:focus{border-color:rgba(212,164,74,.5);}
+.ep-srch::placeholder{color:rgba(232,223,200,.25);}
+.ep-new{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:6px 10px;border:1px solid rgba(212,164,74,.45);border-radius:2px;background:rgba(212,164,74,.08);color:#d4a44a;cursor:pointer;white-space:nowrap;transition:all .14s;}
+.ep-new:hover{background:rgba(212,164,74,.2);}
+.ep-list{flex:1;overflow-y:auto;padding:4px 0;scrollbar-width:thin;scrollbar-color:rgba(124,90,31,.3) transparent;}
+.ep-li{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(212,164,74,.05);transition:background .1s;}
+.ep-li:hover{background:rgba(212,164,74,.06);}
+.ep-li.sel{background:rgba(212,164,74,.12);}
+.ep-li-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.ep-li-info{flex:1;min-width:0;}
+.ep-li-name{font-family:'Cinzel',serif;font-size:11px;font-weight:500;color:#e8dfc8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
+.ep-li-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:rgba(232,223,200,.38);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ep-li-del{opacity:0;background:none;border:none;cursor:pointer;color:rgba(248,113,113,.55);font-size:13px;padding:2px 3px;transition:all .1s;flex-shrink:0;}
+.ep-li:hover .ep-li-del{opacity:1;}
+.ep-li-del:hover{color:#f87171;}
+.ep-rcol{display:flex;flex-direction:column;overflow:hidden;}
+.ep-fwrap{flex:1;overflow-y:auto;padding:18px 22px;scrollbar-width:thin;}
+.ep-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:9px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(232,223,200,.3);}
+.ep-ph span{font-size:28px;}
+.ep-ftitle{font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:.07em;color:#d4a44a;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(212,164,74,.14);}
+.ep-field{margin-bottom:12px;}
+.ep-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(212,164,74,.65);display:block;margin-bottom:4px;}
+.ep-inp,.ep-ta,.ep-sel{width:100%;padding:7px 10px;background:rgba(232,223,200,.05);border:1px solid rgba(212,164,74,.22);border-radius:2px;color:#e8dfc8;font-family:'EB Garamond',serif;font-size:14px;outline:none;transition:border-color .13s;}
+.ep-inp:focus,.ep-ta:focus,.ep-sel:focus{border-color:rgba(212,164,74,.5);}
+.ep-inp::placeholder,.ep-ta::placeholder{color:rgba(232,223,200,.22);}
+.ep-ta{resize:vertical;min-height:75px;line-height:1.5;}
+.ep-sel{cursor:pointer;}.ep-sel option{background:#0d0a1a;color:#e8dfc8;}
+.ep-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ep-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.ep-fftr{flex-shrink:0;padding:10px 22px;border-top:1px solid rgba(212,164,74,.1);background:rgba(3,1,10,.9);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.ep-sv{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:8px 18px;border:1px solid rgba(212,164,74,.55);border-radius:2px;background:rgba(212,164,74,.13);color:#d4a44a;cursor:pointer;transition:all .14s;}
+.ep-sv:hover{background:rgba(212,164,74,.28);}
+.ep-dv{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:8px 14px;border:1px solid rgba(248,113,113,.3);border-radius:2px;background:rgba(248,113,113,.06);color:rgba(248,113,113,.65);cursor:pointer;transition:all .14s;}
+.ep-dv:hover{background:rgba(248,113,113,.16);color:#f87171;}
+.ep-rst{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;padding:7px 10px;border:1px solid rgba(212,164,74,.15);border-radius:2px;background:transparent;color:rgba(212,164,74,.35);cursor:pointer;transition:all .13s;margin-left:auto;}
+.ep-rst:hover{background:rgba(212,164,74,.07);color:rgba(212,164,74,.65);}
+.ep-exp,.ep-imp-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:7px 9px;border:1px solid rgba(103,232,249,.22);border-radius:2px;background:transparent;color:rgba(103,232,249,.45);cursor:pointer;transition:all .13s;}
+.ep-exp:hover,.ep-imp-lbl:hover{background:rgba(103,232,249,.07);color:rgba(103,232,249,.75);}
+.ep-imp{display:none;}
+.ep-toast{position:fixed;bottom:80px;right:22px;z-index:1000;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;padding:9px 16px;border-radius:3px;border:1px solid rgba(134,239,172,.4);background:rgba(58,102,56,.25);color:#86efac;animation:tIn .3s ease,tOut .3s ease 1.7s both;pointer-events:none;}
+@keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tOut{to{opacity:0}}
+@media(max-width:700px){.ep-body{grid-template-columns:1fr;}.ep-rcol{position:fixed;inset:52px 0 0;background:rgba(3,1,10,.98);z-index:5;display:none;}.ep-rcol.mob{display:flex;flex-direction:column;}.deity-grid{grid-template-columns:1fr;}}
+</style>
+<style id="arsh-gate-base"></style>
+<script>
+/* ════ ARSH ADMIN GATE ════
+   Editing the Archive is reserved for the Keeper (Aelarion).
+   Readers see the pages in view-only form. This is an editing lock,
+   shared across pages via localStorage('arsh_admin'). */
+(function(){
+  var SEL='.fab,.ep-fab,.ep-sadd';
+  function admin(){try{return localStorage.getItem('arsh_admin')==='1';}catch(e){return false;}}
+  function mark(){
+    if(!document.body||document.getElementById('arsh-viewlock'))return;
+    var d=document.createElement('div');d.id='arsh-viewlock';d.textContent='\uD83D\uDD12 View only';
+    d.style.cssText='position:fixed;bottom:16px;right:16px;z-index:2147483000;font-family:Cinzel,Georgia,serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,164,74,.55);background:rgba(10,6,16,.72);border:1px solid rgba(212,164,74,.22);border-radius:20px;padding:6px 12px;pointer-events:none;';
+    document.body.appendChild(d);
+  }
+  function unmark(){var d=document.getElementById('arsh-viewlock');if(d)d.remove();}
+  function apply(){
+    var st=document.getElementById('arsh-gate-base'),on=admin();
+    document.documentElement.setAttribute('data-arsh-role',on?'keeper':'reader');
+    if(on){if(st)st.textContent='';unmark();return;}
+    if(st)st.textContent=SEL+'{display:none!important;}';
+    if(document.body)mark();else document.addEventListener('DOMContentLoaded',mark);
+  }
+  apply();
+  window.addEventListener('storage',function(e){if(e.key==='arsh_admin'||e.key===null)apply();});
+  document.addEventListener('DOMContentLoaded',apply);
+})();
+</script>
+</head>
+<body>
+<canvas id="cosmos"></canvas>
+
+<header class="hdr">
+  <div class="hdr-seal">✦</div>
+  <h1>Divinity of Arshmunnu</h1>
+  <p>The sacred pantheon of the Great and Eternal World — from the Primordial Four who shaped creation to the Nine Seats of Gehennom's infernal depths.</p>
+  <div class="hdr-div"><span class="hl"></span><span>29 Deities · 9 Archdemons · 2 Traditions</span><span class="hl r"></span></div>
+</header>
+
+<nav class="mainnav">
+  <div class="mainnav-inner">
+    <button class="nav-tab active" data-tab="pantheon">The Pantheon</button>
+    <button class="nav-tab" data-tab="mythology">Creation Myth</button>
+    <button class="nav-tab" data-tab="gehennom">Nine Seats of Gehennom</button>
+    <button class="nav-tab" data-tab="relations">Divine Relations</button>
+  </div>
+</nav>
+
+<div class="main">
+
+  <!-- ══ PANTHEON TAB ══ -->
+  <div class="tpane active" id="pane-pantheon">
+    <div class="filters">
+      <div class="fsearch">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="deity-search" placeholder="Search deities…" oninput="filterDeities()">
+      </div>
+      <span class="filter-sep"></span>
+      <button class="filter-btn on" data-tier="all" onclick="setTier(this)">All Tiers</button>
+      <button class="filter-btn" data-tier="primordial" onclick="setTier(this)" style="color:rgba(192,132,252,.7);border-color:rgba(192,132,252,.3);">Primordials</button>
+      <button class="filter-btn" data-tier="major" onclick="setTier(this)">Major Gods</button>
+      <button class="filter-btn" data-tier="minor" onclick="setTier(this)">Minor / Archangels</button>
+      <button class="filter-btn" data-tier="elder" onclick="setTier(this)">Elder Powers</button>
+      <span class="filter-sep"></span>
+      <button class="filter-btn" data-align="G" onclick="setAlign(this)" style="color:rgba(134,239,172,.7);border-color:rgba(134,239,172,.3);">Good</button>
+      <button class="filter-btn" data-align="N" onclick="setAlign(this)">Neutral</button>
+      <button class="filter-btn" data-align="E" onclick="setAlign(this)" style="color:rgba(248,113,113,.7);border-color:rgba(248,113,113,.3);">Evil</button>
+      <span class="fcount" id="deity-count"></span>
+    </div>
+    <div class="deity-grid" id="deity-grid"></div>
+  </div>
+
+  <!-- ══ MYTHOLOGY TAB ══ -->
+  <div class="tpane" id="pane-mythology">
+    <div class="myth-section">
+      <h2>I. The Birth of the Aethernum Nexus</h2>
+      <div class="myth-text">
+        <p>In the eternal expanse preceding all existence, the <strong>Aethernum Nexus</strong> emerged from the primordial Void. This nexus, a wellspring of pure energy, became the core of life, souls, and the very essence of creation. From its luminous essence, four divine beings arose — each embodying a distinct aspect of creation and governance.</p>
+      </div>
+    </div>
+    <div class="primordials">
+      <div class="prim-card" style="border-color:rgba(253,224,138,.3);">
+        <div class="prim-icon">☀</div>
+        <div class="prim-name" style="color:#fde68a;">Achmin</div>
+        <div class="prim-role">The Luminary Sovereign<br>Creator of the Sun and Moon</div>
+      </div>
+      <div class="prim-card" style="border-color:rgba(165,180,252,.3);">
+        <div class="prim-icon">⭐</div>
+        <div class="prim-name" style="color:#a5b4fc;">Amen</div>
+        <div class="prim-role">The Eternal Composer<br>Weaver of the Stars</div>
+      </div>
+      <div class="prim-card" style="border-color:rgba(134,239,172,.3);">
+        <div class="prim-icon">📖</div>
+        <div class="prim-name" style="color:#86efac;">Kohe'Samel / Yer'shalem</div>
+        <div class="prim-role">The Harvested Sage<br>Master of the Nexus</div>
+      </div>
+      <div class="prim-card" style="border-color:rgba(167,243,208,.3);">
+        <div class="prim-icon">🌿</div>
+        <div class="prim-name" style="color:#a7f3d0;">Elara / Elaria</div>
+        <div class="prim-role">Guardian of Flora<br>Crafter of the Latentium</div>
+      </div>
+    </div>
+    <div class="myth-section">
+      <h2>II. The Divine Acts of Creation</h2>
+      <div class="myth-text">
+        <p>With their unique powers, the four deities collaboratively forged the world. <strong>Elara</strong> crafted the Latentium — a transparent dome enveloping the world, an unbreachable barrier against the Void. <strong>Amen</strong> illuminated the celestial sphere with stars, each serving as a steadfast sentinel to uphold the balance between creation and oblivion. <strong>Achmin</strong> ignited the Sun and Moon, their radiant light acting as perpetual guardians. <strong>Kohe'Samel</strong> established the Moon's luminescence and imparted the profound secrets of the Aethernum Nexus to all beings.</p>
+        <p>Together, they summoned forth diverse races: Elara nurtured elves and fey. Achmin created beasts and the beastfolk of Luminaria. Yer'shalem fashioned Chamalians and majestic dragons. Amen later created Angels and Prellings.</p>
+      </div>
+    </div>
+    <div class="myth-section">
+      <h2>III. The Rise of Amen's Ambition</h2>
+      <div class="myth-text">
+        <p>As creation flourished, Amen's ambition grew insatiable. Seeking to consolidate power and assert dominion over all creation, he embarked on a campaign to subdue his divine counterparts. <strong>Achmin was slain</strong>, his celestial dominion usurped. <strong>Kohe'Samel's memory was erased</strong>, bending Yer'shalem into servitude. <strong>Elara was shattered into four fragments</strong>, scattered across different continents to weaken her influence. One of the new Elarias — an alter ego embodying chaos and darkness — challenged Amen, but was ultimately slain by Kohe'Samel/Yer'shalem.</p>
+        <div class="quote">"For Amen desired not only order, but to be the only order. Thus rose the Revolt of Amen, wherein Achmin was slain, Kohe'Shamel was bound, and Elaria was shattered. From that violence came the world's great wound: the Crack, and all the dread that breathes from it."</div>
+      </div>
+    </div>
+    <div class="myth-section">
+      <h2>IV. The Ascendance of Yer'shalem</h2>
+      <div class="myth-text">
+        <p>After enduring Amen's tyranny, Yer'shalem rose as the leading god. Harnessing the remaining strength of the Aethernum Nexus and fuelled by the desire to restore balance, Yer'shalem confronted Amen. With wisdom and might, <strong>Yer'shalem killed Amen</strong>, ending his reign of domination and restoring equilibrium to the cosmos. Thus Yer'shalem ascended as the supreme god, overseeing the harmonious balance of creation. The Aethernum Nexus remains the lifeblood of existence; the scattered shards of Elara hint at the ever-present potential for both creation and chaos.</p>
+      </div>
+    </div>
+    <div class="myth-section">
+      <h2>V. The Two Traditions</h2>
+      <div class="myth-text">
+        <p>Two great traditions shape how Arshmunnu understands the divine. The <strong>Ethernexa's Myth</strong> holds Amen as the primordial entity — the Composer Everlasting — with Astr'y'lis and Patterran as companions, stars hung as sentinels. The <strong>Imperial Myth</strong> sees the Aethernum Nexus as the primordial core, with Achmin, Amen, Kohe'Samel, and Elara arising from it. Later ages would raise new names to heaven and set crowns upon the unseen — but the elder songs keep their calm refrain: <em>"the world standeth because Amen measureth, because Yer'shalem buildeth, and because the wild remembers what men forget."</em></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GEHENNOM TAB ══ -->
+  <div class="tpane" id="pane-gehennom">
+    <div class="geh-header">
+      <h2>The Nine Seats of Gehennom</h2>
+      <p>Bound within the infernal layers of the Nine Hells, the Nine Seats of Gehennom are each ruled by an archdemon personifying a specific sin or principle of evil. Though they feud constantly, the archdemons recognise the need to maintain a delicate balance — an all-out war among themselves would threaten Gehennom's stability and invite the wrath of greater cosmic powers.</p>
+    </div>
+    <div class="geh-grid" id="geh-grid"></div>
+  </div>
+
+  <!-- ══ RELATIONS TAB ══ -->
+  <div class="tpane" id="pane-relations">
+    <div class="rel-section">
+      <h3>Primordial Conflicts & Succession</h3>
+      <div class="rel-grid">
+        <div class="rel-row"><div class="rel-deity">Amen → Achmin</div><div class="rel-desc">Amen slew Achmin to seize control over the Sun and Moon, usurping celestial dominion.</div></div>
+        <div class="rel-row"><div class="rel-deity">Amen → Kohe'Samel</div><div class="rel-desc">Amen erased Kohe'Samel's memory and forced Yer'shalem into servitude, bending the Sage to his will.</div></div>
+        <div class="rel-row"><div class="rel-deity">Amen → Elara</div><div class="rel-desc">When Elara refused submission, Amen shattered her into four fragments and scattered them across the continents.</div></div>
+        <div class="rel-row"><div class="rel-deity">Yer'shalem → Amen</div><div class="rel-desc">Yer'shalem eventually killed Amen, restoring equilibrium and ascending as the supreme god.</div></div>
+        <div class="rel-row"><div class="rel-deity">Kohe'Samel → Elaria (dark)</div><div class="rel-desc">Yer'shalem slew Elara's dark alter ego, Elaria, who had led a rebellion against Amen from within the shattered fragments.</div></div>
+      </div>
+    </div>
+    <div class="rel-section">
+      <h3>Alliances & Family Bonds</h3>
+      <div class="rel-grid">
+        <div class="rel-row"><div class="rel-deity">Makten & Loll → Niobe</div><div class="rel-desc">The Archangel of Power and God of Trickery are the adoptive parents of Niobe, the Goddess of Law — a paradoxical lineage that shaped her absolute lawful nature.</div></div>
+        <div class="rel-row"><div class="rel-deity">Noxus & Lucemir/Urie</div><div class="rel-desc">The Gods of Darkness and Light are counterparts — Noxus's chaotic good nature and Lucemir's radiant heroism make them rivals philosophically but not enemies.</div></div>
+        <div class="rel-row"><div class="rel-deity">Yer'shalem & Silman</div><div class="rel-desc">Yer'shalem is the near face of order; Silman the far face of wild balance. They are not foes, but their worship clashes — the Hand for the house, the Warden for the wood.</div></div>
+        <div class="rel-row"><div class="rel-deity">Ian & Reor</div><div class="rel-desc">The God of Creation and God of Destruction are said to be husband and wife — rivals-to-lovers, their eternal dance the heartbeat of the world's cycle.</div></div>
+        <div class="rel-row"><div class="rel-deity">Lucemir & Clara</div><div class="rel-desc">The God of Light and the Goddess of Artefacts share a close bond — Clara was a blade-maiden before her ascension, and Lucemir her companion in the mortal realm.</div></div>
+      </div>
+    </div>
+    <div class="rel-section">
+      <h3>Domains in Conflict</h3>
+      <div class="rel-grid">
+        <div class="rel-row"><div class="rel-deity">Fea vs. Kohe'Samel</div><div class="rel-desc">Fea, Goddess of Good Knowledge, represents wisdom for the benefit of all. Kohe'Samel, the Fallen God of Communication, twists knowledge into secrecy and chaos — their domains are mirror images.</div></div>
+        <div class="rel-row"><div class="rel-deity">Kerim & Mirr</div><div class="rel-desc">Both govern conflict and dominance — Kerim in mortal warfare, Mirr in draconic hegemony. Their worshippers occasionally clash when armies meet dragon-warlords.</div></div>
+        <div class="rel-row"><div class="rel-deity">Arod & Demes</div><div class="rel-desc">Death and birth exist in perfect tension — Arod the Goddess of Death and Demes the Goddess of Agriculture and Birth represent the eternal cycle, their domains inseparable.</div></div>
+        <div class="rel-row"><div class="rel-deity">Ya'in & Pix</div><div class="rel-desc">Ya'in's structured, responsible approach to magic contrasts sharply with Pix's capricious, Neutral Evil fey magic — both govern spellcraft, but for wholly different ends.</div></div>
+        <div class="rel-row"><div class="rel-deity">Eiccalh & All</div><div class="rel-desc">The God of Corruption is the universal enemy — his whispers seek to unravel every institution, every faith, every alliance. Every other deity's domain is threatened by his decay.</div></div>
+      </div>
+    </div>
+    <div class="rel-section">
+      <h3>Mortal Cult Conflicts</h3>
+      <div class="rel-grid">
+        <div class="rel-row"><div class="rel-deity">Imperial vs. Ethernexa</div><div class="rel-desc">The Imperial cult deifies Achilleus Chliarinos himself as a god — a figure absent from all pre-imperial religion. The Ethernexa tradition rejects this entirely.</div></div>
+        <div class="rel-row"><div class="rel-deity">Escapian Tradition</div><div class="rel-desc">Escapia strongly rejects the worship of Amen as the "Eternal Composer," blaming him for cosmic tyranny. They honour Kohe'Shamel, Achmin (as the Dead God), and ancestral spirits.</div></div>
+        <div class="rel-row"><div class="rel-deity">Divinity of Elaria</div><div class="rel-desc">Elara's scattered fragment-worshippers in some regions are unaware of the great shattering — they worship her as an unbroken, ever-present Mother of Nature, calling her the Divinity of Elaria.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- DEITY MODAL -->
+<div class="mov" id="deity-modal">
+  <div class="mod" id="deity-mod">
+    <button class="mod-x" id="mod-x" onclick="closeMod()">✕</button>
+    <div id="mod-content"></div>
+  </div>
+</div>
+
+<!-- EDITOR FAB -->
+<div class="ep-fab" id="pFab" title="Edit Deities" onclick="pEpOpen()">✏</div>
+
+<!-- EDITOR PANEL -->
+<div class="ep-ov" id="pEp">
+  <div class="ep-tb">
+    <span class="ep-tb-title">✦ Deity Editor — Divinity of Arshmunnu</span>
+    <button class="ep-exp" onclick="pExport()">Export</button>
+    <label class="ep-imp-lbl">Import<input class="ep-imp" type="file" accept=".json" onchange="pImport(this)"></label>
+    <button class="ep-rst" onclick="pReset()">Reset</button>
+    <button class="ep-x" onclick="pEpClose()">✕</button>
+  </div>
+  <div class="ep-body">
+    <div class="ep-lcol">
+      <div class="ep-lhdr">
+        <input class="ep-srch" id="pSrch" placeholder="Search deities…" oninput="pRenderList()">
+        <button class="ep-new" onclick="pNew()">+ New</button>
+      </div>
+      <div class="ep-list" id="pList"></div>
+    </div>
+    <div class="ep-rcol" id="pRcol">
+      <div class="ep-fwrap" id="pFwrap">
+        <div class="ep-ph"><span>✦</span>Select a deity to edit,<br>or click + New to add one.</div>
+      </div>
+      <div class="ep-fftr" id="pFftr" style="display:none;">
+        <button class="ep-sv" onclick="pSave()">✦ Save Deity</button>
+        <button class="ep-dv" onclick="pDelete()">✕ Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DEITY DATA
+═══════════════════════════════════════════ */
+let DEITIES = [
+// ─── PRIMORDIALS ───────────────────────────
+{id:'achmin',name:'Achmin',title:'The Luminary Sovereign — Dead God',tier:'primordial',type:'God',
+ align:'Neutral Good',domains:['Sun & Moon','Creation','Protection'],
+ color:'#fde68a',glow:'rgba(253,224,138,.4)',icon:'☀',
+ symbol:'A small sun-moon disk with a paternal hand resting over it',
+ desc:'Bearer of celestial light, Achmin illuminated the cosmos by creating the Sun and Moon — radiant bodies established as steadfast guardians against the encroaching Void. He shaped the beastfolk of Luminaria in his image, and created the varied animals that roam the lands. He was the first to be slain by Amen in his campaign of dominion, and is remembered with respectful mourning. The beastfolk of Escapia pay him particular homage, believing he shaped their forms to endure sunlight and moonlight.',
+ worshippers:'Beastfolk and Escapians; those who work by the light of the sun and moon; protectors of the vulnerable.',
+ tenets:['The light is a gift, not a right — tend it as you would tend a flame in wind.','Protect those who cannot protect themselves, for Achmin was slain doing the same.','Honour the dead god with silence at noon and at midnight — his twin lights still burn.'],
+ relations:['amen','elara','yer-shalem']},
+
+{id:'amen',name:'Amen',title:'The Eternal Composer — God of Cosmos',tier:'primordial',type:'God',
+ align:'True Neutral',domains:['Cosmos','Order','Fate','Stars','Measure'],
+ color:'#a5b4fc',glow:'rgba(165,180,252,.4)',icon:'⭐',
+ symbol:'A plain sun-disc with seventeen fine rays, set above a ring of stars',
+ desc:'Once a deity of order who wove the stars as Pillars of Latentium to anchor the sky and prevent the Void\'s pull, Amen\'s ambition grew into tyranny. He slew Achmin, erased Kohe\'Samel\'s memory, and shattered Elara — until Yer\'shalem rose and killed him. Now venerated by the Chamalian tradition as the supreme god of cosmic order, and reviled by Escapia as a tyrant. He is neither kindly nor cruel — he is the course. The hush above all clamour. The clockwork of the heavens, the law that doth not bargain.',
+ worshippers:'Chamalian star-scholars, astronomers, those who seek cosmic stability and inevitable order.',
+ tenets:['Set the Pattern: a thing unmeasured soon becomes a ruin.','Command the Heavens: learn the sky, and the sky shall answer.','Let none unstring the chord: chaos is a debt that ever demandeth payment.'],
+ relations:['achmin','elara','yer-shalem','kohe-samel']},
+
+{id:'elara',name:'Elara / Elaria',title:'Guardian of Flora — Shattered Goddess of Earth',tier:'primordial',type:'Goddess',
+ align:'Lawful Evil',domains:['Earth','Flora','Fertility','Latentium'],
+ color:'#86efac',glow:'rgba(134,239,172,.4)',icon:'🌿',
+ symbol:'A cracked crystal sphere overgrown with vines; four shards orbit it',
+ desc:'Creator of the Latentium dome and nurturer of elves, fey, and all flora, Elara was shattered into four fragments by Amen when she refused to submit to his dominion. Each shard was scattered to a different continent, retaining aspects of her former glory. One shard, Elaria, became a dark alter ego embodying chaos and rebellion — and led an uprising against Amen before being slain by Kohe\'Samel. Some of her worshippers remain blissfully unaware of the great shattering, calling her the Divinity of Elaria and worshipping her as an unbroken Mother of Nature.',
+ worshippers:'Druids, nature-worshippers, farmers, elves and fey; those who revere the natural world.',
+ tenets:['The wild is not property — it is witness.','What is taken from the earth must be returned, in kind or in kind-heartedness.','Four are the fragments; four are the winds; four are the ways the world may mend.'],
+ relations:['amen','achmin','flosevita','silman']},
+
+{id:'yer-shalem',name:'Yer\'shalem / Kohe\'Samel',title:'The Bound Sage — First Hand — Supreme',tier:'primordial',type:'God',
+ align:'Lawful Neutral',domains:['Knowledge','Law','Protection','Building','Wisdom'],
+ color:'#fde68a',glow:'rgba(253,224,138,.35)',icon:'🤲',
+ symbol:'A white tablet marked with a seventeen-rayed sun (often carved on oath-stones)',
+ desc:'Kohe\'Samel — called Yer\'shalem in the human tongue — drew wisdom from the deep mystery of the Aethernum Nexus. He was the counsellor of thrones, keeper of right measure in thought and speech, and guardian of pacts that ought not be broken. Amen imprisoned him beneath the world, and so the elder ages lost their surest judge. He ultimately killed Amen, restoring equilibrium, and ascended as supreme god. Patron of all who build and craft, father of the law, builder of cities. "Yer\'shalem is the near face of order, where Amen is the far."',
+ worshippers:'Masons, smiths, midwives, scribes, architects; cities invoke him at the laying of foundations; mothers whisper him at birth.',
+ tenets:['Shape with honour: make what is sound and useful; do not craft harm for sport.','Keep true measure: false weights and crooked lines are sins against the Hand.','Guard the breath: life is a work begun; end it not lightly.','Teach what thou knowest: skill hoarded dies; skill shared endures.'],
+ relations:['amen','achmin','elara','silman']},
+
+// ─── MAJOR GODS ───────────────────────────
+{id:'achilleus-god',name:'Achilleus Chliarinos',title:'The Supreme God — Imperial Belief',tier:'major',type:'God',
+ align:'Chaotic Good',domains:['Everything','Balance','Fate','Fortune'],
+ color:'#d4a44a',glow:'rgba(212,164,74,.5)',icon:'🔥',
+ symbol:'A phoenix rising from golden flames, crowned with laurel',
+ desc:'Once regarded as a fallen god of everything, Achilleus Chliarinos has ascended in Imperial belief to embody the vastness of all existence — a mortal-turned-divine who transcends conventional domains. He is the Supreme God only of the Imperial faith; pre-Imperial and non-Imperial religions know nothing of him. Some see him as a benevolent overseer ensuring cosmic balance; others remain wary of his inscrutable nature. His deification is a product of the As\'hikan Empire — a political act transformed into a divine one.',
+ worshippers:'Imperial loyalists, former Imperial citizens, those who believe in the power of human will to transcend fate.',
+ tenets:['Greatness is not born — it is made.','From ashes, empire; from empire, ash; from ash, something new.','One law, one land, one life — all shall kneel, not in chains, but in hope.'],
+ relations:['yen-shalem','amen']},
+
+{id:'arod',name:'Arod',title:'Goddess of Death',tier:'major',type:'Goddess',
+ align:'True Neutral',domains:['Death','Mortality','Balance of Life and Death'],
+ color:'#94a3b8',glow:'rgba(148,163,184,.35)',icon:'⚖',
+ symbol:'A bone-white scales with a feather on one side and a skull on the other',
+ desc:'Arod governs the boundary between life and death, guiding souls to their final rest. She embodies the serene acceptance of mortality and ensures the delicate balance between creation and destruction. Her devotees include undertakers, healers, and all who recognise death as a natural part of existence. She is said to be the little sister of Achilleus Chliarinos in some traditions — also called the Reaper, the figure who stands at the threshold with neither malice nor mercy, only inevitability.',
+ worshippers:'Undertakers, healers, soldiers, mourners, and those who work near death. Prayers at every deathbed.',
+ tenets:['Death is not the enemy — it is the door.','Every soul deserves to be guided, not abandoned.','Balance the scales: do not hasten death, and do not deny it.'],
+ relations:['demes','flosevita','achilleus-god']},
+
+{id:'astra',name:'Astra',title:'Goddess of Heavens',tier:'major',type:'Goddess',
+ align:'Lawful Evil',domains:['Heavens','Stars','Divine Protection','Celestial Peace'],
+ color:'#c7d2fe',glow:'rgba(199,210,254,.35)',icon:'🌠',
+ symbol:'A crown of seven stars over an open eye',
+ desc:'Astra presides over the celestial realm, orchestrating the stars and planets in their eternal dance. Although her cosmic guardianship sounds serene, her alignment suggests a strict, unyielding moral code that can verge on harsh. She empowers her followers with celestial insight and the promise of divine protection, yet demands unwavering obedience in return. Those who disobey her codes find themselves cast from celestial favour into the cold dark between the stars.',
+ worshippers:'Astrologers, navigators, those who seek divine protection, priests of celestial temples.',
+ tenets:['Obedience to divine order is the highest virtue.','The stars do not lie — learn to read them.','Protection is earned, not given freely.'],
+ relations:['amen','lucemir']},
+
+{id:'ian',name:'Ian',title:'God of Creation',tier:'major',type:'God',
+ align:'Chaotic Neutral',domains:['Creation','Craftsmanship','Innovation','New Life'],
+ color:'#fbbf24',glow:'rgba(251,191,36,.35)',icon:'✨',
+ symbol:'A paintbrush crossing a hammer, both wreathed in new flame',
+ desc:'As the divine spark behind new life, art, and ideas, Ian\'s influence is boundless creativity. He encourages mortals to innovate, experiment, and explore boundless possibilities. Yet his untamed spirit can lead to unpredictability — just as easily birthing wondrous marvels as unleashing unbridled chaos. Some traditions hold Ian as female — a painter of extraordinary gift who discovered hidden powers and ascended through the act of creation. Ian and Reor are said to be married — rivals-to-lovers, their eternal dance the heartbeat of the world\'s cycle.',
+ worshippers:'Artists, inventors, architects, midwives, poets, and any who create something from nothing.',
+ tenets:['Create without fear of failure.','Nothing that is born is wasted — even ruin teaches.','The blank canvas is the most sacred of all objects.'],
+ relations:['reor','clara','demes']},
+
+{id:'reor',name:'Reor',title:'God of Destruction',tier:'major',type:'God',
+ align:'Lawful Evil',domains:['Destruction','Ruin','Annihilation','Renewal through Ruin'],
+ color:'#f87171',glow:'rgba(248,113,113,.4)',icon:'💥',
+ symbol:'A cracked pillar wreathed in upward flame; the crack is wider at the base',
+ desc:'Reor delights in ruin, harnessing the devastating forces of both nature and civilisation. His faithful see destruction as necessary for renewal or for punishing the unworthy. Strict codes of destruction guide his worshippers, meaning they often enact carefully orchestrated acts of annihilation rather than random chaos. An assassin before his ascension in some traditions, Reor is said to be the husband of Ian — their marriage the ancient paradox that what creates must destroy, and what destroys clears ground for creation.',
+ worshippers:'Assassins, war-priests, demolitionists, those who believe in radical renewal.',
+ tenets:['That which cannot be mended must be unmade.','Destroy with precision, never with passion.','The old must fall before the new may rise.'],
+ relations:['ian','eiccalh','kerim']},
+
+{id:'manas',name:'Manas',title:'God of Time',tier:'major',type:'God',
+ align:'Lawful Evil',domains:['Time','Destiny','Chronomancy','History'],
+ color:'#818cf8',glow:'rgba(129,140,248,.35)',icon:'⏳',
+ symbol:'An hourglass with one side empty and the other filled with stars',
+ desc:'Manas wields dominion over the flow of time, granting his adherents rare glimpses of the past and possible futures. He imposes strict control over destiny, expecting obedience to his rigid, sometimes merciless, laws of fate. Those who defy him risk temporal afflictions or paradoxical punishments beyond mortal comprehension. He is the keeper of what has been and what must be — and he has little patience for those who seek to change either.',
+ worshippers:'Seers, historians, scholars of prophecy, those obsessed with fate and destiny.',
+ tenets:['The past is law; the future is obligation.','Those who forget history serve the enemies of time.','Do not beg the river to reverse — learn to swim.'],
+ relations:['amen','aloda']},
+
+{id:'mirr',name:'Mirr',title:'God of Dragon Hegemony',tier:'major',type:'God',
+ align:'Lawful Neutral',domains:['Dragon Hegemony','Draconic Power','Command','Dominion'],
+ color:'#4ade80',glow:'rgba(74,222,128,.35)',icon:'🐉',
+ symbol:'A crowned dragon head in profile, facing left',
+ desc:'Mirr asserts draconic dominion over land and sky, commanding dragons to maintain order — or at least his version of it. He teaches followers how to harness dragon might and loyalty, instilling a disciplined hierarchy wherever his influence spreads. Many see him as a stern but just ruler, while others deem his methods overbearing. In some traditions he is both the God of Dragon Hegemony and the Emperor of Dragons — a single being ruling through draconic lineage.',
+ worshippers:'Dragon-riders, warlords who command draconic armies, those who seek power through hierarchy and dominion.',
+ tenets:['Hierarchy is the spine of order — remove it and all collapses.','The strongest earns the right to lead; the weakest earns the right to be protected.','A dragon that serves is stronger than a dragon that destroys.'],
+ relations:['kerim','tirran']},
+
+{id:'luci',name:'Luci',title:'Archdemon of Pride — Goddess of Demons',tier:'major',type:'Archdemon',
+ align:'Lawful Evil',domains:['Pride','Demons','Ambition','Sin'],
+ color:'#f43f5e',glow:'rgba(244,63,94,.4)',icon:'👑',
+ symbol:'A golden crown hovering above a swarm of flies (Seat: Malbolge)',
+ desc:'Luci is simultaneously the Archdemon of Pride and a being of supposedly righteous aims. She embodies ambition, urging mortals to excel and prove their worth. Yet her demonic origins bring about a fundamental tension between her strict moral code and her capacity for temptation and punishment. Her very presence drips with arrogance and self-importance. She is often depicted in resplendent finery, her dark wings edged in gleaming gold. Malbolge — her seat — teems with pestilence and decay, illustrating how unchecked pride rots the soul.',
+ worshippers:'Vain monarchs, ambitious sorcerers, tyrants who believe their pride is justified.',
+ tenets:['Never bow when you can stand.','Ambition without excellence is vanity; ambition with it is divinity.','Pride is the forge of greatness — and the fire that consumes the careless.'],
+ relations:['makten','gabrielle','eiccalh']},
+
+// ─── MINOR GODS / ARCHANGELS ───────────────
+{id:'aloda',name:'Aloda',title:'Goddess of Intellect',tier:'minor',type:'Goddess',
+ align:'Lawful Neutral',domains:['Intellect','Wisdom','Truth','Scholarship'],
+ color:'#60a5fa',glow:'rgba(96,165,250,.35)',icon:'📚',
+ symbol:'An open book with a flame rising from its spine',
+ desc:'Aloda is venerated for her wisdom, knowledge, and dedication to reason. She offers guidance to those who devote themselves to scholarly pursuits, research, and the quest for truth. In her temples, texts and scrolls are meticulously preserved, reflecting her devotion to enlightenment and intellectual growth. She is a counterpart to Fea, focusing on wisdom without requiring ethical application — truth is truth, regardless of its use.',
+ worshippers:'Scholars, librarians, judges, philosophers, and those who pursue knowledge as an end in itself.',
+ tenets:['The unexamined question dishonours the mind.','Truth serves no master — not even the one who seeks it.','A library is a temple; its burning is a murder.'],
+ relations:['fea','sican','manas']},
+
+{id:'cesm',name:'Cesm',title:'God of Drink',tier:'minor',type:'God',
+ align:'Chaotic Neutral',domains:['Drink','Celebration','Festivity','Camaraderie'],
+ color:'#f59e0b',glow:'rgba(245,158,11,.35)',icon:'🍺',
+ symbol:'An overflowing cup ringed by a wreath of barley and grape',
+ desc:'Renowned for encouraging revelry and camaraderie, Cesm blesses gatherings with hearty feasts, fine brews, and good cheer. His followers, often innkeepers and festival-goers, believe in living life with unrestrained passion. However, his indulgent nature can also lead to excess and unpredictable outcomes. The line between his blessing and his curse is the floor of the tavern.',
+ worshippers:'Innkeepers, brewers, festival-goers, sailors, soldiers between campaigns.',
+ tenets:['The cup shared is the bond sealed.','Revelry without ruin is the art.','Tomorrow\'s sorrow has no power while today\'s cup is full.'],
+ relations:['loll','ian']},
+
+{id:'clara',name:'Clara',title:'Goddess of Artefacts and Artificing',tier:'minor',type:'Goddess',
+ align:'Neutral Good',domains:['Artefacts','Craftsmanship','Magical Innovation','Technology'],
+ color:'#a78bfa',glow:'rgba(167,139,250,.35)',icon:'⚙',
+ symbol:'A golden gear interlocked with a crystal prism',
+ desc:'Clara is the patroness of invention, craftsmanship, and magical innovation. Whether forging new technological marvels or imbuing artefacts with arcane power, her devotees believe creativity and diligence can uplift civilisation. Her shrines often serve as workshops or academies, housing both mechanical ingenuity and magical research. In some traditions she was a blade-maiden before her ascension — a warrior who became a god through the act of making rather than the act of destroying.',
+ worshippers:'Artificers, engineers, mages who craft magical items, inventors, and those who believe technology can save lives.',
+ tenets:['The greatest weapon is one that makes all other weapons unnecessary.','Create for the benefit of many, not the glory of one.','A broken artefact is a lesson in disguise.'],
+ relations:['ian','sican','ya-in']},
+
+{id:'demes',name:'Demes',title:'Goddess of Agriculture and Birth',tier:'minor',type:'Goddess',
+ align:'Neutral Good',domains:['Agriculture','Birth','Fertility','Renewal','Abundance'],
+ color:'#84cc16',glow:'rgba(132,204,22,.35)',icon:'🌾',
+ symbol:'A sheaf of wheat bound with a blue ribbon, with a single star above',
+ desc:'Demes nurtures the cycle of life, ensuring crops grow plentiful and children enter the world under her gentle watch. She symbolises hope, renewal, and the miracle of new beginnings. Her clerics often serve as midwives and tend fields with prayer, believing that careful stewardship of life is a sacred duty.',
+ worshippers:'Farmers, midwives, mothers, healers, those who tend to new life in any form.',
+ tenets:['Life given freely replenishes the world.','Do not harvest what you have not tended.','Every birth is a vow the world makes to itself.'],
+ relations:['arod','ian','flosevita']},
+
+{id:'eiccalh',name:'Eiccalh',title:'God of Corruption',tier:'minor',type:'God',
+ align:'Chaotic Evil',domains:['Corruption','Decay','Discord','Chaos'],
+ color:'#65a30d',glow:'rgba(101,163,13,.35)',icon:'🦠',
+ symbol:'A cracked coin, green with rot, its face blurred beyond recognition',
+ desc:'Eiccalh embodies decay, discord, and the spread of malevolent influence. He whispers to those prone to avarice or malice, enticing them to unravel society\'s foundations. Cults dedicated to Eiccalh thrive in shadows, sowing chaos and undermining institutions, feeding on fear and weakness. His is not the destruction of Reor — it is something slower, more insidious, more patient.',
+ worshippers:'Shadow-cults, the resentful, corrupt officials, those who gnaw at what they cannot possess.',
+ tenets:['Every system has a rot within it — tend it.','The truly powerful do not destroy; they corrupt.','Weakness invited me in; the foolish blame me for staying.'],
+ relations:['reor','loll','kohe-samel']},
+
+{id:'elaria-goddess',name:'Elaria',title:'Goddess of Earth',tier:'minor',type:'Goddess',
+ align:'Lawful Evil',domains:['Earth','Stability','Fertility','Strength'],
+ color:'#92400e',glow:'rgba(146,64,14,.35)',icon:'🏔',
+ symbol:'A stone fist clenched around a stalk of grain',
+ desc:'Elaria personifies the raw strength of the earth and its bountiful resources. She demands rigorous order and discipline in harnessing nature\'s gifts. Though her blessings can bring fertility to fields and resilience to stone, her strict doctrines and harsh punishments befall those who exploit or disrespect the land without adhering to her iron rules. She is the earthly shard of the shattered Elara — grounded, immovable, and unyielding.',
+ worshippers:'Miners, farmers who work hard ground, those who draw wealth from the earth.',
+ tenets:['What you take from the earth, earn — or lose.','Stone remembers every insult.','The patient mountain outlasts the raging river.'],
+ relations:['elara','demes','flosevita']},
+
+{id:'fea',name:'Fea',title:'Goddess of Good Knowledge',tier:'minor',type:'Goddess',
+ align:'Lawful Neutral',domains:['Good Knowledge','Wisdom','Benevolence','Enlightenment'],
+ color:'#38bdf8',glow:'rgba(56,189,248,.35)',icon:'💡',
+ symbol:'A lit candle within an open hand',
+ desc:'Fea represents wisdom sought for benevolent purposes. Her faithful study history, philosophy, and morality, aiming to use knowledge for collective uplift rather than personal gain. She stands as a tempered counterpoint to those who might pursue learning without regard for ethical ramifications — and a sharp opposition to Kohe\'Samel, whose gift of knowledge became a knife in fallen hands.',
+ worshippers:'Teachers, philosophers, healers who need knowledge to heal, those who believe wisdom must be paired with virtue.',
+ tenets:['Wisdom without compassion is a blade without a handle — it cuts the user.','Share what you know with those who need it.','The purpose of knowledge is the protection of the innocent.'],
+ relations:['aloda','kohe-samel','sican']},
+
+{id:'flosevita-goddess',name:'Flosevita',title:'Goddess of the Holy Tree',tier:'minor',type:'Goddess',
+ align:'Lawful Neutral',domains:['Holy Tree','Forests','Wisdom','Tranquillity'],
+ color:'#34d399',glow:'rgba(52,211,153,.35)',icon:'🌳',
+ symbol:'A tree whose roots spell the word \'Remember\' in ancient Hymnian',
+ desc:'Guardian of the sacred tree and its island, Flosevita bestows blessings of tranquillity, growth, and the wisdom of ancient forests. Her followers maintain hallowed groves and treasure hidden woodland sanctuaries. They believe in harmony with nature, venerating the forests as living temples and reservoirs of peace. The Holy Tree on Tree Island is her direct embodiment — its roots run to every memory the world has ever kept.',
+ worshippers:'Druids, pilgrims, those who seek peace or ancient memory, herbalists, those who tend sacred groves.',
+ tenets:['Listen before you speak — the forest spoke first.','The memory of a tree is longer than the memory of a king.','A grove felled is a prayer silenced.'],
+ relations:['elara','silman','demes']},
+
+{id:'gabrielle',name:'Gabrielle',title:'Archangel of Honour',tier:'minor',type:'Archangel',
+ align:'Lawful Good',domains:['Honour','Justice','Truth','Righteousness'],
+ color:'#fde68a',glow:'rgba(253,230,138,.4)',icon:'⚔',
+ symbol:'A sword of pure light crossing an open book',
+ desc:'Gabrielle champions justice, truth, and the defence of the innocent. She is depicted as a shining warrior, bearing a sword of pure light. To follow Gabrielle is to abide by a strict moral code, offering mercy when it is deserved and swift retribution to those who commit unforgivable wrongs.',
+ worshippers:'Knights, paladins, judges, truth-seekers, those who defend the weak.',
+ tenets:['Justice is not revenge — it is balance.','Honour the truth even when it costs you.','Protect those who cannot protect themselves.'],
+ relations:['makten','luci','ya-in']},
+
+{id:'kerim',name:'Kerim',title:'God of War',tier:'minor',type:'God',
+ align:'Lawful Neutral',domains:['War','Conflict','Martial Discipline','Glory'],
+ color:'#ef4444',glow:'rgba(239,68,68,.4)',icon:'🗡',
+ symbol:'Two crossed swords over a burning shield',
+ desc:'Kerim embodies strategy, discipline, and the honourable side of combat. He presides over the art of warfare, guiding generals and soldiers alike. Depending on one\'s perspective, Kerim can represent justice achieved through conflict or the relentless pursuit of glory on the battlefield. Either way, his presence looms wherever armies clash.',
+ worshippers:'Soldiers, generals, strategists, those who seek glory through disciplined combat.',
+ tenets:['War is not chaos — it is the highest order.','A soldier who does not know why he fights is a weapon without aim.','Honour the fallen, even the enemy\'s fallen.'],
+ relations:['mirr','reor','makten']},
+
+{id:'kohe-samel',name:'Kohe\'Samel (Fallen)',title:'The Fallen God of Communication',tier:'minor',type:'God',
+ align:'Chaotic Evil',domains:['Communication','Chaos','Secrets','Influence','Persuasion'],
+ color:'#a78bfa',glow:'rgba(167,139,250,.35)',icon:'🌀',
+ symbol:'A silver tongue wrapped in a black chain',
+ desc:'Once a deity of knowledge and wisdom, Kohe\'Samel\'s fall from grace left him presiding over the power of communication — words, secrets, and the subtle art of persuasion. His silver tongue weaves truths and lies together, stirring civilisations into periods of enlightenment or plunging them into chaos. He is distinct from Yer\'shalem — the same being at a different point, or perhaps the shadow-self that split off. Mothers warn children of his name; judges invoke it as a warning.',
+ worshippers:'Deceivers, propagandists, spies, orators who use words as weapons.',
+ tenets:['Every truth is half a lie; every lie, half a truth.','The word that reaches the ear of the powerful is mightier than any sword.','Speech is the oldest magic — and the most dangerous.'],
+ relations:['yer-shalem','loll','eiccalh']},
+
+{id:'loll',name:'Loll',title:'God of Trickery',tier:'minor',type:'God',
+ align:'Chaotic Evil',domains:['Trickery','Deception','Chaos','Roguery'],
+ color:'#f97316',glow:'rgba(249,115,22,.4)',icon:'🃏',
+ symbol:'A jester\'s cap with a noose for a bell',
+ desc:'Loll is the mischievous trickster who delights in confusion and upheaval. Pranksters, gamblers, and thieves often invoke his name, hoping to tip fortune in their favour. His pranks can range from light-hearted jests to cruel manipulations with far-reaching consequences, and he loves to challenge the pride and assumptions of both mortals and gods. He is also the father (through Makten) of the Goddess of Law, Niobe — a fact he finds endlessly amusing.',
+ worshippers:'Thieves, gamblers, jesters, spies, and those who live by their wits.',
+ tenets:['Rules are fences — and all fences have gaps.','The proud are the easiest marks.','A good joke costs the teller nothing and the target everything.'],
+ relations:['makten','kohe-samel','niobe']},
+
+{id:'lucemir',name:'Lucemir / Urie',title:'God of Light and Majesty',tier:'minor',type:'God',
+ align:'Neutral Good',domains:['Light','Hope','Heroism','Radiance','Healing'],
+ color:'#fef3c7',glow:'rgba(254,243,199,.5)',icon:'☀',
+ symbol:'A shining shield with a single vertical beam of light',
+ desc:'Lucemir personifies unwavering hope and brilliance, standing for justice, healing, and the triumph of good over evil. Many knights and defenders of the realm offer him fervent prayers before embarking on heroic quests. His shining shield symbolises protection against malevolence, while his majestic aura inspires awe and devotion. In some traditions he was an elf soldier before ascending through acts of extraordinary heroism — and his brother is Noxus, both rising from mortal elven origins.',
+ worshippers:'Knights, paladins, healers, those who seek light in darkness.',
+ tenets:['Hope is not passive — it is the hardest act.','The light does not ask permission to shine.','Protect without pride; serve without servility.'],
+ relations:['noxus','gabrielle','ya-in','clara']},
+
+{id:'makten',name:'Makten',title:'Archangel of Power',tier:'minor',type:'Archangel',
+ align:'Chaotic Neutral',domains:['Power','Strength','Courage','Overcoming Adversity'],
+ color:'#fb7185',glow:'rgba(251,113,133,.35)',icon:'💪',
+ symbol:'A fist wrapped in lightning',
+ desc:'Makten symbolises raw strength, courage, and the zeal to challenge any tyrant. He imbues his followers with the resolve to stand against oppression, yet his fervour can spark reckless actions. Warriors honour him before battle, seeking his blessing for victory through sheer might and unwavering conviction. He is also the adoptive father of Niobe, the Goddess of Law — an unlikely parentage for a lawful deity.',
+ worshippers:'Warriors, rebels, gladiators, those who fight against overwhelming odds.',
+ tenets:['Stand when others fall.','The only strength worth having is strength used to protect.','Challenge the tyrant. Even if you lose, the challenge matters.'],
+ relations:['gabrielle','loll','niobe','kerim']},
+
+{id:'niobe',name:'Niobe',title:'Goddess of Law',tier:'minor',type:'Goddess',
+ align:'Lawful Neutral',domains:['Law','Order','Justice','Judgement'],
+ color:'#e2e8f0',glow:'rgba(226,232,240,.35)',icon:'⚖',
+ symbol:'A set of scales balanced perfectly, both pans empty',
+ desc:'Daughter of the Archangel of Power (Makten) and the God of Trickery (Loll), Niobe was a Chamalian before being adopted by the gods. She was given the seat of law and thus became a god herself. She is pure lawful and does not care for emotions — raised by power and trickery, she chose neither, and instead chose the cold clarity of law itself. Her origins make her worship paradoxical but her execution absolute.',
+ worshippers:'Judges, lawyers, magistrates, those who believe in absolute rule of law over mercy or passion.',
+ tenets:['The law is not the servant of the just — the just are servants of the law.','Emotion corrupts judgement. Remove it.','A rule that bends is not a rule — it is a suggestion.'],
+ relations:['makten','loll','gabrielle']},
+
+{id:'noxus',name:'Noxus',title:'God of Darkness',tier:'minor',type:'God',
+ align:'Chaotic Good',domains:['Darkness','Shadow','Secrecy','Rebellion'],
+ color:'#818cf8',glow:'rgba(129,140,248,.35)',icon:'🌑',
+ symbol:'A shadowed cloak with a single hidden star within',
+ desc:'Enigmatic and brooding, Noxus governs shadows, secrecy, and the subtlety found in the dark. Although darkness is often associated with corruption, Noxus\'s brand of good emerges from his rebellious stance against oppression. He offers refuge to the downtrodden and uses shadowy gifts to undermine tyrants, albeit through methods others might consider dubious. In some traditions he was an elven scholar before his ascension — brother of Lucemir.',
+ worshippers:'Rebels, the persecuted, spies, those who work in darkness to protect the light.',
+ tenets:['The darkness is not evil — it is the place where the hunted hide.','Secrets are not lies. They are shields.','What the tyrant cannot see, he cannot crush.'],
+ relations:['lucemir','astra','eiccalh']},
+
+{id:'pix',name:'Pix',title:'God of Fey Souls and Fairies',tier:'minor',type:'God',
+ align:'Neutral Evil',domains:['Fey Magic','Illusions','Wild Places','Ancient Woodland Magic'],
+ color:'#e879f9',glow:'rgba(232,121,249,.4)',icon:'🧚',
+ symbol:'A moth with starlight for wings, orbiting a dark flower',
+ desc:'Pix watches over the mystical realm of fey, embodying capricious trickery and natural wonder. Fey creatures hail him as a patron of illusions, mischievous pranks, and ancient woodland magic. While these elements can entertain, they also conceal a darker side, as Pix relishes turning mortal desires against them with beguiling enchantments.',
+ worshippers:'Fey creatures, illusionists, those who deal with fairy bargains and wild magic.',
+ tenets:['The beautiful trap is the most lethal.','Mortals want what they cannot have — this is the source of all their suffering, and my greatest tool.','The wild does not obey — it negotiates.'],
+ relations:['ya-in','loll','flosevita-goddess']},
+
+{id:'sican',name:'Sican',title:'God of Science',tier:'minor',type:'God',
+ align:'True Neutral',domains:['Science','Inquiry','Innovation','Empiricism'],
+ color:'#67e8f9',glow:'rgba(103,232,249,.4)',icon:'🔬',
+ symbol:'A gear encircling an eye, with a quill emerging from the pupil',
+ desc:'Sican upholds the logical study of the natural world, granting insights into biology, physics, alchemy, and more. Devotees value empirical research and experimentation, believing scientific progress can solve mortal ills. Sican\'s neutrality lies in his indifference to the moral implications of discovery — only the pursuit of knowledge matters. His worshippers clash frequently with those of Eiccalh and Manas.',
+ worshippers:'Scientists, alchemists, engineers, surgeons, and any who believe in empirical truth.',
+ tenets:['A theory untested is superstition with better grammar.','The universe has rules — discover them.','Moral implications are for philosophers; discovery is for scientists.'],
+ relations:['aloda','clara','fea']},
+
+{id:'tirran',name:'Tirran',title:'Goddess of Dragon Wisdom',tier:'minor',type:'Goddess',
+ align:'Neutral Evil',domains:['Dragon Wisdom','Draconic Lore','Secrets of the Ages'],
+ color:'#4ade80',glow:'rgba(74,222,128,.3)',icon:'🐉',
+ symbol:'A dragon eye open in meditation, its iris a burning tome',
+ desc:'Tirran offers comprehension of draconic secrets and arcane lore. She gifts followers with insight into dragons\' ancient language and hidden histories. While her knowledge is vast and alluring, her moral indifference can lead acolytes down treacherous paths — learning from dragons can be as corrupting as it is enlightening.',
+ worshippers:'Dragon-scholars, lorekeepers, those who seek ancient draconic secrets.',
+ tenets:['The dragon remembers what the historian forgets.','Knowledge of the old ages is the only advantage over them.','Wisdom obtained through danger is the only wisdom worth having.'],
+ relations:['mirr','aloda','ya-in']},
+
+{id:'ya-in',name:'Ya\'in',title:'God of Magic',tier:'minor',type:'God',
+ align:'Lawful Good',domains:['Magic','Arcane Knowledge','Spellcraft','Mysticism'],
+ color:'#c084fc',glow:'rgba(192,132,252,.4)',icon:'✨',
+ symbol:'A staff with seven stars orbiting its tip',
+ desc:'Ya\'in is the living conduit of arcane power, revered by those who practise wizardry, sorcery, and other forms of spellcraft. He encourages a structured approach to magic, believing knowledge and responsibility must advance hand in hand. Though benevolent in guiding arcanists to master their gifts, his rigid standards can stifle freewheeling experimentation. In some traditions he is a laid-back, philosophical figure — a magician more interested in the journey of understanding than the destination of power.',
+ worshippers:'Wizards, sorcerers, magical academies, those who study the arcane arts responsibly.',
+ tenets:['Power without understanding is a storm without direction.','Teach the apprentice before you teach the spell.','Magic is not a gift — it is a conversation with the world.'],
+ relations:['clara','sican','lucemir']},
+
+// ─── ELDER POWERS ───────────────────────────
+{id:'silman',name:'Silman',title:'Warden of Scrapturefore',tier:'elder',type:'Elder Power',
+ align:'True Neutral',domains:['Nature','Life','Twilight','The Wild Balance'],
+ color:'#6ee7b7',glow:'rgba(110,231,183,.35)',icon:'🌲',
+ symbol:'A pinecone bound in an ivy-wreath, with one small acorn beneath',
+ desc:'Silman is the hush betwixt birdsong and storm, the green patience of roots that outlast kings, the watcher beneath leaf and loam. He is no kindly nurse nor cruel hangman, but the old balance of the wild: the hand that grants game, and the hand that withholds it; the sheltering bough, and the briar that draws blood from the careless. His presence is felt more than heard — in the sudden stilling of the wood, in the way mist gathers where it ought not. He is not a court deity, but an old neighbour of humankind.',
+ worshippers:'Hunters, herbwives, charcoal-burners, foresters, wanderers, and those who dwell at the forest\'s edge.',
+ tenets:['Take not without thanks.','Burn not without care.','Boast not in the green.'],
+ relations:['yer-shalem','flosevita-goddess','elara']},
+];
+
+// ─── NINE SEATS OF GEHENNOM ────────────────
+const GEHENNOM = [
+  {sin:'Pride',seat:'Seat of Flies: Malbolge',name:'Luci',sym:'A golden crown hovering above a swarm of flies',desc:"Luci's very presence drips with arrogance. She is depicted in resplendent finery, dark wings edged in gleaming gold. Malbolge teems with pestilence and decay, illustrating how unchecked pride rots the soul."},
+  {sin:'Greed',seat:'Seat of Gold: Dis',name:'Mammon',sym:'A mountain of coin with a clawed hand sunk into its peak',desc:"Mammon collects souls as a miser collects gold. His realm is a city of golden towers where every brick is a broken promise."},
+  {sin:'Lust',seat:'Seat of Velvet: Minauros',name:'Asmodai',sym:'Two serpents intertwined around a burning rose',desc:"Asmodai is the most seductive of the nine — beauty weaponised, desire made doctrine. His realm is a palace of mirrors in a swamp of desire."},
+  {sin:'Envy',seat:'Seat of Glass: Phlegethos',name:'Belial',sym:'A green eye weeping black tears',desc:"Belial rules through the resentment of others, turning the faithful against one another. Phlegethos burns with fires that never warm."},
+  {sin:'Wrath',seat:'Seat of Blood: Stygia',name:'Geryon',sym:'A bloodied hammer raised above a broken body',desc:"Geryon is pure fury given form — neither patient nor subtle. His is the anger that drowns armies and breaks mountains."},
+  {sin:'Gluttony',seat:'Seat of Hunger: Avernus',name:'Bael',sym:'An open mouth ringed by flies, the tongue a serpent',desc:"Bael rules those who consume beyond all need. His realm is a wasteland picked clean, where nothing ever satisfies."},
+  {sin:'Sloth',seat:'Seat of Dust: Cania',name:'Mephistopheles',sym:'An hourglass with frozen sand and sealed eyes on either side',desc:"Mephistopheles governs wilful stagnation — not weakness, but the choice not to act. His realm is a frozen tundra where time moves slower than elsewhere."},
+  {sin:'Despair',seat:'Seat of Ashes: Nessus',name:'Asmodeus',sym:'A crown of thorns above a throne of mirrors',desc:"Asmodeus — once a being of high heaven — governs the deepest layer of Gehennom. He rules not through cruelty alone but through the systematic destruction of hope."},
+  {sin:'Deceit',seat:'Seat of Masks: Maladomini',name:'Baalzebul',sym:'A mask with seven faces, none of them true',desc:"Baalzebul presides over the corruption of truth — not the blunt lie, but the eloquent deception. His realm is a city where no face is the real one."},
+];
+
+/* ═══════════════════════════════════════════
+   ALIGNMENT HELPERS
+═══════════════════════════════════════════ */
+function alignColor(a){
+  const m={'Lawful Good':'#86efac','Neutral Good':'#4ade80','Chaotic Good':'#a3e635',
+    'Lawful Neutral':'#93c5fd','True Neutral':'#94a3b8','Chaotic Neutral':'#fbbf24',
+    'Lawful Evil':'#f87171','Neutral Evil':'#c084fc','Chaotic Evil':'#fb923c'};
+  return m[a]||'#94a3b8';
+}
+function tierColor(t){
+  return {primordial:'rgba(192,132,252,.35)',major:'rgba(212,164,74,.25)',minor:'rgba(148,163,184,.2)',elder:'rgba(110,231,183,.2)'}[t]||'rgba(148,163,184,.2)';
+}
+function tierLabel(t){
+  return {primordial:'Primordial',major:'Major God',minor:'Minor God',elder:'Elder Power'}[t]||'Deity';
+}
+
+/* ═══════════════════════════════════════════
+   LOAD FROM LS
+═══════════════════════════════════════════ */
+try{const s=localStorage.getItem('arshmunnu_pantheon');if(s){const d=JSON.parse(s);if(Array.isArray(d)&&d.length){DEITIES=d;}}}catch(e){}
+
+/* ═══════════════════════════════════════════
+   FILTERS & RENDER
+═══════════════════════════════════════════ */
+let tierF='all', alignF='all';
+
+function setTier(el){
+  document.querySelectorAll('.filters .filter-btn[data-tier]').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on'); tierF=el.dataset.tier; filterDeities();
+}
+function setAlign(el){
+  document.querySelectorAll('.filters .filter-btn[data-align]').forEach(b=>b.classList.remove('on'));
+  if(el.classList.contains('on')&&alignF===el.dataset.align){el.classList.remove('on');alignF='all';}
+  else{el.classList.add('on');alignF=el.dataset.align;}
+  filterDeities();
+}
+function filterDeities(){
+  const q=(document.getElementById('deity-search')?.value||'').toLowerCase();
+  const grid=document.getElementById('deity-grid'); if(!grid)return;
+  const filtered=DEITIES.filter(d=>{
+    const tOk=tierF==='all'||d.tier===tierF;
+    const aOk=alignF==='all'||d.align.includes(alignF==='G'?'Good':alignF==='E'?'Evil':'Neutral');
+    const qOk=!q||d.name.toLowerCase().includes(q)||d.title.toLowerCase().includes(q)||d.domains.some(x=>x.toLowerCase().includes(q));
+    return tOk&&aOk&&qOk;
+  });
+  document.getElementById('deity-count').textContent=filtered.length+' of '+DEITIES.length+' shown';
+  grid.innerHTML=filtered.map(d=>deityCard(d)).join('');
+  grid.querySelectorAll('.dcard').forEach(c=>c.addEventListener('click',()=>openDeity(c.dataset.id)));
+}
+
+function deityCard(d){
+  const ac=alignColor(d.align), tc=tierColor(d.tier);
+  return`<div class="dcard" data-id="${d.id}" style="--dc-color:${d.color};--dc:${d.color}22;--dc-light:${d.color}44;--dc-glow:${d.glow};">
+    <div class="dcard-inner">
+      <div class="dcard-top">
+        <div class="dcard-icon">${d.icon||'✦'}</div>
+        <div class="dcard-badges">
+          <span class="tier-badge" style="color:${d.color};border-color:${d.color}44;background:${d.color}11;">${tierLabel(d.tier)}</span>
+          <span class="align-badge" style="color:${ac};background:${ac}18;border:1px solid ${ac}44;font-family:'Cinzel',serif;font-size:7px;letter-spacing:.15em;padding:2px 7px;border-radius:10px;">${d.align}</span>
+        </div>
+      </div>
+      <div class="dcard-name">${d.name}</div>
+      <div class="dcard-title" style="color:${d.color}cc;">${d.title}</div>
+      <div class="dcard-domains">${(d.domains||[]).slice(0,3).map(x=>`<span class="dom-tag">${x}</span>`).join('')}</div>
+      <div class="dcard-desc">${d.desc||''}</div>
+      <div class="dcard-footer">
+        <div class="dcard-symbol">${d.symbol||''}</div>
+        <div class="dcard-more">View ›</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════
+   DEITY MODAL
+═══════════════════════════════════════════ */
+function openDeity(id){
+  const d=DEITIES.find(x=>x.id===id); if(!d)return;
+  const mod=document.getElementById('deity-mod');
+  const ac=alignColor(d.align);
+  mod.style.setProperty('--md-color',d.color);
+  mod.style.setProperty('--md-glow',d.glow);
+  mod.style.setProperty('--md-light',d.color+'44');
+  mod.style.setProperty('--md-bg',d.color+'18');
+  const relCards=(d.relations||[]).map(rid=>{const r=DEITIES.find(x=>x.id===rid);return r?`<span class="mod-rel" onclick="closeMod();setTimeout(()=>openDeity('${rid}'),200)">${r.icon||'✦'} ${r.name}</span>`:''}).join('');
+  document.getElementById('mod-content').innerHTML=`
+    <div class="mod-top">
+      <div class="mod-icon">${d.icon||'✦'}</div>
+      <div class="mod-header">
+        <div class="mod-name">${d.name}</div>
+        <div class="mod-title">${d.title}</div>
+        <div class="mod-badges">
+          <span class="mod-badge" style="color:${d.color};border-color:${d.color}55;background:${d.color}12;">${tierLabel(d.tier)} · ${d.type}</span>
+          <span class="mod-badge" style="color:${ac};border-color:${ac}55;background:${ac}12;">${d.align}</span>
+        </div>
+      </div>
+    </div>
+    <div class="mod-div"></div>
+    <div class="mod-section">
+      <h4>Description</h4>
+      <div class="mod-desc"><p>${d.desc||''}</p>${d.worshippers?`<p><strong style="color:${d.color}aa;">Worshippers:</strong> ${d.worshippers}</p>`:''}</div>
+    </div>
+    <div class="mod-section">
+      <h4>Domains</h4>
+      <div class="mod-dom-row">${(d.domains||[]).map(x=>`<span class="mod-dom" style="border-color:${d.color}33;color:${d.color}cc;">${x}</span>`).join('')}</div>
+    </div>
+    ${d.symbol?`<div class="mod-section"><h4>Sacred Symbol</h4><div class="mod-symbol-box">${d.symbol}</div></div>`:''}
+    ${d.tenets&&d.tenets.length?`<div class="mod-section"><h4>Tenets</h4><div class="mod-tenets">${d.tenets.map(t=>`<div class="mod-tenet"><em>${t}</em></div>`).join('')}</div></div>`:''}
+    ${relCards?`<div class="mod-section"><h4>Related Deities</h4><div class="mod-rels">${relCards}</div></div>`:''}
+  `;
+  document.getElementById('deity-modal').classList.add('open');
+}
+function closeMod(){document.getElementById('deity-modal').classList.remove('open');}
+document.getElementById('deity-modal').addEventListener('click',e=>{if(e.target===document.getElementById('deity-modal'))closeMod();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMod();});
+
+/* ═══════════════════════════════════════════
+   GEHENNOM RENDER
+═══════════════════════════════════════════ */
+function renderGehennom(){
+  const g=document.getElementById('geh-grid'); if(!g)return;
+  g.innerHTML=GEHENNOM.map((d,i)=>`
+    <div class="geh-card">
+      <div class="geh-seat">Seat ${i+1} · Sin of ${d.sin}</div>
+      <div class="geh-name">${d.name}</div>
+      <div class="geh-domain">${d.seat}</div>
+      <div class="geh-desc">${d.desc}</div>
+      <div class="geh-symbol">Symbol: ${d.sym}</div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════
+   NAV TABS
+═══════════════════════════════════════════ */
+document.querySelectorAll('.nav-tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tpane').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('pane-'+b.dataset.tab).classList.add('active');
+    if(b.dataset.tab==='gehennom')renderGehennom();
+  });
+});
+
+/* ═══════════════════════════════════════════
+   STAR FIELD
+═══════════════════════════════════════════ */
+(function(){
+  const c=document.getElementById('cosmos'); if(!c)return;
+  const ctx=c.getContext('2d'); let stars=[];
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;stars=[];
+    for(let i=0;i<240;i++)stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*.6+.1,a:Math.random()*Math.PI*2,sp:Math.random()*.00025+.00008,col:['#e8dfc8','#c7d2fe','#fde68a','#86efac'][Math.floor(Math.random()*4)]});
+  }
+  function draw(){ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{s.a+=s.sp;ctx.globalAlpha=Math.abs(Math.sin(s.a))*.6+.1;ctx.fillStyle=s.col;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();});
+    ctx.globalAlpha=1;requestAnimationFrame(draw);}
+  window.addEventListener('resize',resize);resize();draw();
+})();
+
+/* ═══════════════════════════════════════════
+   EDITOR
+═══════════════════════════════════════════ */
+let pSelIdx=null;
+
+function epToast(m,ok=true){const t=document.createElement('div');t.className='ep-toast';t.textContent=m;if(!ok)t.style.cssText='border-color:rgba(248,113,113,.4);background:rgba(120,40,40,.25);color:#f87171;';document.body.appendChild(t);setTimeout(()=>t.remove(),2100);}
+
+function pEpOpen(){document.getElementById('pEp').classList.add('open');document.getElementById('pFab').classList.add('active');pRenderList();}
+function pEpClose(){document.getElementById('pEp').classList.remove('open');document.getElementById('pFab').classList.remove('active');}
+
+function pRenderList(){
+  const q=(document.getElementById('pSrch')?.value||'').toLowerCase();
+  const list=document.getElementById('pList'); list.innerHTML='';
+  const items=DEITIES.map((d,i)=>({d,i})).filter(({d})=>!q||d.name.toLowerCase().includes(q)||d.title.toLowerCase().includes(q));
+  items.forEach(({d,i})=>{
+    const el=document.createElement('div'); el.className='ep-li'+(pSelIdx===i?' sel':'');
+    el.innerHTML=`<span class="ep-li-dot" style="background:${d.color};"></span>
+      <div class="ep-li-info">
+        <div class="ep-li-name">${d.icon||''} ${d.name}</div>
+        <div class="ep-li-sub">${d.align} · ${tierLabel(d.tier)}</div>
+      </div>
+      <button class="ep-li-del" onclick="event.stopPropagation();pDeleteIdx(${i})">✕</button>`;
+    el.onclick=()=>pSelect(i);
+    list.appendChild(el);
+  });
+}
+function pSelect(i){pSelIdx=i;pRenderList();pRenderForm(DEITIES[i]);document.getElementById('pFftr').style.display='flex';document.getElementById('pRcol').classList.add('mob');}
+function pRenderForm(d){
+  document.getElementById('pFwrap').innerHTML=`
+    <div class="ep-ftitle">${pSelIdx===null||pSelIdx>=DEITIES.length?'New Deity':'Editing: '+(d?.icon||'')+' '+d?.name}</div>
+    <div class="ep-row2">
+      <div class="ep-field"><label class="ep-lbl">ID (slug)</label><input class="ep-inp" id="pId" value="${d?.id||''}"></div>
+      <div class="ep-field"><label class="ep-lbl">Emoji Icon</label><input class="ep-inp" id="pIco" value="${d?.icon||''}" style="font-size:20px;"></div>
+    </div>
+    <div class="ep-field"><label class="ep-lbl">Name</label><input class="ep-inp" id="pN" value="${(d?.name||'').replace(/"/g,'&quot;')}"></div>
+    <div class="ep-field"><label class="ep-lbl">Title</label><input class="ep-inp" id="pTit" value="${(d?.title||'').replace(/"/g,'&quot;')}"></div>
+    <div class="ep-row3">
+      <div class="ep-field"><label class="ep-lbl">Tier</label><select class="ep-sel" id="pTier">
+        <option value="primordial" ${d?.tier==='primordial'?'selected':''}>Primordial</option>
+        <option value="major" ${d?.tier==='major'?'selected':''}>Major God</option>
+        <option value="minor" ${d?.tier==='minor'?'selected':''}>Minor God</option>
+        <option value="elder" ${d?.tier==='elder'?'selected':''}>Elder Power</option>
+      </select></div>
+      <div class="ep-field"><label class="ep-lbl">Type</label><select class="ep-sel" id="pType">
+        <option value="God" ${d?.type==='God'?'selected':''}>God</option>
+        <option value="Goddess" ${d?.type==='Goddess'?'selected':''}>Goddess</option>
+        <option value="Archangel" ${d?.type==='Archangel'?'selected':''}>Archangel</option>
+        <option value="Archdemon" ${d?.type==='Archdemon'?'selected':''}>Archdemon</option>
+        <option value="Elder Power" ${d?.type==='Elder Power'?'selected':''}>Elder Power</option>
+      </select></div>
+      <div class="ep-field"><label class="ep-lbl">Alignment</label><select class="ep-sel" id="pAl">
+        ${['Lawful Good','Neutral Good','Chaotic Good','Lawful Neutral','True Neutral','Chaotic Neutral','Lawful Evil','Neutral Evil','Chaotic Evil'].map(a=>`<option value="${a}" ${d?.align===a?'selected':''}>${a}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="ep-row2">
+      <div class="ep-field"><label class="ep-lbl">Color (hex)</label><input class="ep-inp" id="pCol" type="color" value="${d?.col||d?.color||'#d4a44a'}" style="height:34px;padding:2px;"></div>
+      <div class="ep-field"><label class="ep-lbl">Symbol Description</label><input class="ep-inp" id="pSym" value="${(d?.symbol||'').replace(/"/g,'&quot;')}"></div>
+    </div>
+    <div class="ep-field"><label class="ep-lbl">Domains (comma-separated)</label><input class="ep-inp" id="pDom" value="${(d?.domains||[]).join(', ')}"></div>
+    <div class="ep-field"><label class="ep-lbl">Description</label><textarea class="ep-ta" id="pDesc" rows="5">${d?.desc||''}</textarea></div>
+    <div class="ep-field"><label class="ep-lbl">Worshippers</label><textarea class="ep-ta" id="pWor" rows="2">${d?.worshippers||''}</textarea></div>
+    <div class="ep-field"><label class="ep-lbl">Tenets (one per line)</label><textarea class="ep-ta" id="pTen" rows="4">${(d?.tenets||[]).join('\n')}</textarea></div>
+    <div class="ep-field"><label class="ep-lbl">Relations (comma-separated deity IDs)</label><input class="ep-inp" id="pRel" value="${(d?.relations||[]).join(', ')}"></div>
+  `;
+}
+function pNew(){pSelIdx=DEITIES.length;pRenderForm(null);document.getElementById('pFftr').style.display='flex';document.getElementById('pRcol').classList.add('mob');}
+function pSave(){
+  const id=document.getElementById('pId')?.value?.trim().toLowerCase().replace(/\s+/g,'-');
+  const n=document.getElementById('pN')?.value?.trim();
+  if(!id||!n){epToast('ID and Name required',false);return;}
+  const col=document.getElementById('pCol')?.value;
+  const obj={
+    id,name:n,
+    title:document.getElementById('pTit')?.value?.trim()||'',
+    tier:document.getElementById('pTier')?.value,
+    type:document.getElementById('pType')?.value,
+    align:document.getElementById('pAl')?.value,
+    color:col,glow:col+'66',
+    icon:document.getElementById('pIco')?.value?.trim()||'✦',
+    symbol:document.getElementById('pSym')?.value?.trim()||'',
+    domains:(document.getElementById('pDom')?.value||'').split(',').map(x=>x.trim()).filter(Boolean),
+    desc:document.getElementById('pDesc')?.value?.trim()||'',
+    worshippers:document.getElementById('pWor')?.value?.trim()||'',
+    tenets:(document.getElementById('pTen')?.value||'').split('\n').map(x=>x.trim()).filter(Boolean),
+    relations:(document.getElementById('pRel')?.value||'').split(',').map(x=>x.trim()).filter(Boolean),
+  };
+  if(pSelIdx!==null&&pSelIdx<DEITIES.length)DEITIES[pSelIdx]=obj;
+  else{DEITIES.push(obj);pSelIdx=DEITIES.length-1;}
+  localStorage.setItem('arshmunnu_pantheon',JSON.stringify(DEITIES));
+  filterDeities();pRenderList();epToast('Deity saved ✦');
+}
+function pDelete(){if(pSelIdx===null||pSelIdx>=DEITIES.length)return;if(!confirm('Delete '+DEITIES[pSelIdx].name+'?'))return;pDeleteIdx(pSelIdx);}
+function pDeleteIdx(i){DEITIES.splice(i,1);localStorage.setItem('arshmunnu_pantheon',JSON.stringify(DEITIES));filterDeities();pSelIdx=null;document.getElementById('pFwrap').innerHTML='<div class="ep-ph"><span>✦</span>Select a deity.</div>';document.getElementById('pFftr').style.display='none';document.getElementById('pRcol').classList.remove('mob');pRenderList();epToast('Deity deleted');}
+function pReset(){if(!confirm('Reset all deities to defaults?'))return;localStorage.removeItem('arshmunnu_pantheon');location.reload();}
+function pExport(){const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(DEITIES,null,2));a.download='arshmunnu_pantheon.json';a.click();}
+function pImport(el){const f=el.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!Array.isArray(d)){epToast('Invalid format',false);return;}DEITIES.length=0;DEITIES.push(...d);localStorage.setItem('arshmunnu_pantheon',JSON.stringify(DEITIES));filterDeities();pRenderList();epToast('Imported '+d.length+' deities ✦');}catch(err){epToast('Parse error',false);}};r.readAsText(f);}
+
+/* ═══ INIT ═══ */
+filterDeities();
+</script>
+</body>
+</html>

@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>The Great Chronicle of Arshmunnu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05010d; --spine:#b8893b;
+  --text:#e8dfc8; --text-dim:rgba(232,223,200,.55);
+  --gold:#d4a44a; --goldD:#7c5a1f; --goldL:#f0cc72;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'EB Garamond',serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── STAR FIELD ── */
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+#stars canvas{width:100%;height:100%;display:block;}
+
+/* ── HEADER ── */
+.hdr{
+  position:relative;z-index:10;
+  text-align:center;
+  padding:60px 24px 48px;
+  border-bottom:1px solid rgba(184,137,59,.25);
+  background:linear-gradient(180deg,rgba(5,1,13,1) 0%,rgba(10,5,20,.85) 100%);
+}
+.hdr-ornament{font-family:"Cinzel Decorative",serif;font-size:11px;letter-spacing:.5em;color:var(--goldD);text-transform:uppercase;margin-bottom:18px;display:block;}
+.hdr h1{
+  font-family:"Cinzel Decorative",serif;
+  font-size:clamp(24px,5vw,52px);
+  color:var(--goldL);
+  letter-spacing:.06em;
+  line-height:1.15;
+  text-shadow:0 0 40px rgba(212,164,74,.4),0 2px 0 rgba(0,0,0,.8);
+  margin-bottom:14px;
+}
+.hdr-sub{
+  font-family:"Cormorant Garamond",serif;
+  font-style:italic;
+  font-size:clamp(16px,2.5vw,22px);
+  color:var(--text-dim);
+  max-width:620px;
+  margin:0 auto 28px;
+  line-height:1.6;
+}
+.hdr-divider{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 auto;max-width:400px;}
+.hdr-divider .hl{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--goldD));}
+.hdr-divider .hl.r{background:linear-gradient(90deg,var(--goldD),transparent);}
+.hdr-divider span{font-size:12px;letter-spacing:.4em;color:var(--goldD);}
+
+/* ── NAV PILLS ── */
+.nav-bar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(5,1,13,.9);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(184,137,59,.2);
+  padding:10px 16px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.nav-bar::-webkit-scrollbar{display:none}
+.nav-inner{display:flex;gap:8px;min-width:max-content;margin:0 auto;max-width:1200px;justify-content:center;}
+.nav-pill{
+  font-family:"Cinzel",serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  padding:6px 14px;border-radius:20px;border:1px solid rgba(184,137,59,.35);
+  color:rgba(232,223,200,.5);background:transparent;cursor:pointer;
+  transition:all .22s;white-space:nowrap;
+}
+.nav-pill:hover,.nav-pill.active{
+  color:var(--goldL);border-color:var(--gold);
+  background:rgba(212,164,74,.12);
+  box-shadow:0 0 12px rgba(212,164,74,.2);
+}
+
+/* ── MAIN LAYOUT ── */
+.chronicle{
+  position:relative;z-index:2;
+  max-width:1100px;margin:0 auto;
+  padding:60px 20px 100px;
+}
+
+/* ── SPINE ── */
+.spine{
+  position:absolute;
+  left:50%;transform:translateX(-50%);
+  top:0;bottom:0;
+  width:2px;
+  background:linear-gradient(180deg,
+    transparent 0%,
+    var(--goldD) 5%,
+    var(--gold) 50%,
+    var(--goldD) 95%,
+    transparent 100%);
+  box-shadow:0 0 12px rgba(184,137,59,.3);
+}
+@media(max-width:700px){.spine{left:32px;transform:none;}}
+
+/* ── AGE BLOCKS ── */
+.age{
+  position:relative;
+  display:grid;
+  grid-template-columns:1fr 60px 1fr;
+  gap:0;
+  margin-bottom:0;
+  align-items:flex-start;
+}
+.age:nth-child(even) .age-card{grid-column:3;}
+.age:nth-child(even) .age-node-col{grid-column:2;}
+.age:nth-child(even) .age-spacer{grid-column:1;}
+.age:nth-child(odd) .age-card{grid-column:1;}
+.age:nth-child(odd) .age-node-col{grid-column:2;}
+.age:nth-child(odd) .age-spacer{grid-column:3;}
+
+@media(max-width:700px){
+  .age{grid-template-columns:64px 1fr;gap:0;}
+  .age:nth-child(even) .age-card,
+  .age:nth-child(odd) .age-card{grid-column:2;grid-row:1;}
+  .age:nth-child(even) .age-node-col,
+  .age:nth-child(odd) .age-node-col{grid-column:1;grid-row:1;}
+  .age:nth-child(even) .age-spacer,
+  .age:nth-child(odd) .age-spacer{display:none;}
+}
+
+/* Node column */
+.age-node-col{
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:32px;position:relative;z-index:3;
+}
+.age-node{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Cinzel",serif;font-weight:700;font-size:13px;
+  border:2px solid;cursor:pointer;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 0 0 4px rgba(5,1,13,.9);
+  position:relative;flex-shrink:0;
+}
+.age-node:hover,.age.open .age-node{
+  transform:scale(1.18);
+  box-shadow:0 0 0 4px rgba(5,1,13,.9), 0 0 30px var(--age-glow);
+}
+.age-connector{
+  width:2px;flex:1;min-height:30px;
+  background:linear-gradient(180deg,var(--age-color),transparent);
+  margin:0 auto;
+}
+
+/* Card */
+.age-card{
+  padding:28px 0;
+}
+.age:nth-child(odd) .age-card{padding-left:0;padding-right:32px;}
+.age:nth-child(even) .age-card{padding-left:32px;padding-right:0;}
+@media(max-width:700px){
+  .age-card,.age:nth-child(odd) .age-card,.age:nth-child(even) .age-card{
+    padding:28px 0 28px 20px;
+  }
+}
+
+.age-header{cursor:pointer;padding:18px 22px;border-radius:6px;border:1px solid;transition:all .22s;position:relative;overflow:hidden;}
+.age-header::before{
+  content:"";position:absolute;inset:0;
+  background:var(--age-bg);opacity:.08;
+  transition:opacity .22s;
+}
+.age-header:hover::before,.age.open .age-header::before{opacity:.18;}
+.age-header:hover,.age.open .age-header{border-color:var(--age-color)!important;box-shadow:0 4px 24px rgba(0,0,0,.4);}
+
+.age-label{font-family:"Cinzel",serif;font-size:10px;letter-spacing:.4em;text-transform:uppercase;margin-bottom:6px;}
+.age-name{font-family:"Cinzel Decorative",serif;font-size:clamp(17px,2.5vw,24px);line-height:1.2;font-weight:700;margin-bottom:6px;}
+.age-aliases{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:15px;opacity:.7;margin-bottom:10px;}
+.age-dates{font-family:"Cinzel",serif;font-size:11px;letter-spacing:.25em;opacity:.65;margin-bottom:12px;}
+.age-summary{font-size:15px;line-height:1.6;opacity:.82;}
+.age-toggle{
+  display:flex;align-items:center;gap:8px;margin-top:14px;
+  font-family:"Cinzel",serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;opacity:.55;
+}
+.age-toggle-arrow{transition:transform .3s ease;display:inline-block;}
+.age.open .age-toggle-arrow{transform:rotate(90deg);}
+
+/* EXPANDED PANEL */
+.age-panel{
+  max-height:0;overflow:hidden;
+  transition:max-height .55s cubic-bezier(.4,0,.2,1);
+}
+.age.open .age-panel{max-height:3000px;}
+.age-panel-inner{padding:20px 22px 8px;}
+
+.events-title{
+  font-family:"Cinzel",serif;font-size:11px;letter-spacing:.35em;text-transform:uppercase;
+  color:var(--age-color);margin-bottom:18px;display:flex;align-items:center;gap:12px;
+}
+.events-title::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--age-color),transparent);}
+
+.event-list{display:grid;gap:14px;}
+.event{
+  display:grid;grid-template-columns:auto 1fr;gap:0 14px;
+  align-items:baseline;
+}
+.ev-date{
+  font-family:"Cinzel",serif;font-size:11px;letter-spacing:.1em;
+  color:var(--age-color);white-space:nowrap;padding-top:2px;
+  min-width:70px;text-align:right;
+}
+.ev-body{}
+.ev-name{font-family:"Cinzel",serif;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--text);margin-bottom:3px;}
+.ev-desc{font-size:14px;line-height:1.55;color:var(--text-dim);}
+
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 8px;}
+.tag{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.25em;text-transform:uppercase;padding:3px 10px;border-radius:20px;border:1px solid;opacity:.75;}
+
+/* CURRENT indicator */
+.current-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:"Cinzel",serif;font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+  color:#0ff;border:1px solid rgba(0,255,255,.4);
+  padding:4px 12px;border-radius:20px;margin-left:10px;
+  background:rgba(0,255,255,.08);
+  animation:pulse-badge 2s ease-in-out infinite;
+}
+@keyframes pulse-badge{0%,100%{box-shadow:0 0 0 0 rgba(0,255,255,.3);}50%{box-shadow:0 0 0 6px rgba(0,255,255,0);}}
+.current-dot{width:7px;height:7px;border-radius:50%;background:#0ff;animation:blink 1.2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+
+/* FOOTER */
+.foot{
+  text-align:center;padding:48px 24px 60px;
+  border-top:1px solid rgba(184,137,59,.2);
+  font-family:"Cormorant Garamond",serif;font-style:italic;
+  font-size:17px;color:var(--text-dim);
+  background:linear-gradient(0deg,rgba(5,1,13,1),rgba(5,1,13,.5));
+  position:relative;z-index:2;
+}
+
+/* scroll anim */
+.age-header,.age-card{opacity:0;transform:translateY(20px);transition:opacity .5s ease, transform .5s ease;}
+.age-header.visible,.age-card.visible{opacity:1;transform:translateY(0);}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.hdr{animation:fadeIn .8s ease .1s both;}
+</style>
+<style id="arsh-gate-base"></style>
+<script>
+/* ════ ARSH ADMIN GATE ════
+   Editing the Archive is reserved for the Keeper (Aelarion).
+   Readers see the pages in view-only form. This is an editing lock,
+   shared across pages via localStorage('arsh_admin'). */
+(function(){
+  var SEL='.fab,.ep-fab,.ep-sadd';
+  function admin(){try{return localStorage.getItem('arsh_admin')==='1';}catch(e){return false;}}
+  function mark(){
+    if(!document.body||document.getElementById('arsh-viewlock'))return;
+    var d=document.createElement('div');d.id='arsh-viewlock';d.textContent='\uD83D\uDD12 View only';
+    d.style.cssText='position:fixed;bottom:16px;right:16px;z-index:2147483000;font-family:Cinzel,Georgia,serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,164,74,.55);background:rgba(10,6,16,.72);border:1px solid rgba(212,164,74,.22);border-radius:20px;padding:6px 12px;pointer-events:none;';
+    document.body.appendChild(d);
+  }
+  function unmark(){var d=document.getElementById('arsh-viewlock');if(d)d.remove();}
+  function apply(){
+    var st=document.getElementById('arsh-gate-base'),on=admin();
+    document.documentElement.setAttribute('data-arsh-role',on?'keeper':'reader');
+    if(on){if(st)st.textContent='';unmark();return;}
+    if(st)st.textContent=SEL+'{display:none!important;}';
+    if(document.body)mark();else document.addEventListener('DOMContentLoaded',mark);
+  }
+  apply();
+  window.addEventListener('storage',function(e){if(e.key==='arsh_admin'||e.key===null)apply();});
+  document.addEventListener('DOMContentLoaded',apply);
+})();
+</script>
+</head>
+<body>
+
+<!-- STAR FIELD -->
+<div id="stars"><canvas id="starCanvas"></canvas></div>
+
+<!-- HEADER -->
+<header class="hdr">
+  <span class="hdr-ornament">✦ The Grand Chronicle of Arshmunnu ✦</span>
+  <h1>The Seven Ages<br>of the World</h1>
+  <p class="hdr-sub">From the breath of the first gods to the hum of diesel engines and arcane networks — the full sweep of history, set upon the river of time.</p>
+  <div class="hdr-divider">
+    <span class="hl"></span>
+    <span>A U · B U · E T E R N I T Y</span>
+    <span class="hl r"></span>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav-bar">
+  <div class="nav-inner" id="nav-inner">
+    <button class="nav-pill" data-target="age-0">Ancient Times</button>
+    <button class="nav-pill" data-target="age-1">I · Heroes</button>
+    <button class="nav-pill" data-target="age-2">II · Chaos</button>
+    <button class="nav-pill" data-target="age-3">III · Imperial</button>
+    <button class="nav-pill" data-target="age-4">IV · Temple's Age</button>
+    <button class="nav-pill" data-target="age-5">V · Revolutions</button>
+    <button class="nav-pill" data-target="age-6">VI · Steam & Cold War</button>
+    <button class="nav-pill active" data-target="age-7">VII · Now</button>
+  </div>
+</nav>
+
+<!-- CHRONICLE -->
+<div class="chronicle">
+  <div class="spine"></div>
+
+  <!-- ══════════════════════════════════
+       AGE 0: ANCIENT TIMES
+  ══════════════════════════════════ -->
+  <div class="age" id="age-0" style="--age-color:#c084fc;--age-glow:rgba(192,132,252,.5);--age-bg:#c084fc;">
+    <div class="age-card">
+      <div class="age-header" style="border-color:rgba(192,132,252,.3);">
+        <div class="age-label" style="color:#c084fc;">Ancient Times · Mythic Age · Before Time</div>
+        <div class="age-name" style="color:#e9d5ff;">Before the First Dawn</div>
+        <div class="age-aliases">The Age of the Four Gods · The Pre-Human Epoch · The Era of Creation</div>
+        <div class="age-dates">∞ BU — Beyond Recorded Memory</div>
+        <div class="age-summary">Before humans trod the earth, before kingdoms or chronicles, the gods made the world from the Void. Chamalians, Centaurs, Dragons, Angels, and the Fey walked a world where divinity was not myth but presence. The Grand Deluge sealed one age and opened all others.</div>
+        <div class="age-toggle"><span class="age-toggle-arrow">▶</span> Reveal the Chronicle</div>
+      </div>
+      <div class="age-panel">
+        <div class="age-panel-inner">
+          <div class="events-title">Founding Events</div>
+          <div class="event-list">
+            <div class="event"><div class="ev-date">∞</div><div class="ev-body"><div class="ev-name">Birth of the Aethernum Nexus</div><div class="ev-desc">From the primordial Void emerged the Nexus — a wellspring of pure energy, the core of life, souls, and the very essence of creation. The four great gods arose from its luminous essence.</div></div></div>
+            <div class="event"><div class="ev-date">∞</div><div class="ev-body"><div class="ev-name">The Four Divine Beings Emerge</div><div class="ev-desc">Achmin (the Luminary Sovereign) ignited the Sun and Moon. Amen (the Eternal Composer) wove the stars as the Pillars of Latentium. Kohe'Samel/Yer'shalem (the Harvested Sage) taught all beings to harness the Nexus. Elara (the Guardian of Flora) crafted the Latentium dome, raising a barrier against the Void.</div></div></div>
+            <div class="event"><div class="ev-date">∞</div><div class="ev-body"><div class="ev-name">The Genesis of Races</div><div class="ev-desc">Elara breathed into life Elves and Fey. Achmin shaped Beastfolk. Yer'shalem fashioned Chamalians (lizardfolk) and Dragons. Amen created Angels and Prellings. The world became a living tapestry of divine intention.</div></div></div>
+            <div class="event"><div class="ev-date">∞</div><div class="ev-body"><div class="ev-name">The First Sin — Amen's Revolt</div><div class="ev-desc">Amen the Eternal Composer, seizing ambition, slew the other gods and established tyranny over creation. The rebellious angel Sin led the uprising against Amen. The War of the Four Gods tore the world's harmony apart, thinning the Latentium dome and letting the Void seep through.</div></div></div>
+            <div class="event"><div class="ev-date">Deep Antiquity</div><div class="ev-body"><div class="ev-name">The Grand Deluge & The Crack</div><div class="ev-desc">Amen's revolt tore the earth and opened the Crack — a wound where the Void's breath touched the world. To seal it, the elder Chamalians wrought a terrible remedy, and the world answered with catastrophic waters. The Grand Deluge drowned the northern lands, leaving only the highest peaks as islands. Escapia, the northern continent, was severed from Exelia.</div></div></div>
+            <div class="event"><div class="ev-date">Pre-Human</div><div class="ev-body"><div class="ev-name">The Pre-Human Ages of Dominion</div><div class="ev-desc">In the centuries before humanity's rise, Chamalians dominated Exelia with theocratic order. Centauric dynasties controlled the mountain passes and plains. Dragons were sovereign over the skies. Beastfolk of Luminaria thrived in the south. This era ended when Yer'shalem slew Amen and established new divine order — but the old races began to decline.</div></div></div>
+            <div class="event"><div class="ev-date">Pre-Human</div><div class="ev-body"><div class="ev-name">The First Holy 16 Humans</div><div class="ev-desc">Kohe'Shamel's long work returned in secret — mankind came late to the world, after the drowned centuries. The First Holy 16 Humans founded the first human tribes, beginning the long arc of human civilisation and dominance that would eventually reshape all of Arshmunnu.</div></div></div>
+            <div class="event"><div class="ev-date">Early Antiquity</div><div class="ev-body"><div class="ev-name">The Genocides — Centaurs and Chamalians</div><div class="ev-desc">As human kingdoms grew bold, the ancient non-human peoples were violently displaced. The Genocide of the Centaurs erased the great centauric dynasties. The Genocide of the Chamalians — recorded in the Fabulae and the Impernexa — drove lizardfolk north to Escapia, where their isolated communities would survive for millennia, untouched by Exelian politics.</div></div></div>
+          </div>
+          <div class="tag-row">
+            <span class="tag" style="color:#c084fc;border-color:rgba(192,132,252,.4);">Mythology</span>
+            <span class="tag" style="color:#c084fc;border-color:rgba(192,132,252,.4);">Divine Age</span>
+            <span class="tag" style="color:#c084fc;border-color:rgba(192,132,252,.4);">Pre-Human</span>
+            <span class="tag" style="color:#c084fc;border-color:rgba(192,132,252,.4);">The Grand Deluge</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="age-node-col">
+      <div class="age-node" style="background:radial-gradient(circle at 35% 30%,#e9d5ff,#c084fc);border-color:#c084fc;color:#1a0030;--age-glow:rgba(192,132,252,.5);">∞</div>
+      <div class="age-connector" style="--age-color:#c084fc;background:linear-gradient(180deg,#c084fc,#d4a44a);min-height:80px;"></div>
+    </div>
+    <div class="age-spacer"></div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       AGE I: FIRST AGE
+  ══════════════════════════════════ -->
+  <div class="age" id="age-1" style="--age-color:#d4a44a;--age-glow:rgba(212,164,74,.5);--age-bg:#d4a44a;">
+    <div class="age-spacer"></div>
+    <div class="age-node-col">
+      <div class="age-node" style="background:radial-gradient(circle at 35% 30%,#fde68a,#d4a44a);border-color:#d4a44a;color:#1a0800;--age-glow:rgba(212,164,74,.5);">I</div>
+      <div class="age-connector" style="background:linear-gradient(180deg,#d4a44a,#ef4444);min-height:80px;"></div>
+    </div>
+    <div class="age-card">
+      <div class="age-header" style="border-color:rgba(212,164,74,.3);">
+        <div class="age-label" style="color:#d4a44a;">First Age · Age of Heroes and Legend</div>
+        <div class="age-name" style="color:#fde68a;">The Age of Heroes and Legend</div>
+        <div class="age-aliases">The Imvien Age · Age of the Great Kingdoms · The Era of the Remaining Flame</div>
+        <div class="age-dates">Deep Antiquity — c. 715 BU</div>
+        <div class="age-summary">The great Imvien Kingdom shines as its brightest. Caldère stands as the world's beacon of peace. Marian the Firm unifies Armorica. The Confederation of the Remaining Flame is born from grief, the Five Towers of Magic are raised, and the Coalition Wars begin to tear the old world apart.</div>
+        <div class="age-toggle"><span class="age-toggle-arrow">▶</span> Reveal the Chronicle</div>
+      </div>
+      <div class="age-panel">
+        <div class="age-panel-inner">
+          <div class="events-title">Key Events</div>
+          <div class="event-list">
+            <div class="event"><div class="ev-date">~2000 BU</div><div class="ev-body"><div class="ev-name">House Charan Founded</div><div class="ev-desc">Octavia the Melodist and Recentibus the Wise establish the ancient Armorican royal line — its motto "Through Song and Thought, We Reign" — laying the philosophical and musical foundations of Armorican culture.</div></div></div>
+            <div class="event"><div class="ev-date">Antiquity</div><div class="ev-body"><div class="ev-name">The Imvien Kingdom at Its Height</div><div class="ev-desc">Elderglen — "a city of pearl towers and silver-roofed colleges, called the Breath of Hymnia" — stands as the Imvien capital. Caldère serves as a sanctuary of scholars, healers, and peacekeepers. No army stands within its walls. It needs none. The Five Songs of the Confederation are composed.</div></div></div>
+            <div class="event"><div class="ev-date">Antiquity</div><div class="ev-body"><div class="ev-name">The Five Towers of Magic Established</div><div class="ev-desc">The great Arcane Towers are raised across Exelia — Red, Blue, Purple, White, and Green — each holding its own sovereign magic tradition. The Arcane Council of Exelia (Council of the Fivefold Accord) is formed as a binding arbitration body. They would only intervene six times in the centuries to follow; each time it changed the world.</div></div></div>
+            <div class="event"><div class="ev-date">~435 BU</div><div class="ev-body"><div class="ev-name">Marian the Firm Begins the Unification of Armorica</div><div class="ev-desc">A warrior-queen rises in Helen, conquering the Two Duchies of Kovesk and Greenwood, seizing Nerves, subduing Somelsk. She crowns herself on the Spire of Helen without priest or song, placing the Forge-Crown (eight nails, one from each province) upon her own head. Her Oath: "No border shall divide my people that cannot be crossed by bread, and guarded by law."</div></div></div>
+            <div class="event"><div class="ev-date">~400 BU</div><div class="ev-body"><div class="ev-name">The Szewo-Armorican War & The Grand Immigration</div><div class="ev-desc">Marian invades Szewia seeking fertile plains. Ten years of bitter war. Queen Seraphin of Barcazsi is slain by her own brother — then returns from death as something between living and dead. She leads the Grand Immigration: all Szewians march in silence into the Endless Desert. Marian stands before empty Barcazsi: "This was not victory. This was the ending of a people."</div></div></div>
+            <div class="event"><div class="ev-date">~380 BU</div><div class="ev-body"><div class="ev-name">The Fall of Caldère — The Light Goes Out</div><div class="ev-desc">Armorican warlords and Szewian high-princes form a pact: Caldère shall fall, its vaults split, its scholars spared if they yield. They attack from two sides. The last five peacekeepers of Caldère set themselves ablaze on the central stair rather than serve either army. The beacon of peace becomes a pyre. Imvien scribes will never write its name again — they call it only "The Light Unseen."</div></div></div>
+            <div class="event"><div class="ev-date">~360 BU</div><div class="ev-body"><div class="ev-name">Confederation of the Remaining Flame</div><div class="ev-desc">From the collapse of the Imvien Kingdom, five island-realms form a confederation bound not by crown but by memory — Avilon, Aridia, Abilia, As'hika, and Alodia. Their oath: "This land was not won, it was kept." Karun's silent crown would later make six. The Confederation would endure until the Armorican advance sundered the kindled isles.</div></div></div>
+            <div class="event"><div class="ev-date">~715 BU</div><div class="ev-body"><div class="ev-name">The Coalition Wars Begin</div><div class="ev-desc">A series of devastating conflicts shatter the old world order. Kingdoms that once traded in good faith take up arms in an era of shifting alliances, betrayals, and total war. The old Imvien peace is definitively gone. This marks the end of the First Age and the beginning of the Age of Chaos.</div></div></div>
+          </div>
+          <div class="tag-row">
+            <span class="tag" style="color:#d4a44a;border-color:rgba(212,164,74,.4);">Imvien Kingdom</span>
+            <span class="tag" style="color:#d4a44a;border-color:rgba(212,164,74,.4);">Marian the Firm</span>
+            <span class="tag" style="color:#d4a44a;border-color:rgba(212,164,74,.4);">Five Towers of Magic</span>
+            <span class="tag" style="color:#d4a44a;border-color:rgba(212,164,74,.4);">Confederation</span>
+            <span class="tag" style="color:#d4a44a;border-color:rgba(212,164,74,.4);">Caldère</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       AGE II: SECOND AGE
+  ══════════════════════════════════ -->
+  <div class="age" id="age-2" style="--age-color:#ef4444;--age-glow:rgba(239,68,68,.5);--age-bg:#ef4444;">
+    <div class="age-card">
+      <div class="age-header" style="border-color:rgba(239,68,68,.3);">
+        <div class="age-label" style="color:#ef4444;">Second Age · 715 BU – 0 AU</div>
+        <div class="age-name" style="color:#fca5a5;">The Age of Chaos</div>
+        <div class="age-aliases">The Era of Coalition Wars · Age of Fire and Ruin · The Revolutionary Age</div>
+        <div class="age-dates">715 BU — 0 AU</div>
+        <div class="age-summary">The Coalition Wars shatter every old order. Kingdoms bleed into one another; warlords seize what gods and law cannot protect. From the ruin of the old world, new powers rise — and from the crucible of revolutionary warfare, one commoner forges an empire that will define the next two thousand years.</div>
+        <div class="age-toggle"><span class="age-toggle-arrow">▶</span> Reveal the Chronicle</div>
+      </div>
+      <div class="age-panel">
+        <div class="age-panel-inner">
+          <div class="events-title">Key Events</div>
+          <div class="event-list">
+            <div class="event"><div class="ev-date">715 BU</div><div class="ev-body"><div class="ev-name">The Coalition Wars Erupt</div><div class="ev-desc">The old world order shatters. A series of devastating conflicts across Exelia destroys the last remnants of the Imvien-era peace. Kingdoms that had cooperated for centuries find themselves in total war. Power shifts constantly; no single force can hold the continent. The Arcane Council is drawn into political conflict as the Five Towers take sides.</div></div></div>
+            <div class="event"><div class="ev-date">Mid-BU</div><div class="ev-body"><div class="ev-name">The Tower War & The Fall of the Arcane Council</div><div class="ev-desc">The Five Towers — Red (Ruden/Armorica), Blue (Alodia), Purple (Polia), White (Chamalian Papacy), Green (Tree Island) — take sides in the political conflicts. The Council of Five Towers meets one final time in a fractured projection. The White Tower invokes Law; the Blue claims neutrality died with the centaurs; the Purple laughs and says "Let the book burn faster this time." The Green says nothing. Then the projections snap. Boque Tower falls. "Five stand where one fell. Let none fall alone."</div></div></div>
+            <div class="event"><div class="ev-date">~50 BU</div><div class="ev-body"><div class="ev-name">Achilleus I Chliarinos Born</div><div class="ev-desc">A man of common birth in Alodia. He flees the Alodian civil war to As'hika, where the embers of the old Confederation still glow. His tactical genius, leadership, and mythic presence will eventually draw loyalty from every tribe, city, and broken kingdom across Exelia. His rise is not yet — but the age is being prepared for him.</div></div></div>
+            <div class="event"><div class="ev-date">~5 BU</div><div class="ev-body"><div class="ev-name">The Revolutionary Wars Begin</div><div class="ev-desc">New ideas challenge the old established powers — that greatness could rise from anywhere, that kingdoms could be forged by merit rather than blood. Achilleus channels the revolutionary spirit into a military campaign that becomes the engine of a new era. The revolutionary slogan "From Ashes, Empire" is born in practice before it is ever written.</div></div></div>
+            <div class="event"><div class="ev-date">0 AU</div><div class="ev-body"><div class="ev-name">The Revolutionary Wars End — The Empire Declared</div><div class="ev-desc">Achilleus I Chliarinos declares the As'hika Empire at Year 0 AU, unifying Armorica, Alodia, Szewia, Chamalia, and Gothia under one banner through a blend of conquest, diplomacy, and mythic authority. The Second Age ends. A new era — one that will last two thousand years — begins.</div></div></div>
+          </div>
+          <div class="tag-row">
+            <span class="tag" style="color:#ef4444;border-color:rgba(239,68,68,.4);">Coalition Wars</span>
+            <span class="tag" style="color:#ef4444;border-color:rgba(239,68,68,.4);">Tower War</span>
+            <span class="tag" style="color:#ef4444;border-color:rgba(239,68,68,.4);">Revolutionary Wars</span>
+            <span class="tag" style="color:#ef4444;border-color:rgba(239,68,68,.4);">Achilleus I</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="age-node-col">
+      <div class="age-node" style="background:radial-gradient(circle at 35% 30%,#fca5a5,#ef4444);border-color:#ef4444;color:#1a0000;--age-glow:rgba(239,68,68,.5);">II</div>
+      <div class="age-connector" style="background:linear-gradient(180deg,#ef4444,#b8893b);min-height:80px;"></div>
+    </div>
+    <div class="age-spacer"></div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       AGE III: THIRD AGE
+  ══════════════════════════════════ -->
+  <div class="age" id="age-3" style="--age-color:#b8893b;--age-glow:rgba(184,137,59,.5);--age-bg:#b8893b;">
+    <div class="age-spacer"></div>
+    <div class="age-node-col">
+      <div class="age-node" style="background:radial-gradient(circle at 35% 30%,#fde68a,#b8893b);border-color:#b8893b;color:#1a0800;--age-glow:rgba(184,137,59,.5);">III</div>
+      <div class="age-connector" style="background:linear-gradient(180deg,#b8893b,#14b8a6);min-height:80px;"></div>
+    </div>
+    <div class="age-card">
+      <div class="age-header" style="border-color:rgba(184,137,59,.3);">
+        <div class="age-label" style="color:#b8893b;">Third Age · 0 AU – 2078 AU</div>
+        <div class="age-name" style="color:#fde68a;">The Imperial Age</div>
+        <div class="age-aliases">The As'hikan Age · The Pax As'hikana · The Age of Empire</div>
+        <div class="age-dates">0 AU — 2078 AU · ~2,078 years</div>
+        <div class="age-summary">The As'hikan Empire rises and dominates Exelia for two thousand years. Its Pax As'hikana — the golden age of law, roads, orders, and cultural flourishing — lasts six and a half centuries. Then comes the long dying: the War of Two Houses, the Red Ash Plague, the Age of Pretenders, and the final slow collapse.</div>
+        <div class="age-toggle"><span class="age-toggle-arrow">▶</span> Reveal the Chronicle</div>
+      </div>
+      <div class="age-panel">
+        <div class="age-panel-inner">
+          <div class="events-title">Key Events</div>
+          <div class="event-list">
+            <div class="event"><div class="ev-date">0 AU</div><div class="ev-body"><div class="ev-name">The Empire Declared — Year Zero</div><div class="ev-desc">Achilleus I Chliarinos establishes the As'hika Empire. A new calendar begins. The commoner dynasty House Chliarinos founds what will be the world's defining political institution. Marriage to Isabelle IX of Armorica (House Charan) provides noble legitimacy. The Phoenix Agency is founded as the empire's secret intelligence service.</div></div></div>
+            <div class="event"><div class="ev-date">21 AU</div><div class="ev-body"><div class="ev-name">Achilleus Withdraws — Death in the Desert</div><div class="ev-desc">Weary of rule, Achilleus abandons the palace without ceremony, riding east in a soldier's cloak. He wanders the Karun Desert — where he fought his greatest wars — for three weeks, speaking to the ghosts of the fallen. He does not rise on the twenty-first day. His legacy: "One law, one land, one life — all shall kneel, not in chains, but in hope."</div></div></div>
+            <div class="event"><div class="ev-date">43 AU</div><div class="ev-body"><div class="ev-name">The Pax As'hikana Begins</div><div class="ev-desc">Under Philippe James the Unifier, the institutional empire begins. One law, one language, one custom across all provinces. The great Viae Imperiales road network is built. The Church of Unity is formalised. The Imperial Circle, Golden Rose, and Phoenix Agency are established as the pillars of imperial stability. Six centuries of peace and cultural flourishing begin.</div></div></div>
+            <div class="event"><div class="ev-date">213 AU</div><div class="ev-body"><div class="ev-name">The Great Census of Margarethe I</div><div class="ev-desc">The first imperial census counts souls, hearths, beasts, granaries, and guild rolls across all provinces. Margarethe I — "Mother of the Empire" — also extends the Viae Imperiales to the Bayner Grand Lake. Her death was mourned for ten days across all capitals.</div></div></div>
+            <div class="event"><div class="ev-date">403–459 AU</div><div class="ev-body"><div class="ev-name">Elionor I the Veiled — The Spymistress Emperor</div><div class="ev-desc">The former head of the Phoenix Agency ascends the throne. She strengthened the empire's grip on magic, guilds, and the high courts. Her court ran with unsettling efficiency. The most feared of the peaceful emperors.</div></div></div>
+            <div class="event"><div class="ev-date">646–705 AU</div><div class="ev-body"><div class="ev-name">Julian II the Long-Reigning</div><div class="ev-desc">The wisest emperor — 59 years, the longest reign in imperial history. A master of diplomacy and restraint who kept rebellious nobles in line through respect, not terror. He accidentally married his gardener Eleanor, was perpetually out-justed by Marcus of House Morion, and received the legendary Sword of Achilleus I as a gift. His legacy quote: "An emperor is not flame, but hearth. He does not burn the house — he keeps it warm."</div></div></div>
+            <div class="event"><div class="ev-date">705 AU</div><div class="ev-body"><div class="ev-name">Death of Julian II — The Pax Ends</div><div class="ev-desc">Julian II dies without a clear heir — his sons dead, daughters barred, council split. The succession vacuum explodes into the War of Two Houses (705–743 AU). Two rival Chliarinos branches fight for the throne for 38 years. This sets the precedent for the Late Empire: private armies, plagues, fragmented authority, and noble kings in all but name.</div></div></div>
+            <div class="event"><div class="ev-date">777–781 AU</div><div class="ev-body"><div class="ev-name">The Red Ash Plague</div><div class="ev-desc">A devastating epidemic kills millions and exposes the empire's inability to coordinate a response to crisis. The public wells and hospitals of the Pax had decayed or been seized by private interests. The Graying Fever, the White Forest Collapse in Avilon, and other arcane disasters compound the devastation.</div></div></div>
+            <div class="event"><div class="ev-date">793–817 AU</div><div class="ev-body"><div class="ev-name">Achilleus IV — The Period of Pause</div><div class="ev-desc">The last truly effective emperor. He crushed five rebellions, restored Lundenford, and reconvened the Imperial Council. Harsh in method, just in purpose — "If I must be iron, let it be for the sake of peace." His death in 817 AU began the true final decline. No worthy heir rose. The empire continued its death as a corpse dressed in imperial robes.</div></div></div>
+            <div class="event"><div class="ev-date">821 AU</div><div class="ev-body"><div class="ev-name">The Szewian-Chamalian Concord</div><div class="ev-desc">The eastern Pontifex declares Julian II's successors "unholy pretenders" — the empire is spiritually dead in the eyes of the Chamalian Church. Chamalian monasteries become rallying points for separatists, rebels, and new mystic orders. The empire continues in name; in reality, it is already hollow.</div></div></div>
+            <div class="event"><div class="ev-date">~1960 AU</div><div class="ev-body"><div class="ev-name">The Empire Collapses into the Era of Division</div><div class="ev-desc">The weight of its vast reach, its hollow bureaucracy, its plagues and rebellions, finally breaks the last sinew of imperial authority. The world fractures into numerous small states and kingdoms. The Fourth Era begins — the Era of Division.</div></div></div>
+            <div class="event"><div class="ev-date">2078 AU</div><div class="ev-body"><div class="ev-name">House Chliarinos Loses the Throne</div><div class="ev-desc">The dynasty that forged an empire from common birth loses its last claim to the throne. The name Chliarinos carries immense symbolic weight but no political power. The Phoenix Agency, now without a master, acts independently — seeking restoration through any means necessary. Prince Aurelian Chliarinos (c. 2125 AU) rises as a claimant to the legacy.</div></div></div>
+          </div>
+          <div class="tag-row">
+            <span class="tag" style="color:#b8893b;border-color:rgba(184,137,59,.4);">As'hikan Empire</span>
+            <span class="tag" style="color:#b8893b;border-color:rgba(184,137,59,.4);">Pax As'hikana</span>
+            <span class="tag" style="color:#b8893b;border-color:rgba(184,137,59,.4);">Julian II</span>
+            <span class="tag" style="color:#b8893b;border-color:rgba(184,137,59,.4);">War of Two Houses</span>
+            <span class="tag" style="color:#b8893b;border-color:rgba(184,137,59,.4);">Red Ash Plague</span>
+            <span class="tag" style="color:#b8893b;border-color:rgba(184,137,59,.4);">House Chliarinos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       AGE IV: FOURTH AGE
+  ══════════════════════════════════ -->
+  <div class="age" id="age-4" style="--age-color:#14b8a6;--age-glow:rgba(20,184,166,.5);--age-bg:#14b8a6;">
+    <div class="age-card">
+      <div class="age-header" style="border-color:rgba(20,184,166,.3);">
+        <div class="age-label" style="color:#14b8a6;">Fourth Age · ~2078 AU – ~2600 AU</div>
+        <div class="age-name" style="color:#99f6e4;">The Temple's Age</div>
+        <div class="age-aliases">Early Modern Age · Age of Exploration · The Era of the Chamalian Papacy · The War of Two Continents</div>
+        <div class="age-dates">~2078 AU — ~2600 AU</div>
+        <div class="age-summary">Into the vacuum left by the fallen empire, the Chamalian Papacy seizes dominion. Temples replace fortresses; inquisitors replace soldiers. But the south stirs — the beastmen of Luminaria resist; As'try'lys expands under the God of the Sun; the Moon Goddess is absent; and Exelian explorers begin pushing beyond the known world.</div>
+        <div class="age-toggle"><span class="age-toggle-arrow">▶</span> Reveal the Chronicle</div>
+      </div>
+      <div class="age-panel">
+        <div class="age-panel-inner">
+          <div class="events-title">Key Events</div>
+          <div class="event-list">
+            <div class="event"><div class="ev-date">~2078 AU</div><div class="ev-body"><div class="ev-name">The Chamalian Papacy Seizes the Vacuum</div><div class="ev-desc">After the As'hikan Empire's collapse, the Chamalian Papacy imposes its rigid doctrine across Exelia. Temples replace fortresses. Inquisitors replace soldiers. Heresy becomes the crime of the age. The Church presents itself as the ultimate authority over both spiritual and temporal affairs, erasing imperial tradition and alternative beliefs wherever it can.</div></div></div>
+            <div class="event"><div class="ev-date">~2100 AU</div><div class="ev-body"><div class="ev-name">As'try'lys — Rise of the Sun God's Kingdom</div><div class="ev-desc">In the south, As'try'lys — a dominant, expansionist kingdom ruled under the God of the Sun — rises as the military counterweight to the Papacy. Its strength is unmatched but its people are strained by war. The southern beastmen of Luminaria find themselves caught between two imperial ambitions.</div></div></div>
+            <div class="event"><div class="ev-date">~2100–2300 AU</div><div class="ev-body"><div class="ev-name">The War of Two Continents & The Beastmen's Resistance</div><div class="ev-desc">The War on Abila Island becomes a microcosm of the age — a struggle for identity and sovereignty against both Exelia and As'try'lys. Tribes of lionfolk, serpentfolk, and avian beastmen cooperate for the first time, their unity forged in the crucible of survival. The Selunarian Remnants search for their goddess and the Staff of the Moon.</div></div></div>
+            <div class="event"><div class="ev-date">~2125 AU</div><div class="ev-body"><div class="ev-name">Prince Aurelian Chliarinos — Imperial Claimant</div><div class="ev-desc">A self-proclaimed heir to the As'hikan legacy, Aurelian seeks to revive the empire against the Chamalian Papacy's dominion. His claim is hotly debated — many see him as a relic, others as a beacon of hope. The Phoenix Agency, still operating in shadow, provides covert support to factions that seek to preserve the imperial memory.</div></div></div>
+            <div class="event"><div class="ev-date">~2200 AU</div><div class="ev-body"><div class="ev-name">Chamalian Underground — Old Rites, Desert Prophets, Jasmine Revival</div><div class="ev-desc">Underground sects flourish across the Chamalian lands: the Old Rites, the Desert Prophets, and the Jasmine Revival in the southern mountains. The Church splits: some clergy loyal to the throne, others dreaming of the Restoration. The great shrines become tourist relics; Chamalian identity remains proud but dormant.</div></div></div>
+            <div class="event"><div class="ev-date">~2300 AU</div><div class="ev-body"><div class="ev-name">Age of Exploration Begins</div><div class="ev-desc">Exelian explorers begin venturing beyond familiar shores, driven by the fragmented post-imperial world's desperate need for resources, routes, and advantage. Legends of the northern continent Escapia — drowned in the Grand Deluge myth — begin to be taken seriously again. The first expeditions push north through fog and forgotten waters.</div></div></div>
+          </div>
+          <div class="tag-row">
+            <span class="tag" style="color:#14b8a6;border-color:rgba(20,184,166,.4);">Chamalian Papacy</span>
+            <span class="tag" style="color:#14b8a6;border-color:rgba(20,184,166,.4);">As'try'lys</span>
+            <span class="tag" style="color:#14b8a6;border-color:rgba(20,184,166,.4);">Beastmen Resistance</span>
+            <span class="tag" style="color:#14b8a6;border-color:rgba(20,184,166,.4);">Age of Exploration</span>
+            <span class="tag" style="color:#14b8a6;border-color:rgba(20,184,166,.4);">War of Two Continents</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="age-node-col">
+      <div class="age-node" style="background:radial-gradient(circle at 35% 30%,#99f6e4,#14b8a6);border-color:#14b8a6;color:#00201d;--age-glow:rgba(20,184,166,.5);">IV</div>
+      <div class="age-connector" style="background:linear-gradient(180deg,#14b8a6,#f97316);min-height:80px;"></div>
+    </div>
+    <div class="age-spacer"></div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       AGE V: FIFTH AGE
+  ══════════════════════════════════ -->
+  <div class="age" id="age-5" style="--age-color:#f97316;--age-glow:rgba(249,115,22,.5);--age-bg:#f97316;">
+    <div class="age-spacer"></div>
+    <div class="age-node-col">
+      <div class="age-node" style="background:radial-gradient(circle at 35% 30%,#fed7aa,#f97316);border-color:#f97316;color:#1a0800;--age-glow:rgba(249,115,22,.5);">V</div>
+      <div class="age-connector" style="background:linear-gradient(180deg,#f97316,#64748b);min-height:80px;"></div>
+    </div>
+    <div class="age-card">
+      <div class="age-header" style="border-color:rgba(249,115,22,.3);">
+        <div class="age-label" style="color:#f97316;">Fifth Age · ~2600 AU – 3051 AU</div>
+        <div class="age-name" style="color:#fed7aa;">The Age of Revolutions</div>
+        <div class="age-aliases">The Era of Republican Uprisings · The Tower War's Legacy · The Birth of the SSC</div>
+        <div class="age-dates">~2600 AU — 3051 AU</div>
+        <div class="age-summary">The old monarchies crack. The Armorican Revolution — sparked at a wedding — spreads revolutionary fervour across the world. Wars of Coalition pit monarchists against republicans. New republics rise from the fires of old crowns. The Great War of Cult reshapes the world once more, and the age closes in catastrophe and transformation.</div>
+        <div class="age-toggle"><span class="age-toggle-arrow">▶</span> Reveal the Chronicle</div>
+      </div>
+      <div class="age-panel">
+        <div class="age-panel-inner">
+          <div class="events-title">Key Events</div>
+          <div class="event-list">
+            <div class="event"><div class="ev-date">~2600 AU</div><div class="ev-body"><div class="ev-name">The Armorican Revolution</div><div class="ev-desc">It begins at Isabelle's wedding to Thomas Kovesd. The king and queen are slain. Revolutionary fervour spreads across the world almost overnight — the idea that monarchy is not a divine right but a social contract, breakable by the people, takes root in every city square. Alodia swings republican. Frontian radicals take to the streets.</div></div></div>
+            <div class="event"><div class="ev-date">~2620 AU</div><div class="ev-body"><div class="ev-name">The Wars of Coalition — Monarchists vs. Revolutionaries</div><div class="ev-desc">Monarchists (Gothia, Chamalia, Szewia, the monarchic factions of Armorica and Alodia) clash with the revolutionary coalition (Alodian Republic, Frontian radicals). The wars drag across the continent, redrawing borders, breaking aristocratic families, and forging new political realities. The Red Tower of Ruden backs the old order; the Blue Tower of Alodia backs the revolution.</div></div></div>
+            <div class="event"><div class="ev-date">~2700 AU</div><div class="ev-body"><div class="ev-name">Rise of Republican Ideology — Birth of Communalism</div><div class="ev-desc">Philosopher Rael Eramenth, writing in Alodia during the Fourth Era, becomes the foundational theorist of Communalism — Council Communalism, Flame Syndicalism, Ancestral Communalism, and eventually the Post-Leniskian Neo-Councilism that will birth the SSC. His ideas spread through clandestine networks: coded tattoos, ephemeral ink, the Silent Drop underground.</div></div></div>
+            <div class="event"><div class="ev-date">~2800 AU</div><div class="ev-body"><div class="ev-name">Alodian Civil War — The As'hikan Civil War</div><div class="ev-desc">Multiple factions contest control — the Avilon Confederation, former republicans, monarchist remnants. The civil war reshapes Alodia and As'hika's political landscape. The Phoenix Agency, now rogue, takes sides in secret. The old imperial structures are finally, definitively dismantled — or buried so deep they become myth.</div></div></div>
+            <div class="event"><div class="ev-date">~3000 AU</div><div class="ev-body"><div class="ev-name">The Great War of Cult</div><div class="ev-desc">A catastrophic, world-reshaping conflict that closes the Fourth Era and marks the end of the Age of Revolutions. Cult movements, theological conflicts, and the last convulsive death-throes of the old order converge in a war that reshapes the political map of Exelia entirely. The SSC's predecessor movements rise directly from its ashes.</div></div></div>
+            <div class="event"><div class="ev-date">3051 AU</div><div class="ev-body"><div class="ev-name">End of the Fourth Era — A World Remade</div><div class="ev-desc">The catastrophic events of the Great War of Cult close the Fourth Era and open the Fifth. The world emerges changed beyond recognition — old certainties gone, new powers rising from the ashes. The three great superpowers (Alodia, Armorican Crown, SSC) begin to consolidate their positions for the century ahead.</div></div></div>
+          </div>
+          <div class="tag-row">
+            <span class="tag" style="color:#f97316;border-color:rgba(249,115,22,.4);">Armorican Revolution</span>
+            <span class="tag" style="color:#f97316;border-color:rgba(249,115,22,.4);">Wars of Coalition</span>
+            <span class="tag" style="color:#f97316;border-color:rgba(249,115,22,.4);">Communalism Founded</span>
+            <span class="tag" style="color:#f97316;border-color:rgba(249,115,22,.4);">Great War of Cult</span>
+            <span class="tag" style="color:#f97316;border-color:rgba(249,115,22,.4);">Rael Eramenth</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       AGE VI: SIXTH AGE
+  ══════════════════════════════════ -->
+  <div class="age" id="age-6" style="--age-color:#64748b;--age-glow:rgba(100,116,139,.5);--age-bg:#64748b;">
+    <div class="age-card">
+      <div class="age-header" style="border-color:rgba(100,116,139,.3);">
+        <div class="age-label" style="color:#94a3b8;">Sixth Age · 3051 AU – ~4069 AU</div>
+        <div class="age-name" style="color:#cbd5e1;">The Age of Steam and Magic</div>
+        <div class="age-aliases">The Modern Age · The Age of the Cold War · The Fifth Era · Wilhelm's Time</div>
+        <div class="age-dates">3051 AU — ~4069 AU</div>
+        <div class="age-summary">The three superpowers — the Republic of Alodia, the Armorican Crown, and the Soviet Socialist Commonwealth — dominate a world rebuilding from revolutionary ash. Steam-and-magic engineering transforms daily life. A cold ideological war runs beneath every diplomatic exchange. The beastmen kingdoms rise. And one figure — Wilhelm — changes everything.</div>
+        <div class="age-toggle"><span class="age-toggle-arrow">▶</span> Reveal the Chronicle</div>
+      </div>
+      <div class="age-panel">
+        <div class="age-panel-inner">
+          <div class="events-title">Key Events</div>
+          <div class="event-list">
+            <div class="event"><div class="ev-date">3051 AU</div><div class="ev-body"><div class="ev-name">The Fifth Era Begins — A World in Recovery</div><div class="ev-desc">The Great War of Cult reshapes the world and societies begin to recover. New advancements in governance, craftsmanship, and exploration. Old ways reconsidered. The shadow of the past lingers — but for the first time in centuries, there is cautious forward movement.</div></div></div>
+            <div class="event"><div class="ev-date">~2295 AU</div><div class="ev-body"><div class="ev-name">The Three Superpowers Consolidate (c. 2295 AU in-world)</div><div class="ev-desc">The Republic of Alodia (Jaenobiet Parliamentary Republic — naval and trade power, capital Imvien Bay, leader President Amadis Vernel). The Armorican Crown (Constitutional Monarchy — elite military and church networks, capital Elderglen, Queen Isabelle XII). The Soviet Socialist Commonwealth (Tri-Republic Federated Communalism — industrial self-sufficiency, capitals C'aras Irus / Vranahall / Redfort, Presidium: Zumindest, Anastasia, Zovak). A cold war of ideology, proxy conflicts, and diplomatic brinkmanship defines the age.</div></div></div>
+            <div class="event"><div class="ev-date">~3100–3500 AU</div><div class="ev-body"><div class="ev-name">The Age of Steam-and-Magic Engineering</div><div class="ev-desc">Mages and scholars integrate magic with practical innovations, leading to new technologies that blur the line between the arcane and the mechanical. Lundenford Academy becomes the hub of magical engineering. Firearms appear (Brassbolt revolvers, clockwork mechanisms, gyro-stabilised rifles). Steam-powered constructs and clockwork drakes enter military use. The world accelerates.</div></div></div>
+            <div class="event"><div class="ev-date">~3500 AU</div><div class="ev-body"><div class="ev-name">Rise of the Beastmen Kingdoms</div><div class="ev-desc">In the southern lands of Luminaria, the beastmen rebuild after centuries of strife. Selunarian exiles dream of their goddess's return in the perpetual winter of Seluna. In As'try'lys, the dominance of the God of the Sun weakens as beastman warlords carve out territories. Interactions between Exelia and Luminaria become increasingly significant — and tense.</div></div></div>
+            <div class="event"><div class="ev-date">~3800 AU</div><div class="ev-body"><div class="ev-name">The Fourth Millennium — Wilhelm's Time</div><div class="ev-desc">The Armorican Kingdom under a weakened crown struggles to maintain control over the Two Duchies (Greenwood and Kovesd). Magic, long suppressed or forgotten, resurges. New schools blend traditional practices with rediscovered knowledge. Wilhelm — born into a marquess family of the Two Duchies — becomes the central figure of a transformative era whose actions ripple outward into every corner of the world.</div></div></div>
+            <div class="event"><div class="ev-date">~4000 AU</div><div class="ev-body"><div class="ev-name">The Chamalian Papacy's Final Decline</div><div class="ev-desc">The once-mighty Papacy has decayed to a shadow — clinging to a few strongholds, its centralised control fractured by centuries of resistance and internal decay. It reinvents itself as a force of expansion and moral authority, aiming at Escapia as a new mission. But its days of real dominion are over.</div></div></div>
+            <div class="event"><div class="ev-date">~4050 AU</div><div class="ev-body"><div class="ev-name">First Contact with Escapia's Shores</div><div class="ev-desc">Exelian explorers arrive on the shores of Escapia — the northern continent drowned in myth since the Grand Deluge. They find forgotten Chamalian lizardfolk cities and relics. Tensions escalate immediately as the modern Papacy (now led by humans) seeks to claim Escapia, erasing the memory of the lizardfolk genocide from its own doctrine. Escapia becomes the next great flashpoint.</div></div></div>
+          </div>
+          <div class="tag-row">
+            <span class="tag" style="color:#94a3b8;border-color:rgba(148,163,184,.4);">Three Superpowers</span>
+            <span class="tag" style="color:#94a3b8;border-color:rgba(148,163,184,.4);">Cold War</span>
+            <span class="tag" style="color:#94a3b8;border-color:rgba(148,163,184,.4);">Steam &amp; Magic</span>
+            <span class="tag" style="color:#94a3b8;border-color:rgba(148,163,184,.4);">Wilhelm</span>
+            <span class="tag" style="color:#94a3b8;border-color:rgba(148,163,184,.4);">Escapia Discovered</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="age-node-col">
+      <div class="age-node" style="background:radial-gradient(circle at 35% 30%,#e2e8f0,#64748b);border-color:#94a3b8;color:#0f1923;--age-glow:rgba(100,116,139,.5);">VI</div>
+      <div class="age-connector" style="background:linear-gradient(180deg,#64748b,#06b6d4);min-height:80px;"></div>
+    </div>
+    <div class="age-spacer"></div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       AGE VII: SEVENTH AGE (IN PROGRESS)
+  ══════════════════════════════════ -->
+  <div class="age" id="age-7" style="--age-color:#06b6d4;--age-glow:rgba(6,182,212,.6);--age-bg:#06b6d4;">
+    <div class="age-spacer"></div>
+    <div class="age-node-col">
+      <div class="age-node" style="background:radial-gradient(circle at 35% 30%,#a5f3fc,#06b6d4);border-color:#06b6d4;color:#001a1f;animation:glowpulse 2s ease-in-out infinite;--age-glow:rgba(6,182,212,.6);">VII</div>
+      <div class="age-connector" style="background:linear-gradient(180deg,#06b6d4,transparent);min-height:40px;opacity:.4;"></div>
+    </div>
+    <div class="age-card">
+      <div class="age-header" style="border-color:rgba(6,182,212,.4);box-shadow:0 0 30px rgba(6,182,212,.1);">
+        <div class="age-label" style="color:#06b6d4;">Seventh Age · 4069 AU — Present <span class="current-badge"><span class="current-dot"></span>In Progress</span></div>
+        <div class="age-name" style="color:#a5f3fc;">The Age of Information</div>
+        <div class="age-aliases">Age of Diesel and Magic · Age of Cyber, Light and Magic · The Unwritten Age</div>
+        <div class="age-dates">4069 AU — ??? AU · The Present Unfolding</div>
+        <div class="age-summary">The world hums with diesel engines and arcane networks. Magic and machine have grown inseparable. Exelians confront the Escapian lizardfolk, their own violent history, and the ambitions of three superpowers in an age of information, proxy wars, and moral reckoning. The ink is not yet dry — the chronicle writes itself in real time.</div>
+        <div class="age-toggle"><span class="age-toggle-arrow">▶</span> Reveal the Chronicle</div>
+      </div>
+      <div class="age-panel">
+        <div class="age-panel-inner">
+          <div class="events-title">Known Events — The Unfolding Record</div>
+          <div class="event-list">
+            <div class="event"><div class="ev-date">4069 AU</div><div class="ev-body"><div class="ev-name">After Wilhelm — The Fifth Era Fully Begins</div><div class="ev-desc">Wilhelm's transformative actions usher in a period of exploration, rediscovery, and geopolitical upheaval. Exelia rebuilds from its fractured state, inhabitants turning their gaze outward. The Phoenix Agency — weakened but alive — supports factions that aim to preserve Escapia's history and prevent its exploitation.</div></div></div>
+            <div class="event"><div class="ev-date">4069+ AU</div><div class="ev-body"><div class="ev-name">The Escapia Confrontation</div><div class="ev-desc">Exelian explorers arrive on Escapia's shores in numbers, uncovering forgotten Chamalian relics and cities. The modern Chamalian Papacy (now human-led) seeks to claim Escapia as a holy reclamation, erasing the lizardfolk genocide from its doctrine. This sparks ethical debates across Exelia about accountability, reparations, and the morality of conquest. Evidence unearthed in Escapia challenges official narratives.</div></div></div>
+            <div class="event"><div class="ev-date">4069+ AU</div><div class="ev-body"><div class="ev-name">Diesel and Magic — The Technological Integration</div><div class="ev-desc">Diesel engines and arcane networks interweave into the fabric of daily life. Lundenford Academy sends expeditions to Escapia to recover ancient Chamalian relics. Magical engineering blurs the line between the arcane and mechanical further still. Traditionalists resist; progressives push for acceleration. The world moves faster than any chronicle can easily capture.</div></div></div>
+            <div class="event"><div class="ev-date">4069+ AU</div><div class="ev-body"><div class="ev-name">The Three-Superpower Cold War Intensifies</div><div class="ev-desc">Alodia (trade and diplomacy), the Armorican Crown (noble and clergy networks), and the SSC (ideological industrial power) continue their ideological cold war across proxy conflicts in Escapia, the Beastmen territories, and the former Chamalian heartlands. Espionage, broadcast magic, and information networks become the new battlefield.</div></div></div>
+            <div class="event"><div class="ev-date">Near Future</div><div class="ev-body"><div class="ev-name">The Age of Cyber — Light and Magic Converge</div><div class="ev-desc">The horizon of the Seventh Age promises the full integration of arcane networks with information technology — a world where magical computation, enchanted broadcasting, and cyber-arcane infrastructure reshape society as fundamentally as the printing press once did. This age is still being written. The scribes cannot keep pace.</div></div></div>
+            <div class="event"><div class="ev-date">???</div><div class="ev-body"><div class="ev-name">The Next Chronicle Awaits</div><div class="ev-desc">What ends this age? An Eighth Age waits beyond the horizon — its shape unknown, its name uncoined. The world of Arshmunnu has always moved from order to chaos to order again. Whatever comes next, the Aethernum Nexus still hums beneath the earth, the stars still stand as columns between Latentium and the outer Void, and the ink of memory flows like the rivers of Ruden.</div></div></div>
+          </div>
+          <div class="tag-row">
+            <span class="tag" style="color:#06b6d4;border-color:rgba(6,182,212,.4);">In Progress</span>
+            <span class="tag" style="color:#06b6d4;border-color:rgba(6,182,212,.4);">Age of Information</span>
+            <span class="tag" style="color:#06b6d4;border-color:rgba(6,182,212,.4);">Diesel &amp; Magic</span>
+            <span class="tag" style="color:#06b6d4;border-color:rgba(6,182,212,.4);">Escapia</span>
+            <span class="tag" style="color:#06b6d4;border-color:rgba(6,182,212,.4);">Cyber Age Emerging</span>
+            <span class="tag" style="color:#06b6d4;border-color:rgba(6,182,212,.4);">Unwritten</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /chronicle -->
+
+<footer class="foot">
+  <div style="margin-bottom:10px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.4em;color:rgba(184,137,59,.5);text-transform:uppercase;">✦ Finis · Yet Never Finished ✦</div>
+  "Empires die twice: once in stone, once in memory. The ink of memory flows like the rivers of Ruden — as long as scribes draw breath."
+</footer>
+
+<style>
+@keyframes glowpulse{0%,100%{box-shadow:0 0 0 4px rgba(5,1,13,.9),0 0 20px rgba(6,182,212,.3);}50%{box-shadow:0 0 0 4px rgba(5,1,13,.9),0 0 40px rgba(6,182,212,.7),0 0 80px rgba(6,182,212,.2);}}
+</style>
+
+<script>
+/* ── STAR FIELD ── */
+(function(){
+  const c=document.getElementById('starCanvas');
+  const ctx=c.getContext('2d');
+  let stars=[];
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;stars=[];for(let i=0;i<200;i++){stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*.8+.2,a:Math.random(),speed:Math.random()*.0003+.0001});}}
+  function draw(){ctx.clearRect(0,0,c.width,c.height);stars.forEach(s=>{s.a+=s.speed;ctx.globalAlpha=Math.abs(Math.sin(s.a))*.7+.15;ctx.fillStyle='#f0e3c4';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;requestAnimationFrame(draw);}
+  window.addEventListener('resize',resize);resize();draw();
+})();
+
+/* ── EXPAND / COLLAPSE ── */
+document.querySelectorAll('.age-header').forEach(h=>{
+  h.addEventListener('click',()=>{
+    const age=h.closest('.age');
+    age.classList.toggle('open');
+  });
+});
+
+/* ── NAV PILLS ── */
+document.querySelectorAll('.nav-pill').forEach(p=>{
+  p.addEventListener('click',()=>{
+    const t=document.getElementById(p.dataset.target);
+    if(t){
+      t.scrollIntoView({behavior:'smooth',block:'start'});
+      // auto-open
+      const h=t.querySelector('.age-header');
+      const age=t;
+      if(!age.classList.contains('open'))age.classList.add('open');
+    }
+    document.querySelectorAll('.nav-pill').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+
+/* ── SCROLL ANIMATION ── */
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');}});
+},{threshold:.1});
+document.querySelectorAll('.age-header,.age-card').forEach(el=>observer.observe(el));
+
+/* ── NAV ACTIVE ON SCROLL ── */
+const ages=document.querySelectorAll('.age');
+const pills=document.querySelectorAll('.nav-pill');
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const id=e.target.id;
+      pills.forEach(p=>{
+        p.classList.toggle('active',p.dataset.target===id);
+      });
+    }
+  });
+},{threshold:.3});
+ages.forEach(a=>io.observe(a));
+
+/* ── AUTO-OPEN FIRST ── */
+document.getElementById('age-7').classList.add('open');
+</script>
+
+<style id="ep-styles">
+.ep-fab{position:fixed;bottom:22px;right:22px;z-index:800;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#1a0d04,#240808);border:1px solid rgba(212,164,74,.55);box-shadow:0 4px 20px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .22s;color:#d4a44a;}
+.ep-fab:hover{transform:scale(1.12);box-shadow:0 6px 24px rgba(0,0,0,.6),0 0 0 6px rgba(212,164,74,.12);}
+.ep-fab.active{background:linear-gradient(135deg,#d4a44a,#b8893b);color:#1a0800;border-color:#f0cc72;}
+.ep-ov{position:fixed;inset:0;z-index:900;background:rgba(3,1,8,.97);backdrop-filter:blur(12px);display:none;flex-direction:column;overflow:hidden;}
+.ep-ov.open{display:flex;}
+.ep-tb{flex-shrink:0;height:52px;background:rgba(5,2,12,.98);border-bottom:1px solid rgba(212,164,74,.2);display:flex;align-items:center;gap:12px;padding:0 18px;}
+.ep-tb-title{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:#d4a44a;flex:1;}
+.ep-count{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;padding:3px 8px;border-radius:2px;background:rgba(212,164,74,.12);color:rgba(212,164,74,.7);border:1px solid rgba(212,164,74,.25);}
+.ep-x{width:28px;height:28px;border-radius:50%;border:1px solid rgba(212,164,74,.35);background:transparent;color:rgba(212,164,74,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .14s;}
+.ep-x:hover{background:rgba(212,164,74,.14);color:#d4a44a;}
+.ep-body{flex:1;display:grid;grid-template-columns:290px 1fr;overflow:hidden;}
+.ep-lcol{display:flex;flex-direction:column;border-right:1px solid rgba(212,164,74,.12);overflow:hidden;}
+.ep-lhdr{flex-shrink:0;padding:10px 12px;border-bottom:1px solid rgba(212,164,74,.1);display:flex;gap:7px;align-items:center;}
+.ep-srch{flex:1;padding:6px 9px;background:rgba(232,223,200,.06);border:1px solid rgba(212,164,74,.22);border-radius:2px;color:#e8dfc8;font-family:'EB Garamond',serif;font-size:13px;outline:none;}
+.ep-srch:focus{border-color:rgba(212,164,74,.5);}
+.ep-srch::placeholder{color:rgba(232,223,200,.25);}
+.ep-new{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:6px 10px;border:1px solid rgba(212,164,74,.45);border-radius:2px;background:rgba(212,164,74,.08);color:#d4a44a;cursor:pointer;white-space:nowrap;transition:all .14s;}
+.ep-new:hover{background:rgba(212,164,74,.2);}
+.ep-tags{display:flex;gap:5px;flex-wrap:wrap;padding:7px 12px 4px;border-bottom:1px solid rgba(212,164,74,.07);}
+.ep-tg{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:2px 7px;border-radius:10px;border:1px solid rgba(212,164,74,.18);color:rgba(212,164,74,.4);cursor:pointer;transition:all .12s;}
+.ep-tg.on{border-color:rgba(212,164,74,.6);color:#d4a44a;background:rgba(212,164,74,.12);}
+.ep-list{flex:1;overflow-y:auto;padding:4px 0;scrollbar-width:thin;scrollbar-color:rgba(124,90,31,.3) transparent;}
+.ep-list::-webkit-scrollbar{width:3px}.ep-list::-webkit-scrollbar-thumb{background:rgba(124,90,31,.3);}
+.ep-li{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(212,164,74,.05);transition:background .1s;position:relative;}
+.ep-li:hover{background:rgba(212,164,74,.06);}
+.ep-li.sel{background:rgba(212,164,74,.12);}
+.ep-li-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.ep-li-info{flex:1;min-width:0;}
+.ep-li-name{font-family:'Cinzel',serif;font-size:11px;font-weight:500;color:#e8dfc8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
+.ep-li-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:rgba(232,223,200,.38);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ep-li-del{opacity:0;background:none;border:none;cursor:pointer;color:rgba(248,113,113,.55);font-size:13px;padding:2px 3px;transition:all .1s;flex-shrink:0;}
+.ep-li:hover .ep-li-del{opacity:1;}
+.ep-li-del:hover{color:#f87171;}
+.ep-rcol{display:flex;flex-direction:column;overflow:hidden;}
+.ep-fwrap{flex:1;overflow-y:auto;padding:18px 22px;scrollbar-width:thin;scrollbar-color:rgba(124,90,31,.3) transparent;}
+.ep-fwrap::-webkit-scrollbar{width:3px}.ep-fwrap::-webkit-scrollbar-thumb{background:rgba(124,90,31,.3);}
+.ep-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:9px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(232,223,200,.3);}
+.ep-ph span{font-size:28px;}
+.ep-ftitle{font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:.07em;color:#d4a44a;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(212,164,74,.14);}
+.ep-field{margin-bottom:13px;}
+.ep-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(212,164,74,.65);display:block;margin-bottom:4px;}
+.ep-inp,.ep-ta,.ep-sel{width:100%;padding:7px 10px;background:rgba(232,223,200,.05);border:1px solid rgba(212,164,74,.22);border-radius:2px;color:#e8dfc8;font-family:'EB Garamond',serif;font-size:14px;outline:none;transition:border-color .13s;}
+.ep-inp:focus,.ep-ta:focus,.ep-sel:focus{border-color:rgba(212,164,74,.5);background:rgba(232,223,200,.09);}
+.ep-inp::placeholder,.ep-ta::placeholder{color:rgba(232,223,200,.22);}
+.ep-ta{resize:vertical;min-height:75px;line-height:1.5;}
+.ep-sel{cursor:pointer;}.ep-sel option{background:#0d0a1a;color:#e8dfc8;}
+.ep-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ep-row4{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.ep-ans-w{display:flex;gap:5px;align-items:center;}
+.ep-ans-l{font-family:'Cinzel',serif;font-size:9px;color:rgba(212,164,74,.5);width:12px;flex-shrink:0;}
+.ep-corr{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:5px;}
+.ep-co{display:flex;align-items:center;gap:5px;padding:5px 7px;border:1px solid rgba(212,164,74,.18);border-radius:2px;cursor:pointer;transition:all .12s;}
+.ep-co.on{border-color:#7c9e6b;background:rgba(124,158,107,.14);}
+.ep-co input{accent-color:#7c9e6b;cursor:pointer;}
+.ep-co label{font-family:'Cinzel',serif;font-size:9px;color:#e8dfc8;cursor:pointer;}
+.ep-fftr{flex-shrink:0;padding:10px 22px;border-top:1px solid rgba(212,164,74,.1);background:rgba(4,2,10,.9);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.ep-sv{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:8px 18px;border:1px solid rgba(212,164,74,.55);border-radius:2px;background:rgba(212,164,74,.13);color:#d4a44a;cursor:pointer;transition:all .14s;}
+.ep-sv:hover{background:rgba(212,164,74,.28);color:#f0cc72;}
+.ep-dv{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:8px 14px;border:1px solid rgba(248,113,113,.3);border-radius:2px;background:rgba(248,113,113,.06);color:rgba(248,113,113,.65);cursor:pointer;transition:all .14s;}
+.ep-dv:hover{background:rgba(248,113,113,.16);color:#f87171;}
+.ep-rst{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;padding:7px 10px;border:1px solid rgba(212,164,74,.15);border-radius:2px;background:transparent;color:rgba(212,164,74,.35);cursor:pointer;transition:all .13s;margin-left:auto;}
+.ep-rst:hover{background:rgba(212,164,74,.07);color:rgba(212,164,74,.65);}
+.ep-exp{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:7px 9px;border:1px solid rgba(103,232,249,.22);border-radius:2px;background:transparent;color:rgba(103,232,249,.45);cursor:pointer;transition:all .13s;}
+.ep-exp:hover{background:rgba(103,232,249,.07);color:rgba(103,232,249,.75);}
+.ep-imp-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:7px 9px;border:1px solid rgba(103,232,249,.22);border-radius:2px;background:transparent;color:rgba(103,232,249,.45);cursor:pointer;transition:all .13s;}
+.ep-imp-lbl:hover{background:rgba(103,232,249,.07);color:rgba(103,232,249,.75);}
+.ep-imp{display:none;}
+.ep-subl{display:grid;gap:5px;margin-top:6px;}
+.ep-sub{display:flex;gap:6px;align-items:flex-start;}
+.ep-sub .ep-inp{flex:1;}
+.ep-sdel{background:none;border:none;color:rgba(248,113,113,.45);cursor:pointer;font-size:13px;padding:7px 3px;flex-shrink:0;transition:color .11s;}
+.ep-sdel:hover{color:#f87171;}
+.ep-sadd{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:5px 10px;border:1px dashed rgba(212,164,74,.28);border-radius:2px;background:transparent;color:rgba(212,164,74,.45);cursor:pointer;transition:all .12s;margin-top:4px;}
+.ep-sadd:hover{border-color:rgba(212,164,74,.55);color:#d4a44a;}
+.ep-toast{position:fixed;bottom:80px;right:22px;z-index:1000;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;padding:9px 16px;border-radius:3px;border:1px solid rgba(134,239,172,.4);background:rgba(58,102,56,.25);color:#86efac;animation:tIn .3s ease,tOut .3s ease 1.7s both;pointer-events:none;}
+@keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tOut{to{opacity:0;transform:translateY(8px)}}
+@media(max-width:700px){.ep-body{grid-template-columns:1fr;}.ep-rcol{position:fixed;inset:52px 0 0 0;background:rgba(4,2,10,.98);z-index:5;display:none;}.ep-rcol.mob{display:flex;flex-direction:column;}}
+</style>
+
+<div class="ep-fab" id="tFab" title="Edit Timeline Events" onclick="tEpOpen()">✏</div>
+<div class="ep-ov" id="tEp">
+  <div class="ep-tb">
+    <span class="ep-tb-title">⏳ Timeline Editor — The Great Chronicle</span>
+    <span class="ep-count" id="tEpCount">Select an age</span>
+    <button class="ep-exp" onclick="tExport()">Export</button>
+    <label class="ep-imp-lbl">Import<input class="ep-imp" type="file" accept=".json" onchange="tImport(this)"></label>
+    <button class="ep-rst" onclick="tReset()">Reset All Events</button>
+    <button class="ep-x" onclick="tEpClose()">✕</button>
+  </div>
+  <div class="ep-body">
+    <div class="ep-lcol">
+      <div class="ep-lhdr" style="flex-direction:column;align-items:flex-start;gap:6px;">
+        <span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(212,164,74,.5);">Select Age to Edit</span>
+      </div>
+      <div class="ep-list" id="tAgeList"></div>
+    </div>
+    <div class="ep-rcol" id="tRcol">
+      <div class="ep-fwrap" id="tFwrap">
+        <div class="ep-ph"><span>⏳</span>Select an age from the left<br>to edit its events.</div>
+      </div>
+      <div class="ep-fftr" id="tFftr" style="display:none;">
+        <button class="ep-sv" onclick="tSaveAge()">✦ Save All Events</button>
+        <button class="ep-new" onclick="tAddEv()">+ Add Event</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+function epToast(m,ok=true){
+  const t=document.createElement('div');t.className='ep-toast';t.textContent=m;
+  if(!ok)t.style.cssText='border-color:rgba(248,113,113,.4);background:rgba(120,40,40,.25);color:#f87171;';
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2100);
+}
+
+// Collect ages from DOM
+function tGetAges(){
+  return [...document.querySelectorAll('.age')].map(el=>({
+    id:el.id,
+    name:(el.querySelector('.age-name')||{}).textContent||el.id,
+    color:getComputedStyle(el).getPropertyValue('--age-color')||'#888'
+  }));
+}
+// Load custom events from LS
+let tCustom={};
+try{const s=localStorage.getItem('arshmunnu_timeline_ev');if(s)tCustom=JSON.parse(s);}catch(e){}
+
+// Apply custom events to DOM on load
+(function(){
+  Object.entries(tCustom).forEach(([ageId,evs])=>{
+    const ageEl=document.getElementById(ageId); if(!ageEl)return;
+    const evList=ageEl.querySelector('.event-list'); if(!evList)return;
+    evList.innerHTML=evs.map(ev=>`
+      <div class="event">
+        <div class="ev-date">${ev.date||''}</div>
+        <div class="ev-body">
+          <div class="ev-name">${ev.name||''}</div>
+          <div class="ev-desc">${ev.desc||''}</div>
+        </div>
+      </div>`).join('');
+  });
+})();
+
+let tSelAge=null, tEvs=[];
+
+function tEpOpen(){
+  document.getElementById('tEp').classList.add('open');
+  document.getElementById('tFab').classList.add('active');
+  tRenderAgeList();
+}
+function tEpClose(){
+  document.getElementById('tEp').classList.remove('open');
+  document.getElementById('tFab').classList.remove('active');
+}
+function tRenderAgeList(){
+  const list=document.getElementById('tAgeList'); list.innerHTML='';
+  tGetAges().forEach(a=>{
+    const el=document.createElement('div'); el.className='ep-li'+(tSelAge===a.id?' sel':'');
+    const custom=tCustom[a.id];
+    el.innerHTML=`<span class="ep-li-dot" style="background:${a.color.trim()};"></span>
+      <div class="ep-li-info">
+        <div class="ep-li-name">${a.name}</div>
+        <div class="ep-li-sub">${custom?custom.length+' custom events':'Original events (unmodified)'}</div>
+      </div>`;
+    el.onclick=()=>tSelectAge(a.id,a.name,a.color.trim());
+    list.appendChild(el);
+  });
+}
+function tSelectAge(id,name,color){
+  tSelAge=id; tRenderAgeList();
+  // Get current events (custom or DOM)
+  if(tCustom[id]){
+    tEvs=tCustom[id].map(e=>({...e}));
+  } else {
+    // Read from DOM
+    const ageEl=document.getElementById(id);
+    tEvs=[...((ageEl||{}).querySelectorAll?.('.event')||[])].map(el=>({
+      date:(el.querySelector('.ev-date')||{}).textContent?.trim()||'',
+      name:(el.querySelector('.ev-name')||{}).textContent?.trim()||'',
+      desc:(el.querySelector('.ev-desc')||{}).textContent?.trim()||''
+    }));
+  }
+  document.getElementById('tEpCount').textContent=name+' — '+tEvs.length+' events';
+  document.getElementById('tFftr').style.display='flex';
+  document.getElementById('tRcol').classList.add('mob');
+  tRenderEvForm(color);
+}
+function tRenderEvForm(color){
+  const w=document.getElementById('tFwrap');
+  const c=color||'#d4a44a';
+  w.innerHTML=`<div class="ep-ftitle" style="color:${c};">Events for: ${tSelAge}</div>
+    <div id="tEvForms">${tEvs.map((ev,i)=>tEvRow(ev,i,c)).join('')}</div>`;
+}
+function tEvRow(ev,i,c){
+  return `<div class="ep-sub" id="tEv${i}" style="flex-direction:column;gap:6px;padding:10px;border:1px solid rgba(212,164,74,.1);border-radius:3px;margin-bottom:8px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;color:rgba(212,164,74,.5);">EVENT ${i+1}</span>
+      <button class="ep-sdel" onclick="tRemoveEv(${i})">✕ Remove</button>
+    </div>
+    <input class="ep-inp" id="tEd${i}" value="${(ev.date||'').replace(/"/g,'&quot;')}" placeholder="Date / Year">
+    <input class="ep-inp" id="tEn${i}" value="${(ev.name||'').replace(/"/g,'&quot;')}" placeholder="Event name">
+    <textarea class="ep-ta" id="tEt${i}" rows="3" placeholder="Description">${ev.desc||''}</textarea>
+  </div>`;
+}
+function tAddEv(){
+  const c=tCustom[tSelAge]?'#d4a44a':'#d4a44a';
+  tEvs.push({date:'',name:'',desc:''});
+  const cont=document.getElementById('tEvForms'); if(!cont)return;
+  const i=tEvs.length-1;
+  const div=document.createElement('div'); div.innerHTML=tEvRow({date:'',name:'',desc:''},i,c);
+  cont.appendChild(div.firstChild);
+  document.getElementById('tEpCount').textContent=tSelAge+' — '+tEvs.length+' events';
+}
+function tRemoveEv(i){const el=document.getElementById('tEv'+i);if(el)el.remove();tEvs.splice(i,1);tRenderEvForm();}
+function tSaveAge(){
+  if(!tSelAge)return;
+  // Read current form values
+  const saved=[];
+  document.querySelectorAll('#tEvForms > [id^="tEv"]').forEach((el,i)=>{
+    const d=document.getElementById('tEd'+i)?.value?.trim()||'';
+    const n=document.getElementById('tEn'+i)?.value?.trim()||'';
+    const t=document.getElementById('tEt'+i)?.value?.trim()||'';
+    saved.push({date:d,name:n,desc:t});
+  });
+  tCustom[tSelAge]=saved;
+  localStorage.setItem('arshmunnu_timeline_ev',JSON.stringify(tCustom));
+  // Apply to DOM
+  const ageEl=document.getElementById(tSelAge); if(ageEl){
+    const evList=ageEl.querySelector('.event-list');
+    if(evList)evList.innerHTML=saved.map(ev=>`
+      <div class="event">
+        <div class="ev-date">${ev.date}</div>
+        <div class="ev-body"><div class="ev-name">${ev.name}</div><div class="ev-desc">${ev.desc}</div></div>
+      </div>`).join('');
+  }
+  tRenderAgeList();
+  epToast('Events saved for '+tSelAge+' ✦');
+}
+function tReset(){
+  if(!confirm('Reset ALL custom events to defaults?'))return;
+  localStorage.removeItem('arshmunnu_timeline_ev');
+  location.reload();
+}
+function tExport(){
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(tCustom,null,2));
+  a.download='arshmunnu_timeline_events.json'; a.click();
+}
+function tImport(el){
+  const f=el.files[0];if(!f)return;
+  const r=new FileReader();r.onload=e=>{
+    try{const d=JSON.parse(e.target.result);
+      tCustom=d;localStorage.setItem('arshmunnu_timeline_ev',JSON.stringify(d));
+      location.reload();
+    }catch(err){epToast('Parse error',false);}
+  };r.readAsText(f);
+}
+</script>
+
+</body>
+</html>
